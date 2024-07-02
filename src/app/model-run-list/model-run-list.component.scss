@@ -1,0 +1,12 @@
+mat-card {
+    max-width: 100em;
+    margin-bottom: 16px;
+}
+mat-card-header {
+    justify-content: space-between;
+}
+
+.actions {
+    display: flex;
+    column-gap: 16px;
+}

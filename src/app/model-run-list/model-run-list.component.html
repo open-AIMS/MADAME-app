@@ -1,0 +1,18 @@
+<h2>Model Runs</h2>
+
+@for (run of runs; track run.id) {
+<mat-card appearance="outlined" matRipple>
+    <mat-card-header>
+        <mat-card-title>{{ run.title }}</mat-card-title>
+        <span class="actions">
+            <button mat-button><mat-icon>cloud_circle</mat-icon> M&DS</button>
+            <button mat-flat-button routerLink="/view-run/{{run.id}}">Open</button>
+        </span>
+    </mat-card-header>
+    <mat-card-content>
+        {{ run.desc }}
+    </mat-card-content>
+</mat-card>
+} @empty {
+<p>No model runs.</p>
+}
