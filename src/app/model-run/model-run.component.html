@@ -3,7 +3,7 @@
     Back to model runs
 </button>
 
-@if (run) {
+@if (run(); as run) {
 <mat-card>
     <mat-card-header>
         <mat-card-title>{{ run.title }}</mat-card-title>

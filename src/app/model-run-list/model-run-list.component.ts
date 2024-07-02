@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { ModelRunListItemComponent } from "../model-run-list-item/model-run-list-item.component";
 import { MODEL_RUNS } from '../../mock-data/model-runs.mockdata';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -12,7 +11,7 @@ import { RouterLink } from '@angular/router';
     standalone: true,
     templateUrl: './model-run-list.component.html',
     styleUrl: './model-run-list.component.scss',
-    imports: [ModelRunListItemComponent, MatCardModule, MatButtonModule, MatRippleModule, MatIconModule, RouterLink]
+    imports: [MatCardModule, MatButtonModule, MatRippleModule, MatIconModule, RouterLink]
 })
 export class ModelRunListComponent {
 
