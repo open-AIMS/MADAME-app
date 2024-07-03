@@ -1,6 +1,19 @@
-# AdriaApp
+# MADAME App
+
+Model Assessment and Decision Analysis for Marine Environments web application.
+Prototype Decision Support app for the [ADRIA.jl](https://github.com/open-AIMS/ADRIA.jl)
+platform and CoralBlox model.
+
+## Angular Developer Setup
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.0.6.
+
+**One-time setup:**
+1. Install [Node v22](https://nodejs.org/en/download/package-manager)
+2. `npm install -g @angular/cli`
+
+If you encounter a PowerShell script security error,
+[fix Powershell execution policy](https://angular.dev/tools/cli/setup-local#powershell-execution-policy).
 
 ## Development server
 
