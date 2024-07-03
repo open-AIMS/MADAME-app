@@ -41,4 +41,11 @@
         <button mat-button>Scenarios</button>
     </mat-card-actions>
 </mat-card>
+
+<arcgis-map [itemId]="mapItemId" (arcgisViewReadyChange)="arcgisViewReadyChange($event)">
+    <arcgis-expand>
+        <arcgis-search position="top-right"></arcgis-search>
+    </arcgis-expand>
+    <arcgis-legend position="bottom-left"></arcgis-legend>
+</arcgis-map>
 }

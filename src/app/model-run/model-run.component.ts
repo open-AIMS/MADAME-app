@@ -6,18 +6,21 @@ import { MatButtonModule } from '@angular/material/button';
 import { DatePipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
-import { ArcgisMapComponent } from "../arcgis-map/arcgis-map.component";
+import { ComponentLibraryModule } from '@arcgis/map-components-angular';
+import { ArcgisMapCustomEvent } from '@arcgis/map-components';
 
 @Component({
-    selector: 'app-model-run',
-    standalone: true,
-    templateUrl: './model-run.component.html',
-    styleUrl: './model-run.component.scss',
-    imports: [MatCardModule, MatButtonModule, DatePipe, MatIconModule, RouterLink, ArcgisMapComponent]
+  selector: 'app-model-run',
+  standalone: true,
+  templateUrl: './model-run.component.html',
+  styleUrl: './model-run.component.scss',
+  imports: [MatCardModule, MatButtonModule, DatePipe, MatIconModule, RouterLink, ComponentLibraryModule]
 })
 export class ModelRunComponent {
 
   id = input.required<string>();
+
+  mapItemId = '94fe3f59dcc64b9eb94576a1f1f17ec9';
 
   run = computed(() => {
     const id = this.id();
@@ -27,4 +30,8 @@ export class ModelRunComponent {
     }
     return run;
   });
+
+  arcgisViewReadyChange(event: ArcgisMapCustomEvent<void>) {
+    console.log("ArcGis ready");
+  }
 }

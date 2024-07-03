@@ -1,9 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 
 html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif;
-    padding: 16px;
-}
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 .info-table {
     th {
@@ -18,3 +16,9 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif;
 .row {
     display: flex;
 }
+
+// ArcGis Theme
+// Alternatively, could load stylesheet index.html
+// <link rel="stylesheet" href="https://js.arcgis.com/4.30/esri/themes/dark/main.css" />
+// However, this has nicer legend heading size.
+@import "@arcgis/core/assets/esri/themes/light/main.css";
