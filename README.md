@@ -11,9 +11,12 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 **One-time setup:**
 1. Install [Node v22](https://nodejs.org/en/download/package-manager)
 2. `npm install -g @angular/cli`
+3. `npm install --legacy-peer-deps`
 
 If you encounter a PowerShell script security error,
 [fix Powershell execution policy](https://angular.dev/tools/cli/setup-local#powershell-execution-policy).
+
+*--legacy-peer-deps* will be necessary until ArcGIS updates peer deps to Angular 18.
 
 ## Development server
 
