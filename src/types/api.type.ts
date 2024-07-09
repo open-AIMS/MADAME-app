@@ -1,0 +1,22 @@
+export interface ResultSetInfo {
+    id: string;
+    title: string;
+    datapkg_name: string;
+    invoke_time: string;
+    // TODO finish_time, calculate runtime
+    model_name: string;
+    model_version: string;
+    n_scenarios: number;
+    n_locations: number;
+    n_timesteps: number;
+    start_year: number;
+    end_year: number;
+    // Published properties
+    // FUTURE extend type, or sub-property
+    creator?: string;
+    desc?: string;
+    publish_date?: Date;
+    handle_id?: string;
+    // Mock, need to add to ADRIA ResultSet
+    runtime?: string;
+}

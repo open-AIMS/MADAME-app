@@ -1,26 +1,40 @@
-import { ModelRun } from "../types/model-run.type";
+import { ResultSetInfo } from "../types/api.type";
 
-export const MODEL_RUNS: Array<ModelRun> = [
+export const MODEL_RUNS: Array<ResultSetInfo> = [
     {
         id: "1",
         title: "Alternative Coral Class Study 2022",
-        desc: "Hello descr",
-        startDate: new Date(2024, 7, 1, 11),
-        finishDate: new Date(2024, 7, 1, 14),
-        publishDate: new Date(2024, 7, 3),
+        desc: "Mock: Hello description....",
+        invoke_time: new Date(2024, 7, 1, 11).toDateString(),
+        runtime: "22m 15s",
+        publish_date: new Date(2024, 7, 3),
         creator: "Takuya",
-        modelName: "CoralBlox v1.1",
-        runtime: "22m 30s"
+        model_name: "CoralBlox",
+        model_version: "v1.1",
+        datapkg_name: "Moore",
+        n_scenarios: 100,
+        n_locations: 256,
+        n_timesteps: 50,
+        start_year: 2020,
+        end_year: 2100,
+        handle_id: "foo"
     },
     {
         id: "2",
         title: "EcoBlox Default Run",
-        desc: "Default run for EcoBlox release.",
-        startDate: new Date(2024, 7, 10, 11),
-        finishDate: new Date(2024, 7, 10, 12),
-        publishDate: new Date(2024, 7, 11),
+        desc: "Mock: Default run for EcoBlox release.",
+        invoke_time: new Date(2024, 7, 10, 11).toDateString(),
+        runtime: "15m 33s",
+        publish_date: new Date(2024, 7, 11),
         creator: "Takuya",
-        modelName: "CoralBlox v1.2",
-        runtime: "15m 10s"
+        model_name: "CoralBlox",
+        model_version: "v1.2",
+        datapkg_name: "Moore",
+        n_scenarios: 100,
+        n_locations: 256,
+        n_timesteps: 50,
+        start_year: 2020,
+        end_year: 2100,
+        handle_id: "bar"
     }
 ];

@@ -3,8 +3,9 @@
     Back to model runs
 </button>
 
-@if (run(); as run) {
 <mat-card>
+@defer (when run()) {
+@if (run(); as run) {
     <mat-card-header>
         <mat-card-title>{{ run.title }}</mat-card-title>
     </mat-card-header>
@@ -17,15 +18,15 @@
                 </tr>
                 <tr>
                     <th>Publish Date:</th>
-                    <td>{{ run.publishDate | date }}</td>
+                    <td>{{ run.publish_date | date }}</td>
                 </tr>
                 <tr>
-                    <th>Runtime:</th>
-                    <td>{{ run.runtime }} <em>finished</em> {{ run.finishDate | date }}</td>
+                    <th>Invoked:</th>
+                    <td>{{ run.invoke_time }}, took {{ run.runtime }}</td>
                 </tr>
                 <tr>
                     <th>Model:</th>
-                    <td>{{ run.modelName }}</td>
+                    <td>{{ run.model_name }} {{ run.model_version }}</td>
                 </tr>
                 <tr>
                     <th>Data:</th>
@@ -40,12 +41,17 @@
         <button mat-button>Data Packages</button>
         <button mat-button>Scenarios</button>
     </mat-card-actions>
-</mat-card>
 
-<arcgis-map [itemId]="mapItemId" (arcgisViewReadyChange)="arcgisViewReadyChange($event)">
+
+<!-- <arcgis-map [itemId]="mapItemId" (arcgisViewReadyChange)="arcgisViewReadyChange($event)">
     <arcgis-expand>
         <arcgis-search position="top-right"></arcgis-search>
     </arcgis-expand>
     <arcgis-legend position="bottom-left"></arcgis-legend>
 </arcgis-map>
+-->
 }
+} @placeholder {
+    <mat-card-content>Loading...</mat-card-content>
+}
+</mat-card>

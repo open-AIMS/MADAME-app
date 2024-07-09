@@ -1,11 +1,13 @@
 <h2>Model Runs</h2>
 
-@for (run of runs; track run.id) {
+@for (run of runs$ | async; track run.id) {
 <mat-card appearance="outlined" matRipple>
     <mat-card-header>
         <mat-card-title>{{ run.title }}</mat-card-title>
         <span class="actions">
+            @if (run.handle_id) {
             <button mat-button><mat-icon>cloud_circle</mat-icon> M&DS</button>
+            }
             <button mat-flat-button routerLink="/view-run/{{run.id}}">Open</button>
         </span>
     </mat-card-header>
@@ -14,5 +16,6 @@
     </mat-card-content>
 </mat-card>
 } @empty {
+    <!-- TODO shouldn't display during loading, use defer -->
 <p>No model runs.</p>
 }
