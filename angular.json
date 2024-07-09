@@ -67,7 +67,8 @@
               "buildTarget": "adria-app:build:production"
             },
             "development": {
-              "buildTarget": "adria-app:build:development"
+              "buildTarget": "adria-app:build:development",
+              "proxyConfig": "src/proxy.conf.json"
             }
           },
           "defaultConfiguration": "development"
