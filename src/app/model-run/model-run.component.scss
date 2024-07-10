@@ -7,18 +7,9 @@
     height: calc(100vh - 64px);
 }
 
-mat-card {
-    margin-left: 16px;
-
-    mat-card-content {
-        padding-top: 16px;
-
-        .info-table {
-            padding-right: 24px;
-            margin-right: 24px;
-            border-right: 3px solid black;
-        }
-    }
+mat-expansion-panel {
+    margin: 16px 0 8px 16px;
+    flex: none;
 }
 
 button {

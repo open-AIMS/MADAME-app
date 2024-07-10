@@ -1,6 +1,5 @@
 import { Component, input, Signal } from '@angular/core';
 import { MODEL_RUNS } from '../../mock-data/model-runs.mockdata';
-import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { AsyncPipe, DatePipe, NgIf } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
@@ -13,13 +12,14 @@ import { DataFrame, ResultSetInfo } from '../../types/api.type';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { MatTabsModule } from '@angular/material/tabs';
 import { DataframeTableComponent } from "../dataframe-table/dataframe-table.component";
+import { MatExpansionModule } from '@angular/material/expansion';
 
 @Component({
   selector: 'app-model-run',
   standalone: true,
   templateUrl: './model-run.component.html',
   styleUrl: './model-run.component.scss',
-  imports: [MatCardModule, MatButtonModule, DatePipe, MatIconModule, RouterLink, ComponentLibraryModule, AsyncPipe, NgIf, MatTabsModule, DataframeTableComponent]
+  imports: [MatExpansionModule, MatButtonModule, DatePipe, MatIconModule, RouterLink, ComponentLibraryModule, AsyncPipe, NgIf, MatTabsModule, DataframeTableComponent]
 })
 export class ModelRunComponent {
 

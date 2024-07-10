@@ -1,46 +1,43 @@
-<button mat-button routerLink="/runs">
-    <mat-icon>arrow_back</mat-icon>
-    Back to model runs
-</button>
+@defer (when run()) {
+@if (run(); as run) {
+<mat-expansion-panel expanded="true">
+    <mat-expansion-panel-header>
+        <mat-panel-title>{{ run.title }}</mat-panel-title>
+    </mat-expansion-panel-header>
+    <p *ngIf="run.desc">{{ run.desc }}</p>
+    <table class="info-table">
+        <tr *ngIf="run.creator">
+            <th>Creator:</th>
+            <td>{{ run.creator }}</td>
+        </tr>
+        <tr *ngIf="run.publish_date">
+            <th>Publish Date:</th>
+            <td>{{ run.publish_date | date }}</td>
+        </tr>
+        <tr>
+            <th>Invoked:</th>
+            <td>{{ run.invoke_time }}
+                @if (run.runtime) {
+                , took <em>{{ run.runtime }}</em>
+                }
+            </td>
+        </tr>
+        <tr>
+            <th>Model:</th>
+            <td>{{ run.model_name }} {{ run.model_version }}</td>
+        </tr>
+        <tr *ngIf="run.handle_id">
+            <th>Data:</th>
+            <td><a href="https://mds.gbrrestoration.org/">M&DS</a></td>
+        </tr>
+    </table>
 
-<mat-card>
-    @defer (when run()) {
-    @if (run(); as run) {
-    <mat-card-header>
-        <mat-card-title>{{ run.title }}</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-        <div class="row">
-            <table class="info-table">
-                <tr *ngIf="run.creator">
-                    <th>Creator:</th>
-                    <td>{{ run.creator }}</td>
-                </tr>
-                <tr *ngIf="run.publish_date">
-                    <th>Publish Date:</th>
-                    <td>{{ run.publish_date | date }}</td>
-                </tr>
-                <tr>
-                    <th>Invoked:</th>
-                    <td>{{ run.invoke_time }}, took {{ run.runtime }}</td>
-                </tr>
-                <tr>
-                    <th>Model:</th>
-                    <td>{{ run.model_name }} {{ run.model_version }}</td>
-                </tr>
-                <tr *ngIf="run.handle_id">
-                    <th>Data:</th>
-                    <td><a href="https://mds.gbrrestoration.org/">M&DS</a></td>
-                </tr>
-            </table>
-            <p class="mat-body-large">{{ run.desc }}</p>
-        </div>
-    </mat-card-content>
-    }
-    } @placeholder {
-    <mat-card-content>Loading...</mat-card-content>
-    }
-</mat-card>
+</mat-expansion-panel>
+}
+} @placeholder {
+<p>Loading...</p>
+}
+
 
 <mat-tab-group>
     <mat-tab label="Parameters">
