@@ -1,21 +1,40 @@
 :host {
-    display: block;
-    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+    // subtract top toolbar height
+    height: calc(100vh - 64px);
 }
 
-mat-card-content {
-    padding-top: 16px;
+mat-card {
+    margin-left: 16px;
 
-    .info-table {
-        padding-right: 24px;
-        margin-right: 24px;
-        border-right: 3px solid black;
+    mat-card-content {
+        padding-top: 16px;
+
+        .info-table {
+            padding-right: 24px;
+            margin-right: 24px;
+            border-right: 3px solid black;
+        }
     }
+}
+
+button {
+    margin-left: 16px;
+    flex: none;
+}
+
+mat-tab-group {
+    width: 100%;
+    flex: 1 1 auto;
+    overflow: auto;
 }
 
 arcgis-map {
     display: block;
     width: 100%;
+    // FIXME only fixed heights work?
     height: 600px;
-    margin-top: 16px;
 }

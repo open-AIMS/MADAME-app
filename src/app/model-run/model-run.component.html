@@ -28,7 +28,7 @@
                     <th>Model:</th>
                     <td>{{ run.model_name }} {{ run.model_version }}</td>
                 </tr>
-                <tr>
+                <tr *ngIf="run.handle_id">
                     <th>Data:</th>
                     <td><a href="https://mds.gbrrestoration.org/">M&DS</a></td>
                 </tr>
@@ -42,7 +42,7 @@
     }
 </mat-card>
 
-<mat-tab-group dynamicHeight>
+<mat-tab-group>
     <mat-tab label="Parameters">
         <ng-template matTabContent>
             <app-dataframe-table [data]="modelspecDataframe$ | async"></app-dataframe-table>
