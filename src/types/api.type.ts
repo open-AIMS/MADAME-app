@@ -20,3 +20,14 @@ export interface ResultSetInfo {
     // Mock, need to add to ADRIA ResultSet
     runtime?: string;
 }
+
+export interface DataFrame {
+    columns: Array<Array<any>>;
+    colindex: {
+        lookup: Record<string, number>;
+        names: Array<string>;
+    },
+    metadata: any; // null
+    colmetadata: any; // null
+    allnotemetadata: boolean;
+}

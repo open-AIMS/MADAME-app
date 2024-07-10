@@ -4,19 +4,19 @@
 </button>
 
 <mat-card>
-@defer (when run()) {
-@if (run(); as run) {
+    @defer (when run()) {
+    @if (run(); as run) {
     <mat-card-header>
         <mat-card-title>{{ run.title }}</mat-card-title>
     </mat-card-header>
     <mat-card-content>
         <div class="row">
             <table class="info-table">
-                <tr>
+                <tr *ngIf="run.creator">
                     <th>Creator:</th>
                     <td>{{ run.creator }}</td>
                 </tr>
-                <tr>
+                <tr *ngIf="run.publish_date">
                     <th>Publish Date:</th>
                     <td>{{ run.publish_date | date }}</td>
                 </tr>
@@ -36,22 +36,34 @@
             <p class="mat-body-large">{{ run.desc }}</p>
         </div>
     </mat-card-content>
-    <mat-card-actions>
-        <button mat-button>Parameters</button>
-        <button mat-button>Data Packages</button>
-        <button mat-button>Scenarios</button>
-    </mat-card-actions>
-
-
-<!-- <arcgis-map [itemId]="mapItemId" (arcgisViewReadyChange)="arcgisViewReadyChange($event)">
-    <arcgis-expand>
-        <arcgis-search position="top-right"></arcgis-search>
-    </arcgis-expand>
-    <arcgis-legend position="bottom-left"></arcgis-legend>
-</arcgis-map>
--->
-}
-} @placeholder {
+    }
+    } @placeholder {
     <mat-card-content>Loading...</mat-card-content>
-}
+    }
 </mat-card>
+
+<mat-tab-group dynamicHeight>
+    <mat-tab label="Parameters">
+        <ng-template matTabContent>
+            <app-dataframe-table [data]="modelspecDataframe$ | async"></app-dataframe-table>
+        </ng-template>
+    </mat-tab>
+    <mat-tab label="Scenarios">
+        <ng-template matTabContent>
+            <app-dataframe-table [data]="scenariosDataframe$ | async"></app-dataframe-table>
+        </ng-template>
+    </mat-tab>
+    <mat-tab label="Site Ranking">
+        TODO
+    </mat-tab>
+    <mat-tab label="Map">
+        <ng-template matTabContent>
+            <arcgis-map [itemId]="mapItemId" (arcgisViewReadyChange)="arcgisViewReadyChange($event)">
+                <arcgis-expand>
+                    <arcgis-search position="top-right"></arcgis-search>
+                </arcgis-expand>
+                <arcgis-legend position="bottom-left"></arcgis-legend>
+            </arcgis-map>
+        </ng-template>
+    </mat-tab>
+</mat-tab-group>

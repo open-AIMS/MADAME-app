@@ -1,0 +1,5 @@
+:host {
+    display: block;
+    // FIXME scrollbar isn't visible until scrolldown
+    overflow-x: auto;
+}

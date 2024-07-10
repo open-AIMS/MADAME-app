@@ -2,22 +2,24 @@ import { Component, input, Signal } from '@angular/core';
 import { MODEL_RUNS } from '../../mock-data/model-runs.mockdata';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
-import { AsyncPipe, DatePipe } from '@angular/common';
+import { AsyncPipe, DatePipe, NgIf } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
 import { ComponentLibraryModule } from '@arcgis/map-components-angular';
 import { ArcgisMapCustomEvent } from '@arcgis/map-components';
 import { ApiService } from '../api.service';
 import { Observable, of, switchMap } from 'rxjs';
-import { ResultSetInfo } from '../../types/api.type';
+import { DataFrame, ResultSetInfo } from '../../types/api.type';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { MatTabsModule } from '@angular/material/tabs';
+import { DataframeTableComponent } from "../dataframe-table/dataframe-table.component";
 
 @Component({
   selector: 'app-model-run',
   standalone: true,
   templateUrl: './model-run.component.html',
   styleUrl: './model-run.component.scss',
-  imports: [MatCardModule, MatButtonModule, DatePipe, MatIconModule, RouterLink, ComponentLibraryModule, AsyncPipe]
+  imports: [MatCardModule, MatButtonModule, DatePipe, MatIconModule, RouterLink, ComponentLibraryModule, AsyncPipe, NgIf, MatTabsModule, DataframeTableComponent]
 })
 export class ModelRunComponent {
 
@@ -28,8 +30,14 @@ export class ModelRunComponent {
 
   mapItemId = '94fe3f59dcc64b9eb94576a1f1f17ec9';
 
+  modelspecDataframe$: Observable<DataFrame>;
+  scenariosDataframe$: Observable<DataFrame>;
+
   constructor(private api: ApiService) {
-    this.run$ = toObservable(this.id).pipe(
+    // TODO share needed?
+    const id$ = toObservable(this.id);
+
+    this.run$ = id$.pipe(
       switchMap(id => {
         // HACK mock data has integer ids
         if (isNaN(Number(id))) {
@@ -44,6 +52,14 @@ export class ModelRunComponent {
       }),
     );
     this.run = toSignal(this.run$);
+
+    this.modelspecDataframe$ = id$.pipe(
+      switchMap(id => this.api.getResultSetModelSpec(id))
+    );
+
+    this.scenariosDataframe$ = id$.pipe(
+      switchMap(id => this.api.getResultSetScenarios(id))
+    );
   }
 
   arcgisViewReadyChange(event: ArcgisMapCustomEvent<void>) {
