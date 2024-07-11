@@ -13,13 +13,14 @@ import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { MatTabsModule } from '@angular/material/tabs';
 import { DataframeTableComponent } from "../dataframe-table/dataframe-table.component";
 import { MatExpansionModule } from '@angular/material/expansion';
+import { ModelspecExplorerComponent } from "../model/modelspec-explorer/modelspec-explorer.component";
 
 @Component({
   selector: 'app-model-run',
   standalone: true,
   templateUrl: './model-run.component.html',
   styleUrl: './model-run.component.scss',
-  imports: [MatExpansionModule, MatButtonModule, DatePipe, MatIconModule, RouterLink, ComponentLibraryModule, AsyncPipe, NgIf, MatTabsModule, DataframeTableComponent]
+  imports: [MatExpansionModule, MatButtonModule, DatePipe, MatIconModule, RouterLink, ComponentLibraryModule, AsyncPipe, NgIf, MatTabsModule, DataframeTableComponent, ModelspecExplorerComponent]
 })
 export class ModelRunComponent {
 
