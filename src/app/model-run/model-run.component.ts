@@ -7,13 +7,14 @@ import { RouterLink } from '@angular/router';
 import { ComponentLibraryModule } from '@arcgis/map-components-angular';
 import { ArcgisMapCustomEvent } from '@arcgis/map-components';
 import { ApiService } from '../api.service';
-import { Observable, of, switchMap } from 'rxjs';
+import { map, Observable, of, switchMap } from 'rxjs';
 import { DataFrame, ResultSetInfo } from '../../types/api.type';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { MatTabsModule } from '@angular/material/tabs';
 import { DataframeTableComponent } from "../dataframe-table/dataframe-table.component";
 import { MatExpansionModule } from '@angular/material/expansion';
 import { ModelspecExplorerComponent } from "../model/modelspec-explorer/modelspec-explorer.component";
+import { dataframeToTable, SimpleTable } from '../../util/dataframe-util';
 
 @Component({
   selector: 'app-model-run',
@@ -32,7 +33,7 @@ export class ModelRunComponent {
   mapItemId = '94fe3f59dcc64b9eb94576a1f1f17ec9';
 
   modelspecDataframe$: Observable<DataFrame>;
-  scenariosDataframe$: Observable<DataFrame>;
+  scenariosTable$: Observable<SimpleTable>;
 
   constructor(private api: ApiService) {
     // TODO share needed?
@@ -58,8 +59,9 @@ export class ModelRunComponent {
       switchMap(id => this.api.getResultSetModelSpec(id))
     );
 
-    this.scenariosDataframe$ = id$.pipe(
-      switchMap(id => this.api.getResultSetScenarios(id))
+    this.scenariosTable$ = id$.pipe(
+      switchMap(id => this.api.getResultSetScenarios(id)),
+      map(dataframeToTable)
     );
   }
 

@@ -37,3 +37,20 @@ export function dataframeToRowObjects(data: DataFrame | null | undefined, indexe
 
   return rows;
 }
+
+export interface SimpleTable<T = any> {
+  rows: Array<T>;
+  columns: Array<string>;
+}
+
+export function dataframeToTable(data: DataFrame): SimpleTable {
+  if (data == null) {
+    return { rows: [], columns: [] };
+  }
+
+  return {
+    rows: dataframeToRowObjects(data),
+    // all columns
+    columns: data.colindex.names
+  }
+}

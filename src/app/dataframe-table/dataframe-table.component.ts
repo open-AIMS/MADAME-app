@@ -15,21 +15,16 @@ import { dataframeToRowObjects } from '../../util/dataframe-util';
 })
 export class DataframeTableComponent {
 
-  data = input<DataFrame | null | undefined>()
+  data = input<Array<any>>();
 
-  displayedColumns: Signal<Array<string>>;
+  displayedColumns = input<Array<string>>();
 
   datasource = new MatTableDataSource();
 
   constructor() {
-    this.displayedColumns = computed(() => {
-      // all columns
-      return this.data()?.colindex.names ?? [];
-    })
-
     effect(() => {
       const data = this.data();
-      this.datasource.data = dataframeToRowObjects(data);
+      this.datasource.data = data ?? [];
     })
   }
 }

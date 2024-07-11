@@ -47,7 +47,9 @@
     </mat-tab>
     <mat-tab label="Scenarios">
         <ng-template matTabContent>
-            <app-dataframe-table [data]="scenariosDataframe$ | async"></app-dataframe-table>
+            @if (scenariosTable$ | async; as table) {
+            <app-dataframe-table [data]="table.rows" [displayedColumns]="table.columns"></app-dataframe-table>
+            }
         </ng-template>
     </mat-tab>
     <mat-tab label="Site Ranking">

@@ -1,3 +1,10 @@
 mat-tab-group {
     height: 100%;
 }
+
+h3 {
+    margin-top: 16px !important;
+    margin-left: 16px !important;
+    // FIXME not working
+    position: sticky;
+}
