@@ -2,7 +2,7 @@ import { Component, computed, input, Signal } from '@angular/core';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { DataFrame } from '../../../types/api.type';
-import { DataframeTableComponent } from "../../dataframe-table/dataframe-table.component";
+import { TableComponent } from "../../table/table.component";
 import { dataframeToTable, SimpleTable } from '../../../util/dataframe-util';
 import { CoralData, ModelSpecField, pivotCoralRows } from '../../../util/modelspec-util';
 
@@ -11,7 +11,7 @@ type ModelspecTable = SimpleTable<ModelSpecField>;
 @Component({
   selector: 'app-modelspec-explorer',
   standalone: true,
-  imports: [MatTabsModule, MatTableModule, DataframeTableComponent],
+  imports: [MatTabsModule, MatTableModule, TableComponent],
   templateUrl: './modelspec-explorer.component.html',
   styleUrl: './modelspec-explorer.component.scss'
 })

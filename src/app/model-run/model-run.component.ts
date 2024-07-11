@@ -11,7 +11,7 @@ import { map, Observable, of, switchMap } from 'rxjs';
 import { DataFrame, ResultSetInfo } from '../../types/api.type';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { MatTabsModule } from '@angular/material/tabs';
-import { DataframeTableComponent } from "../dataframe-table/dataframe-table.component";
+import { TableComponent } from "../table/table.component";
 import { MatExpansionModule } from '@angular/material/expansion';
 import { ModelspecExplorerComponent } from "../model/modelspec-explorer/modelspec-explorer.component";
 import { dataframeToTable, SimpleTable } from '../../util/dataframe-util';
@@ -21,7 +21,7 @@ import { dataframeToTable, SimpleTable } from '../../util/dataframe-util';
   standalone: true,
   templateUrl: './model-run.component.html',
   styleUrl: './model-run.component.scss',
-  imports: [MatExpansionModule, MatButtonModule, DatePipe, MatIconModule, RouterLink, ComponentLibraryModule, AsyncPipe, NgIf, MatTabsModule, DataframeTableComponent, ModelspecExplorerComponent]
+  imports: [MatExpansionModule, MatButtonModule, DatePipe, MatIconModule, RouterLink, ComponentLibraryModule, AsyncPipe, NgIf, MatTabsModule, TableComponent, ModelspecExplorerComponent]
 })
 export class ModelRunComponent {
 

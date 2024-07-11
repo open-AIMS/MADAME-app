@@ -2,14 +2,14 @@
 <mat-tab-group>
   <mat-tab label="Intervention">
     <ng-template matTabContent>
-      <app-dataframe-table [data]="componentRows()['Intervention']"
-        [displayedColumns]="displayedColumns()"></app-dataframe-table>
+      <app-table [data]="componentRows()['Intervention']"
+        [displayedColumns]="displayedColumns()"></app-table>
     </ng-template>
   </mat-tab>
   <mat-tab label="Environment">
     <ng-template matTabContent>
-      <app-dataframe-table [data]="componentRows()['EnvironmentalLayer']"
-        [displayedColumns]="displayedColumns()"></app-dataframe-table>
+      <app-table [data]="componentRows()['EnvironmentalLayer']"
+        [displayedColumns]="displayedColumns()"></app-table>
     </ng-template>
   </mat-tab>
   <mat-tab label="Coral">
@@ -59,23 +59,23 @@
   <mat-tab label="Misc">
     <ng-template matTabContent>
       <h3 class="mat-headline-small">Seed Criteria Weights</h3>
-      <app-dataframe-table [data]="componentRows()['SeedCriteriaWeights']"
-        [displayedColumns]="displayedColumns()"></app-dataframe-table>
+      <app-table [data]="componentRows()['SeedCriteriaWeights']"
+        [displayedColumns]="displayedColumns()"></app-table>
 
       <h3 class="mat-headline-small">Fog Criteria Weights</h3>
-      <app-dataframe-table [data]="componentRows()['FogCriteriaWeights']"
-        [displayedColumns]="displayedColumns()"></app-dataframe-table>
+      <app-table [data]="componentRows()['FogCriteriaWeights']"
+        [displayedColumns]="displayedColumns()"></app-table>
 
       <h3 class="mat-headline-small">Depth Thresholds</h3>
-      <app-dataframe-table [data]="componentRows()['decision.DepthThresholds']"
-        [displayedColumns]="displayedColumns()"></app-dataframe-table>
+      <app-table [data]="componentRows()['decision.DepthThresholds']"
+        [displayedColumns]="displayedColumns()"></app-table>
 
     </ng-template>
   </mat-tab>
   <mat-tab label="Raw Table">
     <ng-template matTabContent>
-      <app-dataframe-table [data]="modelspecTable().rows"
-        [displayedColumns]="modelspecTable().columns"></app-dataframe-table>
+      <app-table [data]="modelspecTable().rows"
+        [displayedColumns]="modelspecTable().columns"></app-table>
     </ng-template>
   </mat-tab>
 </mat-tab-group>

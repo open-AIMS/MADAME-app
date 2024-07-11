@@ -48,7 +48,7 @@
     <mat-tab label="Scenarios">
         <ng-template matTabContent>
             @if (scenariosTable$ | async; as table) {
-            <app-dataframe-table [data]="table.rows" [displayedColumns]="table.columns"></app-dataframe-table>
+            <app-table [data]="table.rows" [displayedColumns]="table.columns"></app-table>
             }
         </ng-template>
     </mat-tab>
