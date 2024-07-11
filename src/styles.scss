@@ -8,6 +8,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
         text-align: right;
         color: rgba(0, 0, 0, 0.7);
     }
+
     td {
         padding-left: 0.5em;
     }
@@ -15,6 +16,12 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 .row {
     display: flex;
+}
+
+mat-tab-group.fixed-height {
+    .mat-mdc-tab-body-wrapper {
+        height: 100%;
+    }
 }
 
 // ArcGis Theme

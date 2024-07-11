@@ -26,6 +26,5 @@ mat-tab-group {
 arcgis-map {
     display: block;
     width: 100%;
-    // FIXME only fixed heights work?
-    height: 600px;
+    height: 100%;
 }
