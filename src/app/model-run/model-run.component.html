@@ -57,7 +57,9 @@
     </mat-tab>
     <mat-tab label="Map">
         <ng-template matTabContent>
-            <arcgis-map [itemId]="mapItemId" (arcgisViewReadyChange)="arcgisViewReadyChange($event)">
+            <arcgis-map [itemId]="mapItemId"
+                (arcgisViewReadyChange)="arcgisViewReadyChange($event)"
+                (arcgisViewClick)="arcgisViewClick($event)">
                 <arcgis-expand>
                     <arcgis-search position="top-right"></arcgis-search>
                 </arcgis-expand>

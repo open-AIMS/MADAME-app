@@ -1,10 +1,10 @@
-import { Component, input, Signal } from '@angular/core';
+import { Component, input, Signal, ViewChild } from '@angular/core';
 import { MODEL_RUNS } from '../../mock-data/model-runs.mockdata';
 import { MatButtonModule } from '@angular/material/button';
 import { AsyncPipe, DatePipe, NgIf } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
-import { ComponentLibraryModule } from '@arcgis/map-components-angular';
+import { ArcgisMap, ComponentLibraryModule } from '@arcgis/map-components-angular';
 import { ArcgisMapCustomEvent } from '@arcgis/map-components';
 import { ApiService } from '../api.service';
 import { map, Observable, of, switchMap } from 'rxjs';
@@ -34,6 +34,8 @@ export class ModelRunComponent {
 
   modelspecDataframe$: Observable<DataFrame>;
   scenariosTable$: Observable<SimpleTable>;
+
+  @ViewChild(ArcgisMap) map!: ArcgisMap;
 
   constructor(private api: ApiService) {
     // TODO share needed?
@@ -66,6 +68,28 @@ export class ModelRunComponent {
   }
 
   arcgisViewReadyChange(event: ArcgisMapCustomEvent<void>) {
-    console.log("ArcGis ready");
+    console.log("ArcGis ready", this.map);
+  }
+
+  async arcgisViewClick(event: ArcgisMapCustomEvent<__esri.ViewClickEvent>) {
+    console.log("arcgis map click", event);
+    const view = this.map.view;
+    const resp = await view.hitTest(event.detail);
+    console.log("resp", resp);
+
+    /*
+    view.hitTest(event).then(function(response) {
+      var results = response.results;
+      if (results.length > 0) {
+        var graphic = results.filter(function(result) {
+          return result.graphic.layer === featureLayer;
+        })[0].graphic;
+
+        console.log("Selected feature:", graphic);
+        // Perform actions with the selected graphic
+      }
+    });
+    */
+
   }
 }
