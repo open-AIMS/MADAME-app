@@ -5,7 +5,6 @@ import { AsyncPipe, DatePipe, NgIf } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
 import { ArcgisMap, ComponentLibraryModule } from '@arcgis/map-components-angular';
-import { ArcgisMapCustomEvent } from '@arcgis/map-components';
 import { ApiService } from '../api.service';
 import { map, Observable, of, switchMap } from 'rxjs';
 import { DataFrame, ResultSetInfo } from '../../types/api.type';
@@ -15,13 +14,15 @@ import { TableComponent } from "../table/table.component";
 import { MatExpansionModule } from '@angular/material/expansion';
 import { ModelspecExplorerComponent } from "../model/modelspec-explorer/modelspec-explorer.component";
 import { dataframeToTable, SimpleTable } from '../../util/dataframe-util';
+import { ReefMapComponent } from "../reef-map/reef-map.component";
+
 
 @Component({
   selector: 'app-model-run',
   standalone: true,
   templateUrl: './model-run.component.html',
   styleUrl: './model-run.component.scss',
-  imports: [MatExpansionModule, MatButtonModule, DatePipe, MatIconModule, RouterLink, ComponentLibraryModule, AsyncPipe, NgIf, MatTabsModule, TableComponent, ModelspecExplorerComponent]
+  imports: [MatExpansionModule, MatButtonModule, DatePipe, MatIconModule, RouterLink, ComponentLibraryModule, AsyncPipe, NgIf, MatTabsModule, TableComponent, ModelspecExplorerComponent, ReefMapComponent]
 })
 export class ModelRunComponent {
 
@@ -65,31 +66,5 @@ export class ModelRunComponent {
       switchMap(id => this.api.getResultSetScenarios(id)),
       map(dataframeToTable)
     );
-  }
-
-  arcgisViewReadyChange(event: ArcgisMapCustomEvent<void>) {
-    console.log("ArcGis ready", this.map);
-  }
-
-  async arcgisViewClick(event: ArcgisMapCustomEvent<__esri.ViewClickEvent>) {
-    console.log("arcgis map click", event);
-    const view = this.map.view;
-    const resp = await view.hitTest(event.detail);
-    console.log("resp", resp);
-
-    /*
-    view.hitTest(event).then(function(response) {
-      var results = response.results;
-      if (results.length > 0) {
-        var graphic = results.filter(function(result) {
-          return result.graphic.layer === featureLayer;
-        })[0].graphic;
-
-        console.log("Selected feature:", graphic);
-        // Perform actions with the selected graphic
-      }
-    });
-    */
-
   }
 }

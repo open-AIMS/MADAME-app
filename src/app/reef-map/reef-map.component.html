@@ -1,0 +1,9 @@
+<arcgis-map [itemId]="mapItemId"
+    (arcgisViewReadyChange)="arcgisViewReadyChange($event)"
+    (arcgisViewLayerviewCreate)="arcgisViewLayerviewCreate($event)"
+    (arcgisViewClick)="arcgisViewClick($event)">
+    <arcgis-expand>
+        <arcgis-search position="top-right"></arcgis-search>
+    </arcgis-expand>
+    <arcgis-legend position="bottom-left"></arcgis-legend>
+</arcgis-map>
