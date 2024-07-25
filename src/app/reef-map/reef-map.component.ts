@@ -17,7 +17,7 @@ import { experimentSimpleGraphicsLayer } from '../../util/arcgis/arcgis-layer-ex
 export class ReefMapComponent {
 
   // mapItemId = '94fe3f59dcc64b9eb94576a1f1f17ec9';
-  // Arlo Reef Depth
+  // "MADAME App - Testing" map
   mapItemId = '43ef538d8be7412783eb7c5cfd3fdbe7';
 
   @ViewChild(ArcgisMap) map!: ArcgisMap;
@@ -107,10 +107,10 @@ export class ReefMapComponent {
    * Create a new layer from a Feature service layer URL.
    * @param renderer
    */
-  private testLayerFromUrl(renderer: any) {
+  private testLayerFromUrl(layerUrl: string, renderer: any) {
     const newLayer = new FeatureLayer({
       title: "Reef Relative Cover",
-      url: "https://services3.arcgis.com/wfyOCawpdks4prqC/arcgis/rest/services/ReefMod_Reefs/FeatureServer/17",
+      url: layerUrl,
       visible: true,
       renderer,
     });

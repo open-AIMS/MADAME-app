@@ -39,7 +39,7 @@
 }
 
 
-<mat-tab-group class="fixed-height">
+<mat-tab-group class="fixed-height" preserveContent>
     <mat-tab label="Parameters">
         <ng-template matTabContent>
             <app-modelspec-explorer [data]="modelspecDataframe$ | async"></app-modelspec-explorer>
