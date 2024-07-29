@@ -7,7 +7,7 @@ type FeatureAttributes = Record<string, any>;
 export interface FieldAdditions {
     newFields: Array<Field>;
     // mutate the attributes from the features query prior to constructing the FeatureLayer
-    modifyAttributes: (attributes: FeatureAttributes) => void;
+    modifyAttributes?: (attributes: FeatureAttributes) => void;
 }
 
 /**
@@ -26,8 +26,10 @@ export async function cloneFeatureLayerAsLocal(layer: FeatureLayer, mixin: __esr
         const { newFields, modifyAttributes } = addFields;
         fields.push(...newFields);
 
-        for (let f of featureSet.features) {
-            modifyAttributes(f.attributes);
+        if (modifyAttributes) {
+            for (let f of featureSet.features) {
+                modifyAttributes(f.attributes);
+            }
         }
     }
 
@@ -51,8 +53,6 @@ export async function updateLayerFeatureAttributes(layer: FeatureLayer,
         throw new Error("layer is not local!");
     }
 
-    await layer.when();
-
     const featureSet = await layer.queryFeatures();
 
     // Note: mutating featureSet.features works, but it's much faster
@@ -70,8 +70,6 @@ export async function updateLayerFeatureAttributes(layer: FeatureLayer,
         // @ts-expect-error
         updateFeatures: features
     });
-
-    await layer.when();
 }
 
 /**

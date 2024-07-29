@@ -3,9 +3,12 @@ import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
 import { ArcgisMapCustomEvent } from '@arcgis/map-components';
 import { ArcgisMap, ComponentLibraryModule } from '@arcgis/map-components-angular';
 import Field from '@arcgis/core/layers/support/Field';
-import { cloneFeatureLayerAsLocal, cloneRendererChangedField, updateLayerFeatureAttributes } from '../../util/arcgis/arcgis-layer-util';
-import { concatMap, delay, from, tap } from 'rxjs';
+import { cloneFeatureLayerAsLocal, cloneRendererChangedField } from '../../util/arcgis/arcgis-layer-util';
+import { firstValueFrom } from 'rxjs';
 import { experimentSimpleGraphicsLayer } from '../../util/arcgis/arcgis-layer-experiments';
+import { ApiService } from '../api.service';
+import { ResultSetService } from '../contexts/result-set.service';
+import { dataframeFind } from '../../util/dataframe-util';
 
 @Component({
   selector: 'app-reef-map',
@@ -24,6 +27,9 @@ export class ReefMapComponent {
 
   private cloned = false;
 
+  constructor(private api: ApiService, private resultSetContext: ResultSetService) {
+  }
+
   arcgisViewReadyChange(event: ArcgisMapCustomEvent<void>) {
     console.log("ArcGis ready", this.map);
     const map = this.map;
@@ -35,12 +41,14 @@ export class ReefMapComponent {
   arcgisViewLayerviewCreate(event: ArcgisMapCustomEvent<__esri.ViewLayerviewCreateEvent>) {
     const { layer, layerView } = event.detail;
     // console.log(`layer "${layer.title}" type=${layer.type}`, layer);
-    if (layer.type === 'feature' && layer.title?.startsWith("ReefMod Reefs")) {
+    // TODO refer by ID, this is brittle
+    if (layer.type === 'feature' && layer.title?.includes("Relative Cover")) {
       this.cloneReefsLayer(layer as FeatureLayer, layerView);
     }
   }
 
-  private cloneReefsLayer(layer: __esri.FeatureLayer, layerView: __esri.LayerView) {
+  private async cloneReefsLayer(layer: __esri.FeatureLayer, layerView: __esri.LayerView) {
+    // only do this once
     if (this.cloned) {
       return;
     }
@@ -50,36 +58,58 @@ export class ReefMapComponent {
       throw new Error("expected feature layer");
     }
 
+    const resultSetId = this.resultSetContext.getId();
+
     console.log("reef layer", layer, layerView);
 
     //const layerJSON = (layer as any).toJSON();
     //const popupInfo = layerJSON.popupInfo;
 
     // examples: depth_mean, depth_max, depth_min
-    const field = 'foo';
+    const field = 'relative_cover';
     const renderer = cloneRendererChangedField(layer.renderer, field);
 
     // hide original layer
     layer.visible = false;
 
-    this.testNewLayer(layer, renderer).then(reefLayer => {
-      // set different foo values
-      from([2, 5, 7, 12]).pipe(
-        tap(x => console.log("set foo", x)),
-        concatMap((x) => from(updateLayerFeatureAttributes(reefLayer,
-          (currentAttrs, objectFieldId) => {
-            return {
-              [objectFieldId]: currentAttrs[objectFieldId],
-              foo: x
-            }
-          }
-          // delay a bit to see the render
-          // Note that though attributes updated, view still loading, would be better
-          // to have a Promise for that for future UI busy indicator.
-        )).pipe(delay(500))
-      ),
-      ).subscribe(() => console.log('done setting foo'));
-    });
+    const relCoverData = await firstValueFrom(this.api.getMeanRelativeCover(resultSetId));
+
+    let unique_id_matchCount = 0;
+    // create a new local layer and add relative_cover field
+    const newLayer = await cloneFeatureLayerAsLocal(layer,
+      {
+        title: layer.title,
+        renderer,
+      },
+      {
+        newFields: [
+          new Field({
+            name: field,
+            alias: 'Relative Cover',
+            type: 'double'
+          })
+        ],
+        modifyAttributes: (attrs) => {
+          const val = dataframeFind(relCoverData, 'UNIQUE_ID',
+            (unique_id) => {
+              const match = unique_id === attrs['UNIQUE_ID'];
+              if (match) {
+                unique_id_matchCount++;
+              }
+              return match;
+            },
+            'relative_cover');
+
+/*           if (val) {
+            console.log('rel cover', val);
+          } */
+
+          attrs[field] = val;
+        }
+      });
+
+    console.log(`map.addLayer relative_cover, UNIQUE_ID matchCount=${unique_id_matchCount}`);
+    this.map.addLayer(newLayer);
   }
 
   async arcgisViewClick(event: ArcgisMapCustomEvent<__esri.ViewClickEvent>) {
@@ -119,30 +149,6 @@ export class ReefMapComponent {
     console.log("init fields", newLayer.fields);
 
     this.map.addLayer(newLayer);
-  }
-
-  private async testNewLayer(layer: FeatureLayer, renderer: any) {
-    const newLayer = await cloneFeatureLayerAsLocal(layer,
-      {
-        title: "Hello",
-        renderer,
-      },
-      {
-        newFields: [
-          new Field({
-            name: 'foo',
-            type: 'double'
-          })
-        ],
-        modifyAttributes: (attrs) => {
-          attrs['foo'] = 1;
-        }
-      });
-
-    this.map.addLayer(newLayer);
-    console.log("new layer", newLayer);
-
-    return newLayer;
   }
 
 }

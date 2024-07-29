@@ -1,10 +1,10 @@
+import { U } from '@angular/cdk/keycodes';
 import { DataFrame } from '../types/api.type';
 
 
 /**
  * Convert the dataframe to row objects.
  */
-
 export function dataframeToRowObjects(data: DataFrame | null | undefined, indexes?: Array<number>): Array<any> {
   if (data == null || data.columns.length === 0) {
     return [];
@@ -19,8 +19,7 @@ export function dataframeToRowObjects(data: DataFrame | null | undefined, indexe
     for (let i of indexes) {
       const row: Record<string, any> = {};
       for (let colname of names) {
-        // lookup values are 1-based index
-        row[colname] = columns[lookup[colname] - 1][i];
+        row[colname] = columns[lookup[colname]][i];
       }
       rows.push(row);
     }
@@ -28,8 +27,7 @@ export function dataframeToRowObjects(data: DataFrame | null | undefined, indexe
     for (let i = 0; i < numRows; i++) {
       const row: Record<string, any> = {};
       for (let colname of names) {
-        // lookup values are 1-based index
-        row[colname] = columns[lookup[colname] - 1][i];
+        row[colname] = columns[lookup[colname]][i];
       }
       rows.push(row);
     }
@@ -53,4 +51,26 @@ export function dataframeToTable(data: DataFrame): SimpleTable {
     // all columns
     columns: data.colindex.names
   }
+}
+
+export function dataframeFind(data: DataFrame, colname: string, fn: (val: any) => boolean, returnColname: string): any | undefined {
+  const { columns, colindex } = data;
+  const { lookup, names } = colindex;
+
+  const col = columns[lookup[colname]];
+  if (col === undefined) {
+    throw new Error(`column "${colname}" does not exist in DataFrame`);
+  }
+
+  const index = col.findIndex(fn);
+  if (index === -1) {
+    return undefined;
+  }
+
+  const returnCol = columns[lookup[returnColname]];
+  if (returnCol === undefined) {
+    throw new Error(`column "${returnColname}" does not exist in DataFrame`);
+  }
+
+  return returnCol[index];
 }

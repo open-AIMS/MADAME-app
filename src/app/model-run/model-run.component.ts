@@ -15,6 +15,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { ModelspecExplorerComponent } from "../model/modelspec-explorer/modelspec-explorer.component";
 import { dataframeToTable, SimpleTable } from '../../util/dataframe-util';
 import { ReefMapComponent } from "../reef-map/reef-map.component";
+import { ResultSetService } from '../contexts/result-set.service';
 
 
 @Component({
@@ -22,7 +23,8 @@ import { ReefMapComponent } from "../reef-map/reef-map.component";
   standalone: true,
   templateUrl: './model-run.component.html',
   styleUrl: './model-run.component.scss',
-  imports: [MatExpansionModule, MatButtonModule, DatePipe, MatIconModule, RouterLink, ComponentLibraryModule, AsyncPipe, NgIf, MatTabsModule, TableComponent, ModelspecExplorerComponent, ReefMapComponent]
+  imports: [MatExpansionModule, MatButtonModule, DatePipe, MatIconModule, RouterLink, ComponentLibraryModule, AsyncPipe, NgIf, MatTabsModule, TableComponent, ModelspecExplorerComponent, ReefMapComponent],
+  providers: [ResultSetService]
 })
 export class ModelRunComponent {
 
@@ -38,9 +40,12 @@ export class ModelRunComponent {
 
   @ViewChild(ArcgisMap) map!: ArcgisMap;
 
-  constructor(private api: ApiService) {
+  constructor(private api: ApiService, private resultSetContext: ResultSetService) {
     // TODO share needed?
     const id$ = toObservable(this.id);
+
+    // update the id in the ResultSet context
+    id$.subscribe(id => this.resultSetContext.id = id);
 
     this.run$ = id$.pipe(
       switchMap(id => {

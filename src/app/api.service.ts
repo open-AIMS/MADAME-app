@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { DataFrame, ResultSetInfo } from '../types/api.type';
 
 @Injectable({
@@ -20,10 +20,29 @@ export class ApiService {
   }
 
   getResultSetScenarios(id: string): Observable<DataFrame> {
-    return this.http.get<DataFrame>(`/api/resultset/${id}/scenarios`);
+    return fixDataFrame(this.http.get<DataFrame>(`/api/resultset/${id}/scenarios`));
   }
 
   getResultSetModelSpec(id: string): Observable<DataFrame> {
-    return this.http.get<DataFrame>(`/api/resultset/${id}/modelspec`);
+    return fixDataFrame(this.http.get<DataFrame>(`/api/resultset/${id}/modelspec`));
   }
+
+  getMeanRelativeCover(id: string): Observable<DataFrame> {
+    return fixDataFrame(this.http.get<DataFrame>(`/api/resultset/${id}/relative_cover`));
+  }
+}
+
+/**
+ * Convert 1-based lookup values to 0-based. (mutates)
+ * @param dataframe raw dataframe from API
+  */
+function fixDataFrame(dataframe: Observable<DataFrame>) {
+  return dataframe.pipe(
+    tap(df => {
+      const { lookup } = df.colindex;
+      for (let key in lookup) {
+        lookup[key]--;
+      }
+    })
+  );
 }
