@@ -27,8 +27,16 @@ export class ApiService {
     return fixDataFrame(this.http.get<DataFrame>(`/api/resultset/${id}/modelspec`));
   }
 
-  getMeanRelativeCover(id: string): Observable<DataFrame> {
-    return fixDataFrame(this.http.get<DataFrame>(`/api/resultset/${id}/relative_cover`));
+  getMeanRelativeCover(id: string, timestep?: number): Observable<DataFrame> {
+    if (timestep !== undefined) {
+      return fixDataFrame(
+        this.http.get<DataFrame>(`/api/resultset/${id}/relative_cover`,
+          { params: { timestep } }
+        )
+      );
+    } else {
+      return fixDataFrame(this.http.get<DataFrame>(`/api/resultset/${id}/relative_cover`));
+    }
   }
 }
 
