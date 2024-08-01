@@ -1,23 +1,29 @@
-import { Component, ViewChild } from '@angular/core';
+import {Component, ViewChild} from '@angular/core';
 import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
-import { ArcgisMapCustomEvent } from '@arcgis/map-components';
-import { ArcgisMap, ComponentLibraryModule } from '@arcgis/map-components-angular';
+import {ArcgisMapCustomEvent} from '@arcgis/map-components';
+import {ArcgisMap, ComponentLibraryModule} from '@arcgis/map-components-angular';
 import Field from '@arcgis/core/layers/support/Field';
-import { cloneFeatureLayerAsLocal, cloneRendererChangedField, updateLayerFeatureAttributes } from '../../util/arcgis/arcgis-layer-util';
-import { BehaviorSubject, firstValueFrom, Subject, switchMap, tap } from 'rxjs';
-import { experimentSimpleGraphicsLayer } from '../../util/arcgis/arcgis-layer-experiments';
-import { ApiService } from '../api.service';
-import { ResultSetService } from '../contexts/result-set.service';
-import { dataframeFind } from '../../util/dataframe-util';
-import { MatSliderModule } from '@angular/material/slider';
-import { DataFrame } from '../../types/api.type';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { CommonModule } from '@angular/common';
+import {
+  cloneFeatureLayerAsLocal,
+  cloneRendererChangedField,
+  updateLayerFeatureAttributes
+} from '../../util/arcgis/arcgis-layer-util';
+import {BehaviorSubject, firstValueFrom, Subject, switchMap, tap} from 'rxjs';
+import {experimentSimpleGraphicsLayer} from '../../util/arcgis/arcgis-layer-experiments';
+import {ApiService} from '../api.service';
+import {ResultSetService} from '../contexts/result-set.service';
+import {dataframeFind} from '../../util/dataframe-util';
+import {MatSliderModule} from '@angular/material/slider';
+import {DataFrame} from '../../types/api.type';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {CommonModule} from '@angular/common';
+import {TimeSliderComponent} from "../widgets/time-slider/time-slider.component";
+import {PointOrRange, pointOrRangeToParam} from "../../util/param-util";
 
 @Component({
   selector: 'app-reef-map',
   standalone: true,
-  imports: [ComponentLibraryModule, MatSliderModule, MatProgressSpinnerModule, CommonModule],
+  imports: [ComponentLibraryModule, MatSliderModule, MatProgressSpinnerModule, CommonModule, TimeSliderComponent],
   templateUrl: './reef-map.component.html',
   styleUrl: './reef-map.component.scss'
 })
@@ -28,8 +34,9 @@ export class ReefMapComponent {
   mapItemId = '43ef538d8be7412783eb7c5cfd3fdbe7';
 
   // year timestep
-  timestep: number = -9999;
-  timestep$ = new Subject<number>();
+  timestep$ = new Subject<PointOrRange>();
+  // last emitted value
+  timestep?: PointOrRange;
   timestepLoading$ = new BehaviorSubject<boolean>(false);
 
   @ViewChild(ArcgisMap) map!: ArcgisMap;
@@ -100,7 +107,7 @@ export class ReefMapComponent {
           })
         ],
         modifyAttributes: (attrs) => {
-          const val = dataframeFind(relCoverData, 'UNIQUE_ID',
+          attrs[field] = dataframeFind(relCoverData, 'UNIQUE_ID',
             (unique_id) => {
               const match = unique_id === attrs['UNIQUE_ID'];
               if (match) {
@@ -109,12 +116,6 @@ export class ReefMapComponent {
               return match;
             },
             'relative_cover');
-
-/*           if (val) {
-            console.log('rel cover', val);
-          } */
-
-          attrs[field] = val;
         }
       });
 
@@ -143,7 +144,7 @@ export class ReefMapComponent {
         }
       }
     );
-    this.reefLayer!.title = `Reefs Relative Cover ${this.timestep}`;
+    this.reefLayer!.title = `Reefs Relative Cover ${pointOrRangeToParam(this.timestep!)}`;
 
     // probably race-condition here when overlaping updates
     this.reefLayer?.when(() => this.timestepLoading$.next(false));
@@ -188,4 +189,7 @@ export class ReefMapComponent {
     this.map.addLayer(newLayer);
   }
 
+  onYearRange(event: number | [number, number]) {
+    this.timestep$.next(event);
+  }
 }

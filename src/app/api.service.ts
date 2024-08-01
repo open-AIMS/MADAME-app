@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 import { DataFrame, ResultSetInfo } from '../types/api.type';
+import {PointOrRange, pointOrRangeToParam} from "../util/param-util";
 
 @Injectable({
   providedIn: 'root'
@@ -27,11 +28,11 @@ export class ApiService {
     return fixDataFrame(this.http.get<DataFrame>(`/api/resultset/${id}/modelspec`));
   }
 
-  getMeanRelativeCover(id: string, timestep?: number): Observable<DataFrame> {
+  getMeanRelativeCover(id: string, timestep?: PointOrRange): Observable<DataFrame> {
     if (timestep !== undefined) {
       return fixDataFrame(
         this.http.get<DataFrame>(`/api/resultset/${id}/relative_cover`,
-          { params: { timestep } }
+          { params: { timestep: pointOrRangeToParam(timestep) } }
         )
       );
     } else {

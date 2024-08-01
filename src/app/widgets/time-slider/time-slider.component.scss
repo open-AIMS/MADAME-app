@@ -1,0 +1,12 @@
+:host {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+}
+
+mat-slider {
+  flex: auto;
+}
+span {
+  font-weight: 500;
+}

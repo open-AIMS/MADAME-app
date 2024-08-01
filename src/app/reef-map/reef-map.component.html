@@ -1,14 +1,14 @@
-<arcgis-map [itemId]="mapItemId" (arcgisViewReadyChange)="arcgisViewReadyChange($event)"
-    (arcgisViewLayerviewCreate)="arcgisViewLayerviewCreate($event)" (arcgisViewClick)="arcgisViewClick($event)">
-    <arcgis-expand>
-        <arcgis-search position="top-right"></arcgis-search>
-    </arcgis-expand>
-    <arcgis-legend position="bottom-left"></arcgis-legend>
+<arcgis-map [itemId]="mapItemId"
+            (arcgisViewReadyChange)="arcgisViewReadyChange($event)"
+            (arcgisViewLayerviewCreate)="arcgisViewLayerviewCreate($event)"
+            (arcgisViewClick)="arcgisViewClick($event)">
+  <arcgis-expand>
+    <arcgis-search position="top-right"></arcgis-search>
+  </arcgis-expand>
+  <arcgis-legend position="bottom-left"></arcgis-legend>
 </arcgis-map>
 <div class="timestep-container">
-    <mat-slider class="timestep-slider" min="2025" max="2099" step="1" showTickMarks discrete>
-        <input matSliderThumb (valueChange)="timestep$.next($event)">
-    </mat-slider>
+  <app-time-slider [min]="2025" [max]="2099" (valueChange)="onYearRange($event)"></app-time-slider>
     <mat-progress-spinner mode="indeterminate" diameter="24"
         [style.visibility]="(timestepLoading$ | async) ? 'visible' : 'hidden'">
     </mat-progress-spinner>

@@ -1,0 +1,26 @@
+<span>{{ min() }}</span>
+@if (mode() === 'range') {
+  <mat-slider [min]="min()" [max]="max()" step="1" showTickMarks discrete>
+    <input matSliderStartThumb [(value)]="left" (valueChange)="leftChange.emit($event)">
+    <input matSliderEndThumb [(value)]="right" (valueChange)="rightChange.emit($event)">
+  </mat-slider>
+} @else {
+  <mat-slider [min]="min()" [max]="max()" step="1" showTickMarks discrete>
+    <input matSliderThumb [(value)]="left" (valueChange)="leftChange.emit($event)">
+  </mat-slider>
+}
+<span>{{ max() }}</span>
+<button mat-icon-button [matMenuTriggerFor]="menu">
+  <mat-icon>settings</mat-icon>
+</button>
+<mat-menu #menu="matMenu">
+  @if (mode() === 'range') {
+    <button mat-menu-item (click)="mode.set('point')">
+      <span>Single year mode</span>
+    </button>
+  } @else {
+    <button mat-menu-item (click)="mode.set('range')">
+      <span>Year range mode</span>
+    </button>
+  }
+</mat-menu>
