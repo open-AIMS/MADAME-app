@@ -1,8 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, tap } from 'rxjs';
+import {Observable, of, tap} from 'rxjs';
 import { DataFrame, ResultSetInfo } from '../types/api.type';
 import {PointOrRange, pointOrRangeToParam} from "../util/param-util";
+import {MODEL_RUNS} from "../mock-data/model-runs.mockdata";
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +18,16 @@ export class ApiService {
   }
 
   getResultSetInfo(id: string): Observable<ResultSetInfo> {
-    return this.http.get<ResultSetInfo>(`/api/resultset/${id}/info`);
+    // temporary mock data for prototyping
+    if (id.startsWith("MOCK-")) {
+      const run = MODEL_RUNS.find(m => m.id === id);
+      if (run === undefined) {
+        throw new Error(`MODEL_RUNS missing id=${id}`);
+      }
+      return of(run);
+    } else {
+      return this.http.get<ResultSetInfo>(`/api/resultset/${id}/info`);
+    }
   }
 
   getResultSetScenarios(id: string): Observable<DataFrame> {

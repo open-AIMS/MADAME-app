@@ -8,8 +8,10 @@
   <arcgis-legend position="bottom-left"></arcgis-legend>
 </arcgis-map>
 <div class="timestep-container">
-  <app-time-slider [min]="2025" [max]="2099" (valueChange)="onYearRange($event)"></app-time-slider>
-    <mat-progress-spinner mode="indeterminate" diameter="24"
-        [style.visibility]="(timestepLoading$ | async) ? 'visible' : 'hidden'">
-    </mat-progress-spinner>
+  @if (yearExtent$ | async; as extent) {
+  <app-time-slider [min]="extent[0]" [max]="extent[1]" (valueChange)="onYearRange($event)"></app-time-slider>
+  }
+  <mat-progress-spinner mode="indeterminate" diameter="24"
+                        [style.visibility]="(timestepLoading$ | async) ? 'visible' : 'hidden'">
+  </mat-progress-spinner>
 </div>

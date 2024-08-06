@@ -8,7 +8,7 @@ import {
   cloneRendererChangedField,
   updateLayerFeatureAttributes
 } from '../../util/arcgis/arcgis-layer-util';
-import {BehaviorSubject, firstValueFrom, Subject, switchMap, tap} from 'rxjs';
+import {BehaviorSubject, firstValueFrom, map, Observable, Subject, switchMap, tap} from 'rxjs';
 import {experimentSimpleGraphicsLayer} from '../../util/arcgis/arcgis-layer-experiments';
 import {ApiService} from '../api.service';
 import {ResultSetService} from '../contexts/result-set.service';
@@ -39,12 +39,17 @@ export class ReefMapComponent {
   timestep?: PointOrRange;
   timestepLoading$ = new BehaviorSubject<boolean>(false);
 
+  yearExtent$: Observable<[number, number]>;
+
   @ViewChild(ArcgisMap) map!: ArcgisMap;
 
   private cloned = false;
   private reefLayer?: FeatureLayer;
 
   constructor(private api: ApiService, private resultSetContext: ResultSetService) {
+    this.yearExtent$ = resultSetContext.info$.pipe(
+      map(info => [info.start_year, info.end_year])
+    )
   }
 
   arcgisViewReadyChange(event: ArcgisMapCustomEvent<void>) {
@@ -56,7 +61,7 @@ export class ReefMapComponent {
   }
 
   arcgisViewLayerviewCreate(event: ArcgisMapCustomEvent<__esri.ViewLayerviewCreateEvent>) {
-    const { layer, layerView } = event.detail;
+    const {layer, layerView} = event.detail;
     // console.log(`layer "${layer.title}" type=${layer.type}`, layer);
     // TODO refer by ID, this is brittle
     if (layer.type === 'feature' && layer.title?.includes("Relative Cover")) {
@@ -75,7 +80,7 @@ export class ReefMapComponent {
       throw new Error("expected feature layer");
     }
 
-    const resultSetId = this.resultSetContext.getId();
+    const resultSetId = this.resultSetContext.id;
 
     console.log("reef layer", layer, layerView);
 

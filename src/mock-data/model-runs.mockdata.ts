@@ -2,7 +2,7 @@ import { ResultSetInfo } from "../types/api.type";
 
 export const MODEL_RUNS: Array<ResultSetInfo> = [
     {
-        id: "1",
+        id: "MOCK-1",
         title: "Alternative Coral Class Study 2022",
         desc: "Mock: Hello description....",
         invoke_time: new Date(2024, 7, 1, 11).toDateString(),
@@ -20,7 +20,7 @@ export const MODEL_RUNS: Array<ResultSetInfo> = [
         handle_id: "foo"
     },
     {
-        id: "2",
+        id: "MOCK-2",
         title: "EcoBlox Default Run",
         desc: "Mock: Default run for EcoBlox release.",
         invoke_time: new Date(2024, 7, 10, 11).toDateString(),

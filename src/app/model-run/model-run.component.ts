@@ -1,21 +1,20 @@
-import { Component, input, Signal, ViewChild } from '@angular/core';
-import { MODEL_RUNS } from '../../mock-data/model-runs.mockdata';
-import { MatButtonModule } from '@angular/material/button';
-import { AsyncPipe, DatePipe, NgIf } from '@angular/common';
-import { MatIconModule } from '@angular/material/icon';
-import { RouterLink } from '@angular/router';
-import { ArcgisMap, ComponentLibraryModule } from '@arcgis/map-components-angular';
-import { ApiService } from '../api.service';
-import { map, Observable, of, switchMap } from 'rxjs';
-import { DataFrame, ResultSetInfo } from '../../types/api.type';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { MatTabsModule } from '@angular/material/tabs';
-import { TableComponent } from "../table/table.component";
-import { MatExpansionModule } from '@angular/material/expansion';
-import { ModelspecExplorerComponent } from "../model/modelspec-explorer/modelspec-explorer.component";
-import { dataframeToTable, SimpleTable } from '../../util/dataframe-util';
-import { ReefMapComponent } from "../reef-map/reef-map.component";
-import { ResultSetService } from '../contexts/result-set.service';
+import {Component, input, Signal, ViewChild} from '@angular/core';
+import {MatButtonModule} from '@angular/material/button';
+import {AsyncPipe, DatePipe, NgIf} from '@angular/common';
+import {MatIconModule} from '@angular/material/icon';
+import {RouterLink} from '@angular/router';
+import {ArcgisMap, ComponentLibraryModule} from '@arcgis/map-components-angular';
+import {ApiService} from '../api.service';
+import {map, Observable, switchMap} from 'rxjs';
+import {DataFrame, ResultSetInfo} from '../../types/api.type';
+import {toObservable, toSignal} from '@angular/core/rxjs-interop';
+import {MatTabsModule} from '@angular/material/tabs';
+import {TableComponent} from "../table/table.component";
+import {MatExpansionModule} from '@angular/material/expansion';
+import {ModelspecExplorerComponent} from "../model/modelspec-explorer/modelspec-explorer.component";
+import {dataframeToTable, SimpleTable} from '../../util/dataframe-util';
+import {ReefMapComponent} from "../reef-map/reef-map.component";
+import {ResultSetService} from '../contexts/result-set.service';
 
 
 @Component({
@@ -30,6 +29,7 @@ export class ModelRunComponent {
 
   id = input.required<string>();
 
+  // move this to ResultSetContext instead?
   run$: Observable<ResultSetInfo>;
   run: Signal<ResultSetInfo | undefined>;
 
@@ -47,20 +47,7 @@ export class ModelRunComponent {
     // update the id in the ResultSet context
     id$.subscribe(id => this.resultSetContext.id = id);
 
-    this.run$ = id$.pipe(
-      switchMap(id => {
-        // HACK mock data has integer ids
-        if (isNaN(Number(id))) {
-          return this.api.getResultSetInfo(id)
-        } else {
-          const run = MODEL_RUNS.find(m => m.id === id);
-          if (run === undefined) {
-            throw new Error(`MODEL_RUNS missing id=${id}`);
-          }
-          return of(run);
-        }
-      }),
-    );
+    this.run$ = resultSetContext.info$;
     this.run = toSignal(this.run$);
 
     this.modelspecDataframe$ = id$.pipe(
