@@ -15,6 +15,7 @@ import {ModelspecExplorerComponent} from "../model/modelspec-explorer/modelspec-
 import {dataframeToTable, SimpleTable} from '../../util/dataframe-util';
 import {ReefMapComponent} from "../reef-map/reef-map.component";
 import {ResultSetService} from '../contexts/result-set.service';
+import {MatToolbar} from "@angular/material/toolbar";
 
 
 @Component({
@@ -22,7 +23,7 @@ import {ResultSetService} from '../contexts/result-set.service';
   standalone: true,
   templateUrl: './model-run.component.html',
   styleUrl: './model-run.component.scss',
-  imports: [MatExpansionModule, MatButtonModule, DatePipe, MatIconModule, RouterLink, ComponentLibraryModule, AsyncPipe, NgIf, MatTabsModule, TableComponent, ModelspecExplorerComponent, ReefMapComponent],
+  imports: [MatExpansionModule, MatButtonModule, DatePipe, MatIconModule, RouterLink, ComponentLibraryModule, AsyncPipe, NgIf, MatTabsModule, TableComponent, ModelspecExplorerComponent, ReefMapComponent, MatToolbar],
   providers: [ResultSetService]
 })
 export class ModelRunComponent {
