@@ -2,10 +2,14 @@
             (arcgisViewReadyChange)="arcgisViewReadyChange($event)"
             (arcgisViewLayerviewCreate)="arcgisViewLayerviewCreate($event)"
             (arcgisViewClick)="arcgisViewClick($event)">
-  <arcgis-expand>
-    <arcgis-search position="top-right"></arcgis-search>
+  <arcgis-fullscreen position="top-right"></arcgis-fullscreen>
+  <arcgis-zoom position="top-right"></arcgis-zoom>
+  <arcgis-expand position="top-left">
+    <arcgis-layer-list></arcgis-layer-list>
   </arcgis-expand>
-  <arcgis-legend position="bottom-left"></arcgis-legend>
+  <arcgis-expand position="bottom-left" expanded>
+    <arcgis-legend></arcgis-legend>
+  </arcgis-expand>
 </arcgis-map>
 <div class="timestep-container">
   @if (yearExtent$ | async; as extent) {

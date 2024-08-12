@@ -19,6 +19,7 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {CommonModule} from '@angular/common';
 import {TimeSliderComponent} from "../widgets/time-slider/time-slider.component";
 import {PointOrRange, pointOrRangeToParam} from "../../util/param-util";
+import Home from "@arcgis/core/widgets/Home";
 
 @Component({
   selector: 'app-reef-map',
@@ -52,12 +53,23 @@ export class ReefMapComponent {
     )
   }
 
+  /**
+   * Zoom to the extent of displayed map features where field has values.
+   */
+  public async zoomToExtent(layer: FeatureLayer, field: string) {
+    const query = layer.createQuery();
+    query.where = `${field} is not null`;
+    const extent = await layer.queryExtent(query);
+
+    if (extent.count > 0) {
+      await this.map.goTo(extent.extent);
+    } else {
+      console.warn(`All values missing for field "${field}"`);
+    }
+  }
+
   arcgisViewReadyChange(event: ArcgisMapCustomEvent<void>) {
     console.log("ArcGis ready", this.map);
-    const map = this.map;
-
-    const simpleLayer = experimentSimpleGraphicsLayer();
-    map.addLayer(simpleLayer);
   }
 
   arcgisViewLayerviewCreate(event: ArcgisMapCustomEvent<__esri.ViewLayerviewCreateEvent>) {
@@ -120,12 +132,12 @@ export class ReefMapComponent {
               }
               return match;
             },
-            'relative_cover');
+            field);
         }
       });
 
     console.log(`map.addLayer relative_cover, UNIQUE_ID matchCount=${unique_id_matchCount}`);
-    this.map.addLayer(newLayer);
+    await this.map.addLayer(newLayer);
     this.reefLayer = newLayer;
 
     // start following timestep
@@ -136,6 +148,17 @@ export class ReefMapComponent {
       }),
       switchMap(timestep => this.api.getMeanRelativeCover(resultSetId, timestep))
     ).subscribe((relCoverData) => this.loadTimestepRelativeCoverData(relCoverData));
+
+    // create a Home button that uses our custom zoomToExtent method.
+    const homeButton = new Home({
+      view: this.map.view,
+      goToOverride: (view, goToParameters) => {
+        this.zoomToExtent(newLayer, field);
+      }
+    })
+    this.map.view.ui.add(homeButton, "top-right");
+
+    void this.zoomToExtent(newLayer, field);
   }
 
   private loadTimestepRelativeCoverData(relCoverData: DataFrame) {
