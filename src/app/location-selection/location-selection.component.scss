@@ -1,0 +1,15 @@
+mat-drawer-container {
+  width: 100%;
+  height: 100%;
+}
+
+.drawer-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  .scrollable {
+    flex: auto;
+    overflow: auto;
+  }
+}

@@ -1,0 +1,10 @@
+<form>
+  @for (c of criteria; track c.id) {
+    <mat-divider></mat-divider>
+    <calcite-label>
+      {{ c.name }}
+      <calcite-slider [name]="c.id" [min]="c.min" [max]="c.max"
+                      [minValue]="c.min" [maxValue]="c.max" labelHandles></calcite-slider>
+    </calcite-label>
+  }
+</form>
