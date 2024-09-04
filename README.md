@@ -9,7 +9,8 @@ platform and CoralBlox model.
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.0.6.
 
 **One-time setup:**
-1. Install [Node v22](https://nodejs.org/en/download/package-manager)
+1. Install [Node v22](https://nodejs.org/en/download/package-manager)  
+  In a Linux environment consider using [Node Version Manager](https://github.com/nvm-sh/nvm).
 2. `npm install -g @angular/cli`
 3. `npm install --legacy-peer-deps`
 
@@ -21,6 +22,8 @@ If you encounter a PowerShell script security error,
 ## Development server
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+
+The APIs are proxied to avoid CSRF issues; see [proxy.conf.json](src/proxy.conf.json)
 
 ## Code scaffolding
 
