@@ -1,6 +1,18 @@
 :host {
   display: flex;
   flex-direction: column;
+  height: 100%;
+}
+
+.scrollable {
+  flex: auto;
+  overflow: auto;
+}
+
+mat-toolbar {
+  justify-content: space-between;
+  // flex shrink causes extra scrollbar in drawer
+  flex: none;
 }
 
 calcite-label {

@@ -8,8 +8,13 @@ mat-drawer-container {
   flex-direction: column;
   height: 100%;
 
-  .scrollable {
+  mat-toolbar {
+    // flex shrink causes extra scrollbar
+    flex: none;
+  }
+
+  app-selection-criteria {
+    height: 100px;
     flex: auto;
-    overflow: auto;
   }
 }

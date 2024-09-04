@@ -1,6 +1,7 @@
 import FeatureLayer from "@arcgis/core/layers/FeatureLayer";
 import Field from "@arcgis/core/layers/support/Field";
 import { ClassBreaksRenderer } from "@arcgis/core/renderers";
+import RasterFunction from "@arcgis/core/layers/support/RasterFunction";
 
 type FeatureAttributes = Record<string, any>;
 
@@ -85,4 +86,19 @@ export function cloneRendererChangedField(renderer: __esri.Renderer, field: stri
     colorVizVar.field = field;
     // TODO should use arcgis jsonUtils
     return ClassBreaksRenderer.fromJSON(rendererJSON);
+}
+
+/**
+ * Create a single color raster function.
+ * @param color alpha, r, g, b 0:255
+ */
+export function createSingleColorRasterFunction(color: [number, number, number, number]) {
+  return new RasterFunction({
+    functionName: "Colormap",
+    functionArguments: {
+      Colormap: [
+        color
+      ]
+    }
+  })
 }

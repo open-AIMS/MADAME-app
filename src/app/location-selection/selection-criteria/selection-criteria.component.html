@@ -1,10 +1,18 @@
+<div class="scrollable">
 <form>
   @for (c of criteria; track c.id) {
     <mat-divider></mat-divider>
     <calcite-label>
       {{ c.name }}
-      <calcite-slider [name]="c.id" [min]="c.min" [max]="c.max"
+      <calcite-slider [name]="c.id"
+                      [min]="c.min" [max]="c.max" [step]="c.step ?? 1" snap
                       [minValue]="c.min" [maxValue]="c.max" labelHandles></calcite-slider>
     </calcite-label>
   }
 </form>
+</div>
+<mat-toolbar>
+  <button mat-button>Reset</button>
+  <button mat-flat-button (click)="onSubmit()">Update</button>
+</mat-toolbar>
+

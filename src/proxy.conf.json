@@ -1,9 +1,16 @@
 {
-    "/api/**": {
-        "target": "http://localhost:8080",
-        "secure": false,
-        "pathRewrite": {
-            "^/api": ""
-        }
+  "/api/**": {
+    "target": "http://localhost:8080",
+    "secure": false,
+    "pathRewrite": {
+      "^/api": ""
     }
+  },
+  "/reef-api/**": {
+    "target": "http://localhost:8000",
+    "secure": false,
+    "pathRewrite": {
+      "^/reef-api": ""
+    }
+  }
 }

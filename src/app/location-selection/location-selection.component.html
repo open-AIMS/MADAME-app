@@ -3,14 +3,12 @@
     <div class="drawer-content">
       <mat-toolbar>
         <span style="flex: auto">Criteria</span>
-        <button mat-flat-button>Update</button>
+        <button mat-button (click)="clearAssessedLayers()">Clear</button>
         <button mat-icon-button (click)="drawer.toggle(false)">
           <mat-icon>close</mat-icon>
         </button>
       </mat-toolbar>
-      <div class="scrollable">
-        <app-selection-criteria></app-selection-criteria>
-      </div>
+      <app-selection-criteria (submit)="onSelectionCriteria($event)"></app-selection-criteria>
     </div>
   </mat-drawer>
   <mat-drawer-content>
