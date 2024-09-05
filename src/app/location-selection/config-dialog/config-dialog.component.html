@@ -30,6 +30,11 @@
 
   <h3 class="mat-headline-small">Regions</h3>
 
+  <mat-checkbox [formControl]="parallelRegionRequests"
+                matTooltip="Request region layers simultaneously">
+    Parallel requests
+  </mat-checkbox>
+
   <mat-selection-list [formControl]="regions">
     @for (region of regionChoices; track region) {
       <mat-list-option [value]="region">{{ region }}</mat-list-option>

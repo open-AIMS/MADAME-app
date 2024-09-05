@@ -19,13 +19,6 @@ import {concat, concatMap, delay, Observable, of} from "rxjs";
 import {toObservable} from "@angular/core/rxjs-interop";
 import {AsyncPipe} from "@angular/common";
 
-export const allRegions = [
-  "Townsville-Whitsunday",
-  "Cairns-Cooktown",
-  "Mackay-Capricorn",
-  "FarNorthern"
-];
-
 /**
  * Prototype of Location Selection app.
  * Map be split-off as its own project in the future.
@@ -56,11 +49,6 @@ export class LocationSelectionComponent {
   private assessedRegionsGroupLayer?: GroupLayer;
 
   mapItemId$: Observable<string | null>;
-
-  /**
-   * Request all regions simultaneously.
-   */
-  private parallelRegionRequests: boolean = true;
 
   constructor() {
     this.mapItemId$ = toObservable(this.config.arcgisMapItemId).pipe(
@@ -101,15 +89,17 @@ export class LocationSelectionComponent {
     this.assessedRegionsGroupLayer = groupLayer;
     this.map.addLayer(groupLayer);
 
+    const regions = this.config.enabledRegions();
+
     // TODO rxjs design, switchMap, Subject<Criteria>
-    if (this.parallelRegionRequests) {
-      Promise.all(allRegions.map((r) => this.addRegionLayer(r, groupLayer, criteria))).then(
+    if (this.config.parallelRegionRequests()) {
+      Promise.all(regions.map((r) => this.addRegionLayer(r, groupLayer, criteria))).then(
         () => {
           console.log("done")
         }
       )
     } else {
-      for (let region of allRegions) {
+      for (let region of regions) {
         await this.addRegionLayer(region, groupLayer, criteria);
       }
     }

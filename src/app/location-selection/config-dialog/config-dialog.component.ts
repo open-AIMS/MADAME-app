@@ -11,6 +11,7 @@ import {MatIcon} from "@angular/material/icon";
 import {MatTooltip} from "@angular/material/tooltip";
 import {combineLatest, map, Observable, startWith} from "rxjs";
 import {AsyncPipe} from "@angular/common";
+import {MatCheckbox} from "@angular/material/checkbox";
 
 
 @Component({
@@ -31,7 +32,8 @@ import {AsyncPipe} from "@angular/common";
     MatIcon,
     MatTooltip,
     MatIconAnchor,
-    AsyncPipe
+    AsyncPipe,
+    MatCheckbox
   ],
   templateUrl: './config-dialog.component.html',
   styleUrl: './config-dialog.component.scss'
@@ -46,6 +48,7 @@ export class ConfigDialogComponent {
   arcgisMap: FormControl;
   mapItemId: FormControl;
   regions: FormControl;
+  parallelRegionRequests: FormControl;
 
   arcgisItemUrl: Observable<string | undefined>;
 
@@ -54,6 +57,7 @@ export class ConfigDialogComponent {
     // TODO required if arcgisMap=CUSTOM
     this.mapItemId = new FormControl(this.config.customArcgisMapItemId());
     this.regions = new FormControl(this.config.enabledRegions());
+    this.parallelRegionRequests = new FormControl(this.config.parallelRegionRequests());
 
     // determine ArcGIS item URL for the current selection.
     this.arcgisItemUrl = combineLatest([
@@ -87,6 +91,10 @@ export class ConfigDialogComponent {
 
     if (this.regions.dirty) {
       this.config.enabledRegions.set(this.regions.value);
+    }
+
+    if (this.parallelRegionRequests.dirty) {
+      this.config.parallelRegionRequests.set(this.parallelRegionRequests.value);
     }
 
     this.dialogRef.close();

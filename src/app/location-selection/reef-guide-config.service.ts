@@ -4,6 +4,7 @@ interface StoredConfig {
   arcgisMap: string;
   customArcgisMapItemId: string;
   enabledRegions: Array<string>;
+  parallelRegionRequests: boolean;
 }
 
 const arrayKeys: Array<keyof StoredConfig> = ['enabledRegions'];
@@ -51,6 +52,11 @@ export class ReefGuideConfigService {
    * Enabled regions for ReefGuideAPI
    */
   enabledRegions: WritableSignal<Array<string>>;
+  /**
+   * Request all regions simultaneously.
+   * Otherwise sequential requests.
+   */
+  parallelRegionRequests: WritableSignal<boolean>;
 
   // computed signals
   /**
@@ -84,10 +90,12 @@ export class ReefGuideConfigService {
     });
 
     this.enabledRegions = signal(this.get('enabledRegions', ALL_REGIONS));
+    this.parallelRegionRequests = signal(this.get('parallelRegionRequests', true));
 
     effect(() => this.set('arcgisMap', this.arcgisMap()));
     effect(() => this.set('customArcgisMapItemId', this.customArcgisMapItemId()));
     effect(() => this.set('enabledRegions', this.enabledRegions()));
+    effect(() => this.set('parallelRegionRequests', this.parallelRegionRequests()));
 
     // ignore the first effect, which would set the initial value.
     // effects are async, so run in microtask.
