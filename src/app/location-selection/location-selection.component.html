@@ -1,5 +1,5 @@
 <mat-drawer-container hasBackdrop="false">
-  <mat-drawer #drawer opened>
+  <mat-drawer #drawer>
     <div class="drawer-content">
       <mat-toolbar>
         <span style="flex: auto">Criteria</span>
@@ -24,8 +24,13 @@
         <arcgis-legend></arcgis-legend>
       </arcgis-expand>
     </arcgis-map>
-    <button #drawerButton mat-mini-fab (click)="drawer.toggle(true)" title="foo">
+    <button #drawerButton mat-mini-fab (click)="drawer.toggle(true)"
+            matTooltipPosition="right" matTooltip="Adjust criteria">
       <mat-icon>linear_scale</mat-icon>
+    </button>
+    <button #configButton mat-mini-fab (click)="openConfig()"
+            matTooltipPosition="right" matTooltip="Configuration">
+      <mat-icon>settings</mat-icon>
     </button>
   </mat-drawer-content>
 </mat-drawer-container>

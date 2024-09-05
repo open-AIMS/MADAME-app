@@ -1,0 +1,36 @@
+<h2 mat-dialog-title>Configuration</h2>
+<mat-dialog-content>
+  <h3 class="mat-headline-small">Map</h3>
+
+  <mat-form-field style="min-width: 16em">
+    <mat-label>Map</mat-label>
+    <mat-select [formControl]="arcgisMap">
+      @for (map of mapChoices; track map.arcgisItemId) {
+        <mat-option [value]="map.id">{{ map.name }}</mat-option>
+      }
+      <mat-option value="CUSTOM">Custom</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  @if (arcgisMap.value === 'CUSTOM') {
+  <mat-form-field>
+    <mat-label>ArcGIS Map Item ID</mat-label>
+    <input matInput [formControl]="mapItemId">
+  </mat-form-field>
+  }
+
+  <h3 class="mat-headline-small">Regions</h3>
+
+  <mat-selection-list [formControl]="regions">
+    @for (region of regionChoices; track region) {
+      <mat-list-option [value]="region">{{ region }}</mat-list-option>
+    }
+  </mat-selection-list>
+
+
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button (click)="dialogRef.close()">Cancel</button>
+  <button mat-flat-button (click)="save()">Save</button>
+</mat-dialog-actions>
+

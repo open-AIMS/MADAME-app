@@ -1,4 +1,4 @@
-import {Component, ElementRef, ViewChild} from '@angular/core';
+import {Component, effect, ElementRef, inject, ViewChild} from '@angular/core';
 import {MatSidenavModule} from "@angular/material/sidenav";
 import {ArcgisMap, ComponentLibraryModule} from "@arcgis/map-components-angular";
 import {ArcgisMapCustomEvent} from "@arcgis/map-components";
@@ -11,8 +11,12 @@ import ImageryTileLayer from "@arcgis/core/layers/ImageryTileLayer";
 import {ReefGuideApiService} from "./reef-guide-api.service";
 import {urlToBlobObjectURL} from "../../util/http-util";
 import {createSingleColorRasterFunction} from "../../util/arcgis/arcgis-layer-util";
+import {MatTooltip} from "@angular/material/tooltip";
+import {MatDialog} from "@angular/material/dialog";
+import {ConfigDialogComponent} from "./config-dialog/config-dialog.component";
+import {ReefGuideConfigService} from "./reef-guide-config.service";
 
-const allRegions = [
+export const allRegions = [
   "Townsville-Whitsunday",
   "Cairns-Cooktown",
   "Mackay-Capricorn",
@@ -33,17 +37,22 @@ const allRegions = [
     MatIconModule,
     MatToolbarModule,
     SelectionCriteriaComponent,
+    MatTooltip,
   ],
   templateUrl: './location-selection.component.html',
   styleUrl: './location-selection.component.scss'
 })
 export class LocationSelectionComponent {
+  readonly config = inject(ReefGuideConfigService);
+  readonly api = inject(ReefGuideApiService);
+  readonly dialog = inject(MatDialog);
 
   @ViewChild(ArcgisMap) map!: ArcgisMap;
 
   // TODO new Angular 18 API to do this?
   //drawerButton = viewChild.required("drawerButton");
   @ViewChild("drawerButton", {static: true, read: ElementRef}) drawerButton!: ElementRef;
+  @ViewChild("configButton", {static: true, read: ElementRef}) configButton!: ElementRef;
 
   // Decision Sim 2 v1_5 GS
   mapItemId = 'fee03c9e65a8413f8b0bb8c158c7f040';
@@ -69,6 +78,7 @@ export class LocationSelectionComponent {
     console.log("ArcGis ready", this.map);
 
     // Put our button within ArcGIS UI layout
+    this.map.view.ui.add(this.configButton.nativeElement, {position: "top-left", index: 0});
     this.map.view.ui.add(this.drawerButton.nativeElement, {position: "top-left", index: 0});
 
     // need to set initial view if not loading a Map.
@@ -125,6 +135,10 @@ export class LocationSelectionComponent {
 
     groupLayer?.destroy();
     this.assessedRegionsGroupLayer = undefined;
+  }
+
+  openConfig() {
+    this.dialog.open(ConfigDialogComponent);
   }
 
   private async addRegionLayer(region: string, groupLayer: GroupLayer, criteria: SelectionCriteria) {
