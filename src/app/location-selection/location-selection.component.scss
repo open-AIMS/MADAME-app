@@ -18,3 +18,13 @@ mat-drawer-container {
     flex: auto;
   }
 }
+
+// ESRI buttons are offset in global styles.scss
+.map-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: absolute;
+  top: 12px;
+  left: 12px;
+}

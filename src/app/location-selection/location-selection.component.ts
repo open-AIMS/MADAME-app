@@ -1,4 +1,4 @@
-import {Component, effect, ElementRef, inject, ViewChild} from '@angular/core';
+import {Component, inject, ViewChild} from '@angular/core';
 import {MatSidenavModule} from "@angular/material/sidenav";
 import {ArcgisMap, ComponentLibraryModule} from "@arcgis/map-components-angular";
 import {ArcgisMapCustomEvent} from "@arcgis/map-components";
@@ -15,6 +15,9 @@ import {MatTooltip} from "@angular/material/tooltip";
 import {MatDialog} from "@angular/material/dialog";
 import {ConfigDialogComponent} from "./config-dialog/config-dialog.component";
 import {ReefGuideConfigService} from "./reef-guide-config.service";
+import {concat, concatMap, delay, Observable, of} from "rxjs";
+import {toObservable} from "@angular/core/rxjs-interop";
+import {AsyncPipe} from "@angular/common";
 
 export const allRegions = [
   "Townsville-Whitsunday",
@@ -38,6 +41,7 @@ export const allRegions = [
     MatToolbarModule,
     SelectionCriteriaComponent,
     MatTooltip,
+    AsyncPipe,
   ],
   templateUrl: './location-selection.component.html',
   styleUrl: './location-selection.component.scss'
@@ -49,37 +53,32 @@ export class LocationSelectionComponent {
 
   @ViewChild(ArcgisMap) map!: ArcgisMap;
 
-  // TODO new Angular 18 API to do this?
-  //drawerButton = viewChild.required("drawerButton");
-  @ViewChild("drawerButton", {static: true, read: ElementRef}) drawerButton!: ElementRef;
-  @ViewChild("configButton", {static: true, read: ElementRef}) configButton!: ElementRef;
-
-  // Decision Sim 2 v1_5 GS
-  mapItemId = 'fee03c9e65a8413f8b0bb8c158c7f040';
-
-  // "MADAME App - Testing" map
-  // temporary, quicker to load.
-  // mapItemId = 'd7404f1b7eed4269b0028a0a6b698000';
-
-  // AIMS DS test map
-  // mapItemId = '86a52eb849fe40fe91645a4e87d821fb';
-
   private assessedRegionsGroupLayer?: GroupLayer;
+
+  mapItemId$: Observable<string | null>;
 
   /**
    * Request all regions simultaneously.
    */
   private parallelRegionRequests: boolean = true;
 
-  constructor(public api: ReefGuideApiService) {
+  constructor() {
+    this.mapItemId$ = toObservable(this.config.arcgisMapItemId).pipe(
+      concatMap((x, index) => {
+        if (index === 0) {
+          return of(x);
+        } else {
+          // <arcgis-map> cannot update correctly when itemId changes, so recreate it.
+          // emit null now, then delay emission of x.
+          // this will cause <arcgis-map> to be removed briefly.
+          return concat(of(null), of(x).pipe(delay(20)));
+        }
+      })
+    );
   }
 
   arcgisViewReadyChange(event: ArcgisMapCustomEvent<void>) {
     console.log("ArcGis ready", this.map);
-
-    // Put our button within ArcGIS UI layout
-    this.map.view.ui.add(this.configButton.nativeElement, {position: "top-left", index: 0});
-    this.map.view.ui.add(this.drawerButton.nativeElement, {position: "top-left", index: 0});
 
     // need to set initial view if not loading a Map.
     this.map.goTo({target: [146.1979986145376, -16.865253472483754], zoom: 10});

@@ -1,4 +1,4 @@
-<mat-drawer-container hasBackdrop="false">
+<mat-drawer-container hasBackdrop="false" class="reef-guide">
   <mat-drawer #drawer>
     <div class="drawer-content">
       <mat-toolbar>
@@ -12,6 +12,7 @@
     </div>
   </mat-drawer>
   <mat-drawer-content>
+    @if (mapItemId$ | async; as mapItemId) {
     <arcgis-map [itemId]="mapItemId"
                 (arcgisViewReadyChange)="arcgisViewReadyChange($event)"
                 (arcgisViewClick)="arcgisViewClick($event)">
@@ -24,13 +25,16 @@
         <arcgis-legend></arcgis-legend>
       </arcgis-expand>
     </arcgis-map>
-    <button #drawerButton mat-mini-fab (click)="drawer.toggle(true)"
+    }
+    <div class="map-buttons">
+    <button mat-mini-fab (click)="drawer.toggle(true)"
             matTooltipPosition="right" matTooltip="Adjust criteria">
       <mat-icon>linear_scale</mat-icon>
     </button>
-    <button #configButton mat-mini-fab (click)="openConfig()"
+    <button mat-mini-fab (click)="openConfig()"
             matTooltipPosition="right" matTooltip="Configuration">
       <mat-icon>settings</mat-icon>
     </button>
+    </div>
   </mat-drawer-content>
 </mat-drawer-container>

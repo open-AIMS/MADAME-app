@@ -29,3 +29,8 @@ mat-tab-group.fixed-height {
         height: 100%;
     }
 }
+
+// move top-left ESRI buttons under ReefGuide's
+.reef-guide .esri-ui-top-left {
+  top: 100px;
+}
