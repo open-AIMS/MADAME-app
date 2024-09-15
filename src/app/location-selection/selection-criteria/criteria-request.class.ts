@@ -1,7 +1,19 @@
-import {BehaviorSubject, concatMap, distinct, map, mergeMap, Observable, Subject, takeUntil} from "rxjs";
+import {
+  BehaviorSubject,
+  catchError,
+  concatMap,
+  distinct,
+  map,
+  mergeMap,
+  Observable,
+  of,
+  Subject,
+  takeUntil,
+} from "rxjs";
 import {ReefGuideApiService} from "../reef-guide-api.service";
 import {SelectionCriteria} from "./selection-criteria.component";
 import {ReefGuideConfigService} from "../reef-guide-config.service";
+import {inject} from "@angular/core";
 
 /**
  * Region layer data that is ready to be loaded.
@@ -13,11 +25,15 @@ export interface ReadyRegion {
 }
 
 export class CriteriaRequest {
+  private readonly api = inject(ReefGuideApiService);
+  private readonly config = inject(ReefGuideConfigService);
 
   private busyRegions = new Set<string>();
   private _busyRegions$ = new BehaviorSubject<Set<string>>(this.busyRegions);
 
   private cancel$ = new Subject<void>();
+
+  private regionError = new Subject<string>();
 
   /**
    * Emits the regions that are currently busy whenever a region starts or finishes loading.
@@ -29,10 +45,14 @@ export class CriteriaRequest {
    */
   regionReady$: Observable<ReadyRegion>;
 
+  /**
+   * Emits regions that had an error.
+   */
+  regionError$ = this.regionError.pipe(takeUntil(this.cancel$));
+
   constructor(criteria: SelectionCriteria,
-              regions$: Observable<string>,
-              private readonly api: ReefGuideApiService,
-              private readonly config: ReefGuideConfigService) {
+              regions$: Observable<string>) {
+    const api = this.api;
 
     // avoid repeating values
     regions$ = regions$.pipe(distinct())
@@ -52,16 +72,25 @@ export class CriteriaRequest {
               cogUrl: blobUrl,
               originalUrl: url
             };
+          }),
+          catchError(err => {
+            // console.log(`${region} error`, err);
+            this.regionError.next(region);
+            this.stopRegion(region);
+            // skip, return empty completed observable.
+            // otherwise, any error stops all regions.
+            return of();
           })
         );
       }),
-      takeUntil(this.cancel$),
+      takeUntil(this.cancel$)
     );
   }
 
   cancel() {
-    this.cancel$.next();
     this._busyRegions$.complete();
+    this.regionError.complete();
+    this.cancel$.next();
     this.cancel$.complete();
   }
 

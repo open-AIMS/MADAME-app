@@ -1,4 +1,4 @@
-import {Component, DestroyRef, inject, Injector, signal, ViewChild} from '@angular/core';
+import {Component, DestroyRef, inject, Injector, runInInjectionContext, signal, ViewChild} from '@angular/core';
 import {MatSidenavModule} from "@angular/material/sidenav";
 import {ArcgisMap, ComponentLibraryModule} from "@arcgis/map-components-angular";
 import {ArcgisMapCustomEvent} from "@arcgis/map-components";
@@ -19,6 +19,7 @@ import {takeUntilDestroyed, toObservable} from "@angular/core/rxjs-interop";
 import {AsyncPipe} from "@angular/common";
 import {MatProgressSpinner} from "@angular/material/progress-spinner";
 import {CriteriaRequest, ReadyRegion} from "./selection-criteria/criteria-request.class";
+import {MatSnackBar} from "@angular/material/snack-bar";
 
 /**
  * Prototype of Location Selection app.
@@ -45,6 +46,7 @@ export class LocationSelectionComponent {
   readonly config = inject(ReefGuideConfigService);
   readonly api = inject(ReefGuideApiService);
   readonly dialog = inject(MatDialog);
+  private readonly snackbar = inject(MatSnackBar);
   private readonly destroyRef = inject(DestroyRef);
   private readonly injector = inject(Injector);
 
@@ -84,7 +86,7 @@ export class LocationSelectionComponent {
     // const resp = await view.hitTest(event.detail);
   }
 
-  async submitSelectionCriteria(criteria: SelectionCriteria) {
+  submitSelectionCriteria(criteria: SelectionCriteria) {
     console.log('submitSelectionCriteria', criteria);
 
     this.clearAssessedLayers();
@@ -92,7 +94,7 @@ export class LocationSelectionComponent {
     const regions$ = toObservable(this.config.enabledRegions, { injector: this.injector })
       .pipe(mergeMap(regions => of(...regions)));
 
-    const criteriaRequest = new CriteriaRequest(criteria, regions$, this.api, this.config);
+    const criteriaRequest = runInInjectionContext(this.injector, () => new CriteriaRequest(criteria, regions$));
     this.criteriaRequest.set(criteriaRequest);
 
     const groupLayer = new GroupLayer({
@@ -100,6 +102,9 @@ export class LocationSelectionComponent {
     });
     this.assessedRegionsGroupLayer.set(groupLayer);
     this.map.addLayer(groupLayer);
+
+    criteriaRequest.regionError$
+      .subscribe(region => this.handleRegionError(region))
 
     criteriaRequest.regionReady$
       // unsubscribe when this component is destroyed
@@ -148,6 +153,7 @@ export class LocationSelectionComponent {
   }
 
   private async addRegionLayer(region: ReadyRegion, groupLayer: GroupLayer) {
+    console.log('addRegionLayer', region.region, region.originalUrl);
     const layer = new ImageryTileLayer({
       title: region.region,
       url: region.cogUrl,
@@ -163,12 +169,17 @@ export class LocationSelectionComponent {
    * @param criteria
    */
   onAssess(criteria: SelectionCriteria) {
-    // TODO error handling
     this.submitSelectionCriteria(criteria);
   }
 
   getLoadingRegionsMessage(busyRegions: Set<string>) {
     const vals = Array.from(busyRegions).join(', ');
     return `Loading: ${vals}`;
+  }
+
+  private handleRegionError(region: string) {
+    console.warn('handleRegionError', region);
+    // TODO multi-error display. this replaces previous error.
+    this.snackbar.open(`Error loading ${region}`, 'OK');
   }
 }
