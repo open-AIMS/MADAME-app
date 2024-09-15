@@ -9,12 +9,6 @@
   overflow: auto;
 }
 
-mat-toolbar {
-  justify-content: space-between;
-  // flex shrink causes extra scrollbar in drawer
-  flex: none;
-}
-
 calcite-label {
   padding: 8px 16px 0 16px;
   font-weight: 500;

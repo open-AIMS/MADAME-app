@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {SelectionCriteria} from "./selection-criteria/selection-criteria.component";
 import {HttpClient} from "@angular/common/http";
+import {map, Observable} from "rxjs";
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +15,7 @@ export class ReefGuideApiService {
   /**
    * Use COGs in public/cached-slopes instead of requesting from API.
    */
-  public enableMockData = true;
+  public enableMockData = false;
 
   constructor(private http: HttpClient) {
   }
@@ -47,5 +48,23 @@ export class ReefGuideApiService {
     url.searchParams.set('ub', ub.join(','));
 
     return url.toString();
+  }
+
+  /**
+   * Request blob from the URL and createObjectURL for it.
+   * Caller is responsible for revokeObjectURL.
+   * @param url
+   */
+  toObjectURL(url: string): Observable<string> {
+    return this.http.get(url, { responseType: "blob"}).pipe(
+      map(blob => {
+        // warn if we're doing this for files > 100mb
+        if (blob.size > 100_000_000) {
+          console.warn(`Blob size=${blob.size} for ${url}, createObjectURL`, blob.size);
+        }
+
+        return URL.createObjectURL(blob);
+      })
+    );
   }
 }

@@ -1,14 +1,34 @@
+@let busyRegions = criteriaRequest()?.busyRegions$ | async;
+@let isBusy = busyRegions && busyRegions.size > 0;
 <mat-drawer-container hasBackdrop="false" class="reef-guide">
   <mat-drawer #drawer>
     <div class="drawer-content">
       <mat-toolbar>
         <span style="flex: auto">Criteria</span>
-        <button mat-button (click)="clearAssessedLayers()">Clear</button>
+        <button mat-button (click)="criteria.reset()"
+                matTooltip="Reset all criteria to min/max">Reset</button>
         <button mat-icon-button (click)="drawer.toggle(false)">
           <mat-icon>close</mat-icon>
         </button>
       </mat-toolbar>
-      <app-selection-criteria (submit)="onSelectionCriteria($event)"></app-selection-criteria>
+      <app-selection-criteria #criteria></app-selection-criteria>
+      <mat-toolbar>
+        @if (isBusy) {
+          <button mat-stroked-button (click)="cancelCriteriaRequest()">Cancel</button>
+
+        } @else if (assessedRegionsGroupLayer()) {
+          <button mat-button (click)="clearAssessedLayers()">Clear</button>
+        }
+        <span style="flex: auto"></span>
+        @if (isBusy) {
+          <mat-progress-spinner mode="indeterminate" diameter="32"
+                                [matTooltip]="getLoadingRegionsMessage(busyRegions!)">
+          </mat-progress-spinner>
+        }
+        <button mat-flat-button
+                [disabled]="isBusy"
+                (click)="onAssess(criteria.getCriteria())">Assess</button>
+      </mat-toolbar>
     </div>
   </mat-drawer>
   <mat-drawer-content>
@@ -27,10 +47,18 @@
     </arcgis-map>
     }
     <div class="map-buttons">
-    <button mat-mini-fab (click)="drawer.toggle(true)"
-            matTooltipPosition="right" matTooltip="Adjust criteria">
-      <mat-icon>linear_scale</mat-icon>
-    </button>
+      <div class="row">
+        <button mat-mini-fab (click)="drawer.toggle(true)"
+                matTooltipPosition="right" matTooltip="Adjust criteria">
+          <mat-icon>linear_scale</mat-icon>
+        </button>
+        @if (isBusy) {
+        <mat-progress-spinner class="criteria-spinner"
+                              mode="indeterminate" diameter="32"
+                              [matTooltip]="getLoadingRegionsMessage(busyRegions!)">
+        </mat-progress-spinner>
+        }
+      </div>
     <button mat-mini-fab (click)="openConfig()"
             matTooltipPosition="right" matTooltip="Configuration">
       <mat-icon>settings</mat-icon>

@@ -5,6 +5,8 @@ import {MatDivider} from "@angular/material/divider";
 import {FormsModule} from "@angular/forms";
 import {MatButton} from "@angular/material/button";
 import {MatToolbar} from "@angular/material/toolbar";
+import {MatProgressSpinner} from "@angular/material/progress-spinner";
+import {MatTooltip} from "@angular/material/tooltip";
 
 export type SelectionCriteria = Record<string, [number, number]>;
 
@@ -27,7 +29,9 @@ interface SelectionCriteriaInputDef {
     MatDivider,
     FormsModule,
     MatButton,
-    MatToolbar
+    MatToolbar,
+    MatProgressSpinner,
+    MatTooltip
   ],
   templateUrl: './selection-criteria.component.html',
   styleUrl: './selection-criteria.component.scss'
@@ -82,17 +86,20 @@ export class SelectionCriteriaComponent {
   // form isn't working with Calcite, so we get form data via ViewChildren access
   // @ViewChild('form') form!: NgForm;
 
-  submit = output<SelectionCriteria>();
-
   @ViewChildren(CalciteSlider) sliders!: QueryList<CalciteSlider>;
 
-  onSubmit() {
-    const criteria = this.getCriteria();
-    this.submit.emit(criteria);
-  }
-
-  private getCriteria(): SelectionCriteria {
+  getCriteria(): SelectionCriteria {
     const valueEntries = this.sliders.map(s => [s.name, s.value]);
     return Object.fromEntries(valueEntries);
+  }
+
+  /**
+   * Reset all criteria to min/max.
+   */
+  reset() {
+    this.sliders.forEach(s => {
+      s.minValue = s.min;
+      s.maxValue = s.max;
+    });
   }
 }

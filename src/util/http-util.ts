@@ -3,6 +3,7 @@
  * Caller is responsible for revokeObjectURL
  * @param url
  * @returns url from createObjectURL
+ * @see ReefGuideApiService.toObjectURL
  */
 export async function urlToBlobObjectURL(url: string): Promise<string> {
   const resp = await fetch(url);

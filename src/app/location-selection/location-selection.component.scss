@@ -1,3 +1,7 @@
+@use '@angular/material' as mat;
+
+$theme: mat.define-theme();
+
 mat-drawer-container {
   width: 100%;
   height: 100%;
@@ -11,6 +15,10 @@ mat-drawer-container {
   mat-toolbar {
     // flex shrink causes extra scrollbar
     flex: none;
+
+    mat-progress-spinner {
+      margin-left: 8px;
+    }
   }
 
   app-selection-criteria {
@@ -27,4 +35,13 @@ mat-drawer-container {
   position: absolute;
   top: 12px;
   left: 12px;
+
+  .row {
+    align-items: center;
+    gap: 8px;
+  }
+  mat-progress-spinner {
+    // @include mat.progress-spinner-color($theme, $color-variant: secondary);
+    --mdc-circular-progress-active-indicator-color: rgba(237, 237, 237, 0.8);
+  }
 }
