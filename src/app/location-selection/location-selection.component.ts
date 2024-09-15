@@ -1,5 +1,5 @@
 import {Component, DestroyRef, inject, Injector, runInInjectionContext, signal, ViewChild} from '@angular/core';
-import {MatSidenavModule} from "@angular/material/sidenav";
+import {MatDrawer, MatSidenavModule} from "@angular/material/sidenav";
 import {ArcgisMap, ComponentLibraryModule} from "@arcgis/map-components-angular";
 import {ArcgisMapCustomEvent} from "@arcgis/map-components";
 import {MatButtonModule} from "@angular/material/button";
@@ -20,6 +20,10 @@ import {AsyncPipe} from "@angular/common";
 import {MatProgressSpinner} from "@angular/material/progress-spinner";
 import {CriteriaRequest, ReadyRegion} from "./selection-criteria/criteria-request.class";
 import {MatSnackBar} from "@angular/material/snack-bar";
+import WebTileLayer from "@arcgis/core/layers/WebTileLayer";
+import {LayerStyleEditorComponent} from "../widgets/layer-style-editor/layer-style-editor.component";
+
+type DrawerModes = 'criteria' | 'style';
 
 /**
  * Prototype of Location Selection app.
@@ -38,6 +42,7 @@ import {MatSnackBar} from "@angular/material/snack-bar";
     MatTooltip,
     AsyncPipe,
     MatProgressSpinner,
+    LayerStyleEditorComponent,
   ],
   templateUrl: './location-selection.component.html',
   styleUrl: './location-selection.component.scss'
@@ -50,7 +55,14 @@ export class LocationSelectionComponent {
   private readonly destroyRef = inject(DestroyRef);
   private readonly injector = inject(Injector);
 
+  drawerMode = signal<DrawerModes>('criteria');
+
   @ViewChild(ArcgisMap) map!: ArcgisMap;
+  @ViewChild('drawer') drawer!: MatDrawer;
+
+  styleEditorLayer = signal<GroupLayer | undefined>(undefined);
+
+  private tilesAssessedRegionsGroupLayer?: GroupLayer;
 
   mapItemId$: Observable<string | null>;
 
@@ -86,7 +98,7 @@ export class LocationSelectionComponent {
     // const resp = await view.hitTest(event.detail);
   }
 
-  submitSelectionCriteria(criteria: SelectionCriteria) {
+  addCOGLayers(criteria: SelectionCriteria) {
     console.log('submitSelectionCriteria', criteria);
 
     this.clearAssessedLayers();
@@ -112,6 +124,21 @@ export class LocationSelectionComponent {
       .subscribe(region => this.addRegionLayer(region, groupLayer))
   }
 
+  addTileLayers(criteria: SelectionCriteria) {
+    const tilesGroup = new GroupLayer({
+      title: 'Assessed Regions (Tiles)',
+      blendMode: 'destination-out'
+    });
+    this.tilesAssessedRegionsGroupLayer = tilesGroup;
+    this.map.addLayer(tilesGroup);
+    this.styleEditorLayer.set(tilesGroup);
+
+    const regions = this.config.enabledRegions();
+    for (const region of regions) {
+      this.addTileLayer(region, criteria);
+    }
+  }
+
   /**
    * Cancel any CriteriaRequest and destroy map layers.
    */
@@ -125,7 +152,7 @@ export class LocationSelectionComponent {
         if (layer instanceof ImageryTileLayer && layer.url.startsWith("blob:")) {
           // remove resources after destroy
           setTimeout(() => {
-            console.log("revoke", layer.url);
+            console.log("revokeObjectURL", layer.url);
             URL.revokeObjectURL(layer.url);
           })
         }
@@ -135,6 +162,9 @@ export class LocationSelectionComponent {
 
     groupLayer?.destroy();
     this.assessedRegionsGroupLayer.set(undefined);
+
+    this.tilesAssessedRegionsGroupLayer?.destroy();
+    this.tilesAssessedRegionsGroupLayer = undefined;
   }
 
   /**
@@ -146,6 +176,26 @@ export class LocationSelectionComponent {
       cr.cancel();
       this.criteriaRequest.set(undefined);
     }
+  }
+
+  addTileLayer(region: string, criteria: SelectionCriteria) {
+    const urlTemplate = this.api.tileUrlForCriteria(region, criteria);
+    console.log('urlTemplate', urlTemplate);
+
+    const layer = new WebTileLayer({
+      title: region,
+      urlTemplate,
+      // TODO minScale, different units than zoom
+      // https://developers.arcgis.com/javascript/latest/api-reference/esri-layers-WebTileLayer.html#minScale
+      // blendMode: 'destination-out'
+      // effect also available.
+    });
+    this.tilesAssessedRegionsGroupLayer!.add(layer);
+  }
+
+  openDrawer(mode: DrawerModes) {
+    this.drawerMode.set(mode);
+    this.drawer.toggle(true);
   }
 
   openConfig() {
@@ -169,7 +219,8 @@ export class LocationSelectionComponent {
    * @param criteria
    */
   onAssess(criteria: SelectionCriteria) {
-    this.submitSelectionCriteria(criteria);
+    this.addCOGLayers(criteria);
+    this.addTileLayers(criteria);
   }
 
   getLoadingRegionsMessage(busyRegions: Set<string>) {

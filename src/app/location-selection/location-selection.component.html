@@ -2,6 +2,8 @@
 @let isBusy = busyRegions && busyRegions.size > 0;
 <mat-drawer-container hasBackdrop="false" class="reef-guide">
   <mat-drawer #drawer>
+    @switch (drawerMode()) {
+      @case ('criteria') {
     <div class="drawer-content">
       <mat-toolbar>
         <span style="flex: auto">Criteria</span>
@@ -30,6 +32,24 @@
                 (click)="onAssess(criteria.getCriteria())">Assess</button>
       </mat-toolbar>
     </div>
+      }
+      @case ('style') {
+        <mat-toolbar>
+          <span class="flex: auto">Layer Styling</span>
+          <button mat-icon-button (click)="drawer.toggle(false)">
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-toolbar>
+        <div class="styling-content">
+        @if (styleEditorLayer(); as styleEditorLayer) {
+          <h2 class="mat-headline-small">Tile Layer</h2>
+          <app-layer-style-editor [layer]="styleEditorLayer"></app-layer-style-editor>
+        } @else {
+          <em>Assess to create the layer.</em>
+        }
+        </div>
+      }
+    }
   </mat-drawer>
   <mat-drawer-content>
     @if (mapItemId$ | async; as mapItemId) {
@@ -48,7 +68,7 @@
     }
     <div class="map-buttons">
       <div class="row">
-        <button mat-mini-fab (click)="drawer.toggle(true)"
+        <button mat-mini-fab (click)="openDrawer('criteria')"
                 matTooltipPosition="right" matTooltip="Adjust criteria">
           <mat-icon>linear_scale</mat-icon>
         </button>
@@ -59,10 +79,14 @@
         </mat-progress-spinner>
         }
       </div>
-    <button mat-mini-fab (click)="openConfig()"
-            matTooltipPosition="right" matTooltip="Configuration">
-      <mat-icon>settings</mat-icon>
-    </button>
+      <button mat-mini-fab (click)="openDrawer('style')"
+              matTooltipPosition="right" matTooltip="Layer Style">
+        <mat-icon>brush</mat-icon>
+      </button>
+      <button mat-mini-fab (click)="openConfig()"
+              matTooltipPosition="right" matTooltip="Configuration">
+        <mat-icon>settings</mat-icon>
+      </button>
     </div>
   </mat-drawer-content>
 </mat-drawer-container>
