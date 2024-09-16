@@ -52,6 +52,11 @@
         Parallel COG requests
       </mat-checkbox>
 
+      <mat-checkbox [formControl]="mockCOGS"
+                    matTooltip="Always use mock COGs regardless of criteria selection">
+        Mock COG Requests
+      </mat-checkbox>
+
     </mat-tab>
   </mat-tab-group>
 </mat-dialog-content>

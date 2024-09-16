@@ -120,8 +120,12 @@ export class LocationSelectionComponent {
     const criteriaRequest = runInInjectionContext(this.injector, () => new CriteriaRequest(criteria, regions$));
     this.criteriaRequest.set(criteriaRequest);
 
+    let title = 'Assessed Regions';
+    if (this.config.assessLayerTypes().length > 1) {
+      title = `${title} (COGs)`;
+    }
     const groupLayer = new GroupLayer({
-      title: 'Assessed Regions',
+      title,
     });
     this.cogAssessRegionsGroupLayer.set(groupLayer);
     this.map.addLayer(groupLayer);
@@ -138,8 +142,13 @@ export class LocationSelectionComponent {
   addTileLayers(criteria: SelectionCriteria) {
     console.log('addTileLayers');
 
+    let title = 'Assessed Regions';
+    if (this.config.assessLayerTypes().length > 1) {
+      title = `${title} (Tiles)`;
+    }
+
     const tilesGroup = new GroupLayer({
-      title: 'Assessed Regions (Tiles)',
+      title,
       blendMode: 'destination-out'
     });
     this.tilesAssessRegionsGroupLayer.set(tilesGroup);

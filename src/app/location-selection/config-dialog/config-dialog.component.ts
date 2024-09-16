@@ -52,6 +52,7 @@ export class ConfigDialogComponent {
   regions: FormControl;
   parallelRegionRequests: FormControl;
   assessLayerTypes: FormControl;
+  mockCOGS: FormControl;
 
   arcgisItemUrl: Observable<string | undefined>;
 
@@ -62,6 +63,7 @@ export class ConfigDialogComponent {
     this.regions = new FormControl(this.config.enabledRegions());
     this.parallelRegionRequests = new FormControl(this.config.parallelRegionRequests());
     this.assessLayerTypes = new FormControl(this.config.assessLayerTypes());
+    this.mockCOGS = new FormControl(this.config.mockCOGS());
 
     // determine ArcGIS item URL for the current selection.
     this.arcgisItemUrl = combineLatest([
@@ -103,6 +105,10 @@ export class ConfigDialogComponent {
 
     if (this.assessLayerTypes.dirty) {
       config.assessLayerTypes.set(this.assessLayerTypes.value);
+    }
+
+    if (this.mockCOGS.dirty) {
+      config.mockCOGS.set(this.mockCOGS.value);
     }
 
     this.dialogRef.close();

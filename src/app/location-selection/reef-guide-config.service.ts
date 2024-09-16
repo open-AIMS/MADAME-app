@@ -8,10 +8,28 @@ interface StoredConfig {
   enabledRegions: Array<string>;
   parallelRegionRequests: boolean;
   assessLayerTypes: Array<AssessLayerTypes>;
+  mockCOGS: boolean
 }
 
-const arrayKeys: Array<keyof StoredConfig> = ['enabledRegions', 'assessLayerTypes'];
+const VALUE_SEPARATOR = "\x1F";
+function getArray(val: string): Array<string> {
+  return val.split(VALUE_SEPARATOR);
+}
 
+function getBoolean(val: string): boolean {
+  return val === 'true';
+}
+
+/**
+ * Functions for converting localstorage string value for
+ * variables that aren't a string type.
+ */
+const configVarGetters: Partial<Record<keyof StoredConfig, (val: string) => any>> = {
+  enabledRegions: getArray,
+  assessLayerTypes: getArray,
+  parallelRegionRequests: getBoolean,
+  mockCOGS: getBoolean
+};
 
 interface Map {
   // ID that will never change for this map
@@ -36,8 +54,6 @@ export const ALL_REGIONS = [
   "FarNorthern"
 ];
 
-const VALUE_SEPARATOR = "\x1F";
-
 @Injectable({
   providedIn: 'root'
 })
@@ -61,7 +77,15 @@ export class ReefGuideConfigService {
    */
   parallelRegionRequests: WritableSignal<boolean>;
 
+  /**
+   * Layer types to add on Assess criteria.
+   */
   assessLayerTypes: WritableSignal<Array<AssessLayerTypes>>;
+
+  /**
+   * Use COGs in public/cached-slopes instead of requesting from API.
+   */
+  mockCOGS: WritableSignal<boolean>;
 
   // computed signals
   /**
@@ -97,12 +121,14 @@ export class ReefGuideConfigService {
     this.enabledRegions = signal(this.get('enabledRegions', ALL_REGIONS));
     this.parallelRegionRequests = signal(this.get('parallelRegionRequests', true));
     this.assessLayerTypes = signal(this.get('assessLayerTypes', ['tile']));
+    this.mockCOGS = signal(this.get('mockCOGS', false));
 
     effect(() => this.set('arcgisMap', this.arcgisMap()));
     effect(() => this.set('customArcgisMapItemId', this.customArcgisMapItemId()));
     effect(() => this.set('enabledRegions', this.enabledRegions()));
     effect(() => this.set('parallelRegionRequests', this.parallelRegionRequests()));
     effect(() => this.set('assessLayerTypes', this.assessLayerTypes()));
+    effect(() => this.set('mockCOGS', this.mockCOGS()));
 
     // ignore the first effect, which would set the initial value.
     // effects are async, so run in microtask.
@@ -118,11 +144,8 @@ export class ReefGuideConfigService {
     if (val == null) {
       return dflt ?? undefined;
     } else {
-      if (arrayKeys.includes(key)) {
-        return val.split(VALUE_SEPARATOR) as V;
-      } else {
-        return val as V;
-      }
+      const getFn = configVarGetters[key];
+      return getFn !== undefined ? getFn(val) : val;
     }
   }
 

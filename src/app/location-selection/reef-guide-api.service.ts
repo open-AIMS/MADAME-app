@@ -1,21 +1,18 @@
-import {Injectable} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {SelectionCriteria} from "./selection-criteria/selection-criteria.component";
 import {HttpClient} from "@angular/common/http";
 import {map, Observable} from "rxjs";
+import {ReefGuideConfigService} from "./reef-guide-config.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class ReefGuideApiService {
+  private readonly config = inject(ReefGuideConfigService);
 
   // TODO configuration system
   // use the API proxy
   private readonly base: string = 'http://localhost:4200/reef-api';
-
-  /**
-   * Use COGs in public/cached-slopes instead of requesting from API.
-   */
-  public enableMockData = true;
 
   constructor(private http: HttpClient) {
   }
@@ -24,7 +21,7 @@ export class ReefGuideApiService {
    * Get URL of COGeoTiff layer matching selection criteria.
    */
   cogUrlForCriteria(region: string, criteria: SelectionCriteria): string {
-    if (this.enableMockData) {
+    if (this.config.mockCOGS()) {
       return `http://localhost:4200/cached-slopes/slopes_${region}.tiff`;
     }
 

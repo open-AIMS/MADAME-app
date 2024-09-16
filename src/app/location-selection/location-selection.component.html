@@ -22,6 +22,12 @@
           <button mat-button (click)="clearAssessedLayers()">Clear</button>
         }
         <span style="flex: auto"></span>
+        @if (config.mockCOGS() && config.assessLayerTypes().includes('cog')) {
+          <mat-icon color="warn"
+                    matTooltip="using mock COGS, criteria have no effect on COG layer">
+            warning
+          </mat-icon>
+        }
         @if (isBusy) {
           <mat-progress-spinner mode="indeterminate" diameter="32"
                                 [matTooltip]="getLoadingRegionsMessage(busyRegions!)">
