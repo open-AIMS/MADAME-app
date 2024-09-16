@@ -12,6 +12,7 @@ import {MatTooltip} from "@angular/material/tooltip";
 import {combineLatest, map, Observable, startWith} from "rxjs";
 import {AsyncPipe} from "@angular/common";
 import {MatCheckbox} from "@angular/material/checkbox";
+import {MatTabsModule} from "@angular/material/tabs";
 
 
 @Component({
@@ -33,7 +34,8 @@ import {MatCheckbox} from "@angular/material/checkbox";
     MatTooltip,
     MatIconAnchor,
     AsyncPipe,
-    MatCheckbox
+    MatCheckbox,
+    MatTabsModule
   ],
   templateUrl: './config-dialog.component.html',
   styleUrl: './config-dialog.component.scss'
@@ -49,6 +51,7 @@ export class ConfigDialogComponent {
   mapItemId: FormControl;
   regions: FormControl;
   parallelRegionRequests: FormControl;
+  assessLayerTypes: FormControl;
 
   arcgisItemUrl: Observable<string | undefined>;
 
@@ -58,6 +61,7 @@ export class ConfigDialogComponent {
     this.mapItemId = new FormControl(this.config.customArcgisMapItemId());
     this.regions = new FormControl(this.config.enabledRegions());
     this.parallelRegionRequests = new FormControl(this.config.parallelRegionRequests());
+    this.assessLayerTypes = new FormControl(this.config.assessLayerTypes());
 
     // determine ArcGIS item URL for the current selection.
     this.arcgisItemUrl = combineLatest([
@@ -90,11 +94,15 @@ export class ConfigDialogComponent {
     }
 
     if (this.regions.dirty) {
-      this.config.enabledRegions.set(this.regions.value);
+      config.enabledRegions.set(this.regions.value);
     }
 
     if (this.parallelRegionRequests.dirty) {
-      this.config.parallelRegionRequests.set(this.parallelRegionRequests.value);
+      config.parallelRegionRequests.set(this.parallelRegionRequests.value);
+    }
+
+    if (this.assessLayerTypes.dirty) {
+      config.assessLayerTypes.set(this.assessLayerTypes.value);
     }
 
     this.dialogRef.close();

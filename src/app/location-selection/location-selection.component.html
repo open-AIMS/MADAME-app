@@ -18,7 +18,7 @@
         @if (isBusy) {
           <button mat-stroked-button (click)="cancelCriteriaRequest()">Cancel</button>
 
-        } @else if (assessedRegionsGroupLayer()) {
+        } @else if (showClear()) {
           <button mat-button (click)="clearAssessedLayers()">Clear</button>
         }
         <span style="flex: auto"></span>

@@ -1,13 +1,16 @@
 import {computed, effect, Injectable, Signal, signal, WritableSignal} from '@angular/core';
 
+type AssessLayerTypes = "tile" | "cog";
+
 interface StoredConfig {
   arcgisMap: string;
   customArcgisMapItemId: string;
   enabledRegions: Array<string>;
   parallelRegionRequests: boolean;
+  assessLayerTypes: Array<AssessLayerTypes>;
 }
 
-const arrayKeys: Array<keyof StoredConfig> = ['enabledRegions'];
+const arrayKeys: Array<keyof StoredConfig> = ['enabledRegions', 'assessLayerTypes'];
 
 
 interface Map {
@@ -58,6 +61,8 @@ export class ReefGuideConfigService {
    */
   parallelRegionRequests: WritableSignal<boolean>;
 
+  assessLayerTypes: WritableSignal<Array<AssessLayerTypes>>;
+
   // computed signals
   /**
    * ArcGIS item id for arcgisMap.
@@ -91,11 +96,13 @@ export class ReefGuideConfigService {
 
     this.enabledRegions = signal(this.get('enabledRegions', ALL_REGIONS));
     this.parallelRegionRequests = signal(this.get('parallelRegionRequests', true));
+    this.assessLayerTypes = signal(this.get('assessLayerTypes', ['tile']));
 
     effect(() => this.set('arcgisMap', this.arcgisMap()));
     effect(() => this.set('customArcgisMapItemId', this.customArcgisMapItemId()));
     effect(() => this.set('enabledRegions', this.enabledRegions()));
     effect(() => this.set('parallelRegionRequests', this.parallelRegionRequests()));
+    effect(() => this.set('assessLayerTypes', this.assessLayerTypes()));
 
     // ignore the first effect, which would set the initial value.
     // effects are async, so run in microtask.

@@ -1,4 +1,13 @@
-import {Component, DestroyRef, inject, Injector, runInInjectionContext, signal, ViewChild} from '@angular/core';
+import {
+  Component,
+  computed,
+  DestroyRef,
+  inject,
+  Injector,
+  runInInjectionContext,
+  signal,
+  ViewChild
+} from '@angular/core';
 import {MatDrawer, MatSidenavModule} from "@angular/material/sidenav";
 import {ArcgisMap, ComponentLibraryModule} from "@arcgis/map-components-angular";
 import {ArcgisMapCustomEvent} from "@arcgis/map-components";
@@ -62,13 +71,17 @@ export class LocationSelectionComponent {
 
   styleEditorLayer = signal<GroupLayer | undefined>(undefined);
 
-  private tilesAssessedRegionsGroupLayer?: GroupLayer;
-
   mapItemId$: Observable<string | null>;
 
   criteriaRequest = signal<CriteriaRequest | undefined>(undefined);
 
-  assessedRegionsGroupLayer = signal<GroupLayer | undefined>(undefined);
+  private readonly cogAssessRegionsGroupLayer = signal<GroupLayer | undefined>(undefined);
+  private readonly tilesAssessRegionsGroupLayer = signal<GroupLayer | undefined>(undefined);
+
+  showClear = computed(() => {
+    return this.cogAssessRegionsGroupLayer() !== undefined
+      || this.tilesAssessRegionsGroupLayer() !== undefined;
+  });
 
   constructor() {
     this.mapItemId$ = toObservable(this.config.arcgisMapItemId).pipe(
@@ -99,9 +112,7 @@ export class LocationSelectionComponent {
   }
 
   addCOGLayers(criteria: SelectionCriteria) {
-    console.log('submitSelectionCriteria', criteria);
-
-    this.clearAssessedLayers();
+    console.log('addCOGLayers', criteria);
 
     const regions$ = toObservable(this.config.enabledRegions, { injector: this.injector })
       .pipe(mergeMap(regions => of(...regions)));
@@ -112,7 +123,7 @@ export class LocationSelectionComponent {
     const groupLayer = new GroupLayer({
       title: 'Assessed Regions',
     });
-    this.assessedRegionsGroupLayer.set(groupLayer);
+    this.cogAssessRegionsGroupLayer.set(groupLayer);
     this.map.addLayer(groupLayer);
 
     criteriaRequest.regionError$
@@ -125,11 +136,13 @@ export class LocationSelectionComponent {
   }
 
   addTileLayers(criteria: SelectionCriteria) {
+    console.log('addTileLayers');
+
     const tilesGroup = new GroupLayer({
       title: 'Assessed Regions (Tiles)',
       blendMode: 'destination-out'
     });
-    this.tilesAssessedRegionsGroupLayer = tilesGroup;
+    this.tilesAssessRegionsGroupLayer.set(tilesGroup);
     this.map.addLayer(tilesGroup);
     this.styleEditorLayer.set(tilesGroup);
 
@@ -146,7 +159,7 @@ export class LocationSelectionComponent {
     // cancel current request if any
     this.cancelCriteriaRequest();
 
-    const groupLayer = this.assessedRegionsGroupLayer();
+    const groupLayer = this.cogAssessRegionsGroupLayer();
     if (groupLayer) {
       for (const layer of groupLayer.layers) {
         if (layer instanceof ImageryTileLayer && layer.url.startsWith("blob:")) {
@@ -161,10 +174,10 @@ export class LocationSelectionComponent {
     }
 
     groupLayer?.destroy();
-    this.assessedRegionsGroupLayer.set(undefined);
+    this.cogAssessRegionsGroupLayer.set(undefined);
 
-    this.tilesAssessedRegionsGroupLayer?.destroy();
-    this.tilesAssessedRegionsGroupLayer = undefined;
+    this.tilesAssessRegionsGroupLayer()?.destroy();
+    this.tilesAssessRegionsGroupLayer.set(undefined);
   }
 
   /**
@@ -190,7 +203,7 @@ export class LocationSelectionComponent {
       // blendMode: 'destination-out'
       // effect also available.
     });
-    this.tilesAssessedRegionsGroupLayer!.add(layer);
+    this.tilesAssessRegionsGroupLayer()!.add(layer);
   }
 
   openDrawer(mode: DrawerModes) {
@@ -219,8 +232,15 @@ export class LocationSelectionComponent {
    * @param criteria
    */
   onAssess(criteria: SelectionCriteria) {
-    this.addCOGLayers(criteria);
-    this.addTileLayers(criteria);
+    this.clearAssessedLayers();
+
+    const layerTypes = this.config.assessLayerTypes();
+    if (layerTypes.includes("cog")) {
+      this.addCOGLayers(criteria);
+    }
+    if (layerTypes.includes("tile")) {
+      this.addTileLayers(criteria);
+    }
   }
 
   getLoadingRegionsMessage(busyRegions: Set<string>) {
