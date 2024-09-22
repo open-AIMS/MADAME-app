@@ -1,4 +1,4 @@
-@let busyRegions = criteriaRequest()?.busyRegions$ | async;
+@let busyRegions = mapService.criteriaRequest()?.busyRegions$ | async;
 @let isBusy = busyRegions && busyRegions.size > 0;
 <mat-drawer-container hasBackdrop="false" class="reef-guide">
   <mat-drawer #drawer>
@@ -6,7 +6,7 @@
       @case ('criteria') {
     <div class="drawer-content">
       <mat-toolbar>
-        <span style="flex: auto">Criteria</span>
+        <span>Criteria</span>
         <button mat-button (click)="criteria.reset()"
                 matTooltip="Reset all criteria to min/max">Reset</button>
         <button mat-icon-button (click)="drawer.toggle(false)">
@@ -16,10 +16,10 @@
       <app-selection-criteria #criteria></app-selection-criteria>
       <mat-toolbar>
         @if (isBusy) {
-          <button mat-stroked-button (click)="cancelCriteriaRequest()">Cancel</button>
+          <button mat-stroked-button (click)="mapService.cancelCriteriaRequest()">Cancel</button>
 
-        } @else if (showClear()) {
-          <button mat-button (click)="clearAssessedLayers()">Clear</button>
+        } @else if (mapService.showClear()) {
+          <button mat-button (click)="mapService.clearAssessedLayers()">Clear</button>
         }
         <span style="flex: auto"></span>
         @if (config.mockCOGS() && config.assessLayerTypes().includes('cog')) {
@@ -41,25 +41,28 @@
       }
       @case ('style') {
         <mat-toolbar>
-          <span class="flex: auto">Layer Styling</span>
+          <span>Layer Styling</span>
           <button mat-icon-button (click)="drawer.toggle(false)">
             <mat-icon>close</mat-icon>
           </button>
         </mat-toolbar>
         <div class="styling-content">
-        @if (styleEditorLayer(); as styleEditorLayer) {
-          <h2 class="mat-headline-small">Tile Layer</h2>
-          <app-layer-style-editor [layer]="styleEditorLayer"></app-layer-style-editor>
-        } @else {
-          <em>Assess to create the layer.</em>
-        }
+          <mat-accordion>
+          @for (layer of mapService.styledLayers(); track layer.id) {
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>{{ layer.title }}</mat-expansion-panel-header>
+              <ng-template matExpansionPanelContent>
+                <app-layer-style-editor [layer]="layer"></app-layer-style-editor>
+              </ng-template>
+            </mat-expansion-panel>
+          }
+          </mat-accordion>
         </div>
       }
     }
   </mat-drawer>
   <mat-drawer-content>
     <arcgis-map [itemId]="config.arcgisMapItemId()"
-                (arcgisViewReadyChange)="arcgisViewReadyChange($event)"
                 (arcgisViewClick)="arcgisViewClick($event)">
       <arcgis-fullscreen position="top-right"></arcgis-fullscreen>
       <arcgis-zoom position="top-right"></arcgis-zoom>

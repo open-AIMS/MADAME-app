@@ -1,8 +1,10 @@
-
+mat-form-field {
+  width: 100%;
+}
 header {
   padding-left: 16px;
   font-weight: 500;
 }
 mat-slider {
-  width: 200px;
+  width: calc(100% - 24px);
 }

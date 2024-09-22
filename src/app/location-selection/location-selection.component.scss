@@ -7,6 +7,17 @@ mat-drawer-container {
   height: 100%;
 }
 
+mat-drawer {
+  mat-toolbar > span {
+    // expand to push X button to right
+    flex: auto;
+  }
+
+  app-layer-style-editor {
+    width: 100%;
+  }
+}
+
 .drawer-content {
   display: flex;
   flex-direction: column;
@@ -47,5 +58,5 @@ mat-drawer-container {
 }
 
 .styling-content {
-  padding: 0 16px 16px 16px;
+  padding: 0 8px 16px 8px;
 }
