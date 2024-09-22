@@ -16,6 +16,7 @@ import {MatProgressSpinner} from "@angular/material/progress-spinner";
 import {LayerStyleEditorComponent} from "../widgets/layer-style-editor/layer-style-editor.component";
 import {ReefGuideMapService} from "./reef-guide-map.service";
 import {MatAccordion, MatExpansionModule} from "@angular/material/expansion";
+import {LoginDialogComponent} from "../auth/login-dialog/login-dialog.component";
 
 type DrawerModes = 'criteria' | 'style';
 
@@ -60,6 +61,10 @@ export class LocationSelectionComponent implements AfterViewInit {
 
   ngAfterViewInit() {
     this.mapService.setMap(this.map);
+
+    setTimeout(() => {
+      this.dialog.open(LoginDialogComponent);
+    }, 500)
   }
 
   async arcgisViewClick(event: ArcgisMapCustomEvent<__esri.ViewClickEvent>) {

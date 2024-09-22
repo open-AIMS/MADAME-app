@@ -1,0 +1,16 @@
+<h2 mat-dialog-title>Register</h2>
+<form #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm)">
+<mat-dialog-content>
+  <mat-form-field>
+    <mat-label>Email</mat-label>
+    <input name="email" type="email" matInput required>
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Password</mat-label>
+    <input name="password" type="password" matInput required>
+  </mat-form-field>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button type="submit" mat-flat-button [disabled]="!loginForm.form.valid">Register</button>
+</mat-dialog-actions>
+</form>
