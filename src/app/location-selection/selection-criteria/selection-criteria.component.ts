@@ -1,12 +1,14 @@
-import {Component, output, QueryList, ViewChildren} from '@angular/core';
+import {Component, inject, QueryList, ViewChildren} from '@angular/core';
 import {CalciteComponentsModule, CalciteSlider} from "@esri/calcite-components-angular";
 import {MatSliderModule} from "@angular/material/slider";
 import {MatDivider} from "@angular/material/divider";
 import {FormsModule} from "@angular/forms";
-import {MatButton} from "@angular/material/button";
+import {MatButton, MatIconButton} from "@angular/material/button";
 import {MatToolbar} from "@angular/material/toolbar";
 import {MatProgressSpinner} from "@angular/material/progress-spinner";
 import {MatTooltip} from "@angular/material/tooltip";
+import {MatIcon} from "@angular/material/icon";
+import {ReefGuideMapService} from "../reef-guide-map.service";
 
 export type SelectionCriteria = Record<string, [number, number]>;
 
@@ -31,12 +33,15 @@ interface SelectionCriteriaInputDef {
     MatButton,
     MatToolbar,
     MatProgressSpinner,
-    MatTooltip
+    MatTooltip,
+    MatIconButton,
+    MatIcon,
   ],
   templateUrl: './selection-criteria.component.html',
   styleUrl: './selection-criteria.component.scss'
 })
 export class SelectionCriteriaComponent {
+  readonly mapService = inject(ReefGuideMapService);
 
   /*
   Distance to Nearest Port (NM): 0.0:200.0

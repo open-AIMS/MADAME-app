@@ -1,4 +1,5 @@
 import {
+  AfterViewInit,
   Component,
   computed,
   DestroyRef,
@@ -23,7 +24,7 @@ import {MatTooltip} from "@angular/material/tooltip";
 import {MatDialog} from "@angular/material/dialog";
 import {ConfigDialogComponent} from "./config-dialog/config-dialog.component";
 import {ReefGuideConfigService} from "./reef-guide-config.service";
-import {concat, concatMap, delay, mergeMap, Observable, of} from "rxjs";
+import {mergeMap, of} from "rxjs";
 import {takeUntilDestroyed, toObservable} from "@angular/core/rxjs-interop";
 import {AsyncPipe} from "@angular/common";
 import {MatProgressSpinner} from "@angular/material/progress-spinner";
@@ -31,6 +32,7 @@ import {CriteriaRequest, ReadyRegion} from "./selection-criteria/criteria-reques
 import {MatSnackBar} from "@angular/material/snack-bar";
 import WebTileLayer from "@arcgis/core/layers/WebTileLayer";
 import {LayerStyleEditorComponent} from "../widgets/layer-style-editor/layer-style-editor.component";
+import {ReefGuideMapService} from "./reef-guide-map.service";
 
 type DrawerModes = 'criteria' | 'style';
 
@@ -53,13 +55,15 @@ type DrawerModes = 'criteria' | 'style';
     MatProgressSpinner,
     LayerStyleEditorComponent,
   ],
+  providers: [ReefGuideMapService],
   templateUrl: './location-selection.component.html',
   styleUrl: './location-selection.component.scss'
 })
-export class LocationSelectionComponent {
+export class LocationSelectionComponent implements AfterViewInit {
   readonly config = inject(ReefGuideConfigService);
   readonly api = inject(ReefGuideApiService);
   readonly dialog = inject(MatDialog);
+  readonly mapService = inject(ReefGuideMapService);
   private readonly snackbar = inject(MatSnackBar);
   private readonly destroyRef = inject(DestroyRef);
   private readonly injector = inject(Injector);
@@ -70,8 +74,6 @@ export class LocationSelectionComponent {
   @ViewChild('drawer') drawer!: MatDrawer;
 
   styleEditorLayer = signal<GroupLayer | undefined>(undefined);
-
-  mapItemId$: Observable<string | null>;
 
   criteriaRequest = signal<CriteriaRequest | undefined>(undefined);
 
@@ -84,18 +86,10 @@ export class LocationSelectionComponent {
   });
 
   constructor() {
-    this.mapItemId$ = toObservable(this.config.arcgisMapItemId).pipe(
-      concatMap((x, index) => {
-        if (index === 0) {
-          return of(x);
-        } else {
-          // <arcgis-map> cannot update correctly when itemId changes, so recreate it.
-          // emit null now, then delay emission of x.
-          // this will cause <arcgis-map> to be removed briefly.
-          return concat(of(null), of(x).pipe(delay(20)));
-        }
-      })
-    );
+  }
+
+  ngAfterViewInit() {
+    this.mapService.setMap(this.map);
   }
 
   arcgisViewReadyChange(event: ArcgisMapCustomEvent<void>) {
@@ -111,10 +105,10 @@ export class LocationSelectionComponent {
     // const resp = await view.hitTest(event.detail);
   }
 
-  addCOGLayers(criteria: SelectionCriteria) {
+  private addCOGLayers(criteria: SelectionCriteria) {
     console.log('addCOGLayers', criteria);
 
-    const regions$ = toObservable(this.config.enabledRegions, { injector: this.injector })
+    const regions$ = toObservable(this.config.enabledRegions, {injector: this.injector})
       .pipe(mergeMap(regions => of(...regions)));
 
     const criteriaRequest = runInInjectionContext(this.injector, () => new CriteriaRequest(criteria, regions$));
@@ -139,7 +133,7 @@ export class LocationSelectionComponent {
       .subscribe(region => this.addRegionLayer(region, groupLayer))
   }
 
-  addTileLayers(criteria: SelectionCriteria) {
+  private addTileLayers(criteria: SelectionCriteria) {
     console.log('addTileLayers');
 
     let title = 'Assessed Regions';

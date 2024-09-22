@@ -58,8 +58,7 @@
     }
   </mat-drawer>
   <mat-drawer-content>
-    @if (mapItemId$ | async; as mapItemId) {
-    <arcgis-map [itemId]="mapItemId"
+    <arcgis-map [itemId]="config.arcgisMapItemId()"
                 (arcgisViewReadyChange)="arcgisViewReadyChange($event)"
                 (arcgisViewClick)="arcgisViewClick($event)">
       <arcgis-fullscreen position="top-right"></arcgis-fullscreen>
@@ -71,7 +70,6 @@
         <arcgis-legend></arcgis-legend>
       </arcgis-expand>
     </arcgis-map>
-    }
     <div class="map-buttons">
       <div class="row">
         <button mat-mini-fab (click)="openDrawer('criteria')"

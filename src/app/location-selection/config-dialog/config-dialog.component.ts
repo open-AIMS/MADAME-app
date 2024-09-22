@@ -86,13 +86,18 @@ export class ConfigDialogComponent {
 
   save() {
     const config = this.config;
+    let reload = false;
 
     if (this.arcgisMap.dirty) {
       config.arcgisMap.set(this.arcgisMap.value);
+      // ArcGIS map component does not update correctly on itemId change.
+      reload = true;
     }
 
     if (this.mapItemId.dirty) {
       config.customArcgisMapItemId.set(this.mapItemId.value);
+      // ArcGIS map component does not update correctly on itemId change.
+      reload = true;
     }
 
     if (this.regions.dirty) {
@@ -112,5 +117,10 @@ export class ConfigDialogComponent {
     }
 
     this.dialogRef.close();
+
+    if (reload) {
+      alert("App needs to reload");
+      window.location.reload();
+    }
   }
 }

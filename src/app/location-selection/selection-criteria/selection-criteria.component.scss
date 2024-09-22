@@ -9,7 +9,30 @@
   overflow: auto;
 }
 
-calcite-label {
+.criteria {
+  box-sizing: border-box;
   padding: 8px 16px 0 16px;
-  font-weight: 500;
+  border-bottom: 1px solid lightgray;
+
+  button.visibility {
+    color: lightgray;
+  }
+
+  .row {
+    justify-content: space-between;
+    align-items: center;
+  }
+  .label {
+    font-weight: 500;
+  }
+
+  &.visible {
+    // TODO mat theme color
+    border-left: 8px solid dodgerblue;
+    padding-left: 8px;
+
+    button.visibility {
+      color: inherit;  // default
+    }
+  }
 }

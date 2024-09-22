@@ -1,13 +1,22 @@
 <div class="scrollable">
 <form>
   @for (c of criteria; track c.id) {
-    <mat-divider></mat-divider>
-    <calcite-label>
-      {{ c.name }}
+    @let criteriaLayer = mapService.criteriaLayers[c.id];
+    @let visible = criteriaLayer?.visible();
+    <div class="criteria" [class.visible]="visible === true">
+      <div class="row">
+        <span class="label">{{ c.name }}</span>
+        @if (visible != null) {
+        <button mat-icon-button class="visibility"
+                (click)="mapService.showCriteriaLayer(c.id)">
+          <mat-icon>{{ visible ? 'visibility' : 'visibility_off' }}</mat-icon>
+        </button>
+        }
+      </div>
       <calcite-slider [name]="c.id"
                       [min]="c.min" [max]="c.max" [step]="c.step ?? 1" snap
                       [minValue]="c.min" [maxValue]="c.max" labelHandles></calcite-slider>
-    </calcite-label>
+    </div>
   }
 </form>
 </div>
