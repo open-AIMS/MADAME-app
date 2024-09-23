@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {ApiService} from "../api.service";
+import {AdriaApiService} from "../adria-api.service";
 import {Observable, shareReplay, Subject, switchMap} from "rxjs";
 import {ResultSetInfo} from "../../types/api.type";
 
@@ -27,7 +27,7 @@ export class ResultSetService {
 
   info$: Observable<ResultSetInfo>;
 
-  constructor(private api: ApiService) {
+  constructor(private api: AdriaApiService) {
     this.info$ = this.id$.pipe(
       switchMap(id => api.getResultSetInfo(id)),
       shareReplay(1)

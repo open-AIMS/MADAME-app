@@ -4,7 +4,7 @@ import {AsyncPipe, DatePipe, NgIf} from '@angular/common';
 import {MatIconModule} from '@angular/material/icon';
 import {RouterLink} from '@angular/router';
 import {ArcgisMap, ComponentLibraryModule} from '@arcgis/map-components-angular';
-import {ApiService} from '../api.service';
+import {AdriaApiService} from '../adria-api.service';
 import {map, Observable, switchMap} from 'rxjs';
 import {DataFrame, ResultSetInfo} from '../../types/api.type';
 import {toObservable, toSignal} from '@angular/core/rxjs-interop';
@@ -41,7 +41,7 @@ export class ModelRunComponent {
 
   @ViewChild(ArcgisMap) map!: ArcgisMap;
 
-  constructor(private api: ApiService, private resultSetContext: ResultSetService) {
+  constructor(private api: AdriaApiService, private resultSetContext: ResultSetService) {
     // TODO share needed?
     const id$ = toObservable(this.id);
 

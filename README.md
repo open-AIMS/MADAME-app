@@ -29,6 +29,12 @@ The APIs are proxied to avoid CSRF issues; see [proxy.conf.json](src/proxy.conf.
 
 Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
 
+## Configuration
+
+The environment pattern is used for configuration. During development, [environment.development.ts](src/environments/environment.development.ts) is used. The APIs are proxied by the local dev server to avoid CORS issues, see [proxy.conf.json](src/proxy.conf.json)
+
+The production build uses [environment.ts](src/environments/environment.ts).
+
 ## Build
 
 Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.

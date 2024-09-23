@@ -5,7 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatRippleModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
-import { ApiService } from '../api.service';
+import { AdriaApiService } from '../adria-api.service';
 import { map, Observable } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 
@@ -27,7 +27,7 @@ export class ModelRunListComponent {
 
     runs$: Observable<Array<ModelRun>>;
 
-    constructor(private api: ApiService) {
+    constructor(private api: AdriaApiService) {
         this.runs$ = this.api.getResultSets().pipe(
             map(ids => {
                 const x: Array<ModelRun> = [

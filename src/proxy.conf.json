@@ -1,16 +1,16 @@
 {
-  "/api/**": {
+  "/adria-api/**": {
     "target": "http://localhost:8080",
     "secure": false,
     "pathRewrite": {
-      "^/api": ""
+      "^/adria-api": ""
     }
   },
-  "/reef-api/**": {
+  "/reef-guide-api/**": {
     "target": "http://localhost:8000",
     "secure": false,
     "pathRewrite": {
-      "^/reef-api": ""
+      "^/reef-guide-api": ""
     }
   }
 }

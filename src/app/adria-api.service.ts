@@ -1,3 +1,4 @@
+import {environment} from "../environments/environment";
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {Observable, of, tap} from 'rxjs';
@@ -8,13 +9,15 @@ import {MODEL_RUNS} from "../mock-data/model-runs.mockdata";
 @Injectable({
   providedIn: 'root'
 })
-export class ApiService {
+export class AdriaApiService {
+
+  private base: string = environment.adriaApiUrl;
 
   constructor(private http: HttpClient) {
   }
 
   getResultSets(): Observable<Array<string>> {
-    return this.http.get<Array<string>>(`/api/resultsets`);
+    return this.http.get<Array<string>>(`${this.base}/resultsets`);
   }
 
   getResultSetInfo(id: string): Observable<ResultSetInfo> {
@@ -26,27 +29,27 @@ export class ApiService {
       }
       return of(run);
     } else {
-      return this.http.get<ResultSetInfo>(`/api/resultset/${id}/info`);
+      return this.http.get<ResultSetInfo>(`${this.base}/resultset/${id}/info`);
     }
   }
 
   getResultSetScenarios(id: string): Observable<DataFrame> {
-    return fixDataFrame(this.http.get<DataFrame>(`/api/resultset/${id}/scenarios`));
+    return fixDataFrame(this.http.get<DataFrame>(`${this.base}/resultset/${id}/scenarios`));
   }
 
   getResultSetModelSpec(id: string): Observable<DataFrame> {
-    return fixDataFrame(this.http.get<DataFrame>(`/api/resultset/${id}/modelspec`));
+    return fixDataFrame(this.http.get<DataFrame>(`${this.base}/resultset/${id}/modelspec`));
   }
 
   getMeanRelativeCover(id: string, timestep?: PointOrRange): Observable<DataFrame> {
     if (timestep !== undefined) {
       return fixDataFrame(
-        this.http.get<DataFrame>(`/api/resultset/${id}/relative_cover`,
+        this.http.get<DataFrame>(`${this.base}/resultset/${id}/relative_cover`,
           { params: { timestep: pointOrRangeToParam(timestep) } }
         )
       );
     } else {
-      return fixDataFrame(this.http.get<DataFrame>(`/api/resultset/${id}/relative_cover`));
+      return fixDataFrame(this.http.get<DataFrame>(`${this.base}/resultset/${id}/relative_cover`));
     }
   }
 }

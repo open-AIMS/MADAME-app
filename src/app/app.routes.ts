@@ -30,9 +30,5 @@ export const routes: Routes = [
   {
     path: 'test-map',
     component: TestMapComponent
-  },
-  {
-    path: 'test-sc',
-    component: SelectionCriteriaComponent
   }
 ];

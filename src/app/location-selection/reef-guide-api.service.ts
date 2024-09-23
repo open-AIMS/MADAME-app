@@ -1,3 +1,4 @@
+import { environment } from "../../environments/environment";
 import {inject, Injectable} from '@angular/core';
 import {SelectionCriteria} from "./selection-criteria/selection-criteria.component";
 import {HttpClient} from "@angular/common/http";
@@ -10,9 +11,7 @@ import {ReefGuideConfigService} from "./reef-guide-config.service";
 export class ReefGuideApiService {
   private readonly config = inject(ReefGuideConfigService);
 
-  // TODO configuration system
-  // use the API proxy
-  private readonly base: string = 'http://localhost:4200/reef-api';
+  private readonly base: string = environment.reefGuideApiUrl;
 
   constructor(private http: HttpClient) {
   }

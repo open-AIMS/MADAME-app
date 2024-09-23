@@ -10,7 +10,7 @@ import {
 } from '../../util/arcgis/arcgis-layer-util';
 import {BehaviorSubject, firstValueFrom, map, Observable, Subject, switchMap, tap} from 'rxjs';
 import {experimentSimpleGraphicsLayer} from '../../util/arcgis/arcgis-layer-experiments';
-import {ApiService} from '../api.service';
+import {AdriaApiService} from '../adria-api.service';
 import {ResultSetService} from '../contexts/result-set.service';
 import {dataframeFind} from '../../util/dataframe-util';
 import {MatSliderModule} from '@angular/material/slider';
@@ -47,7 +47,7 @@ export class ReefMapComponent {
   private cloned = false;
   private reefLayer?: FeatureLayer;
 
-  constructor(private api: ApiService, private resultSetContext: ResultSetService) {
+  constructor(private api: AdriaApiService, private resultSetContext: ResultSetService) {
     this.yearExtent$ = resultSetContext.info$.pipe(
       map(info => [info.start_year, info.end_year])
     )
