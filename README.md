@@ -12,7 +12,7 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 1. Install [Node v22](https://nodejs.org/en/download/package-manager)  
   In a Linux environment consider using [Node Version Manager](https://github.com/nvm-sh/nvm).
 2. `npm install -g @angular/cli`
-3. `npm install --legacy-peer-deps`
+3. `npm install`
 
 If you encounter a PowerShell script security error,
 [fix Powershell execution policy](https://angular.dev/tools/cli/setup-local#powershell-execution-policy).
@@ -38,6 +38,14 @@ The production build uses [environment.ts](src/environments/environment.ts).
 ## Build
 
 Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+
+## Deploy
+
+After the **Build** step:
+1. `cd dist/adria-app/browser`
+2. `aws s3 sync . s3://BUCKET_NAME --delete`
+
+(This assumes you have [configured your AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-quickstart.html))
 
 ## Running unit tests
 
