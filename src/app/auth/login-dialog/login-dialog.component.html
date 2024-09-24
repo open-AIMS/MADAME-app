@@ -1,16 +1,25 @@
-<h2 mat-dialog-title>Register</h2>
-<form #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm)">
+@let m = mode();
+@let actionLabel = m === 'register' ? 'Register' : 'Login';
+<h2 mat-dialog-title>{{ actionLabel }}</h2>
 <mat-dialog-content>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
   <mat-form-field>
     <mat-label>Email</mat-label>
-    <input name="email" type="email" matInput required>
+    <input formControlName="email" type="email" matInput>
   </mat-form-field>
   <mat-form-field>
     <mat-label>Password</mat-label>
-    <input name="password" type="password" matInput required>
+    <input formControlName="password" type="password" matInput>
   </mat-form-field>
+  </form>
 </mat-dialog-content>
 <mat-dialog-actions>
-  <button type="submit" mat-flat-button [disabled]="!loginForm.form.valid">Register</button>
+  @if (m === 'login') {
+    <button mat-button (click)="mode.set('register')">Sign Up</button>
+  } @else {
+    <button mat-button (click)="mode.set('login')">Login</button>
+  }
+<!--  <button type="submit" mat-flat-button [disabled]="!loginForm.form.valid">Register</button>-->
+  <button mat-flat-button [disabled]="!form.valid"
+          (click)="onSubmit()">{{ actionLabel }}</button>
 </mat-dialog-actions>
-</form>
