@@ -5,6 +5,7 @@
   @if (m === 'register') {
     <p>Sign up with a new account.</p>
   }
+<!-- FIXME enter on inputs (ngSubmit) not working -->
   <form [formGroup]="form" (ngSubmit)="onSubmit()">
   <mat-form-field>
     <mat-label>Email</mat-label>
@@ -15,6 +16,9 @@
     <input formControlName="password" type="password" matInput>
   </mat-form-field>
   </form>
+  @if (errorMessage()) {
+    <p class="error-message">{{ errorMessage() }}</p>
+  }
 </mat-dialog-content>
 <mat-dialog-actions>
   @if (m === 'login') {

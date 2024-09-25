@@ -5,8 +5,9 @@ import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatInputModule} from "@angular/material/input";
 import {WebApiService} from "../../../api/web-api.service";
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
-import {HttpErrorResponse} from "@angular/common/http";
 import {AuthService} from "../auth.service";
+import {extractErrorMessage} from "../../../api/api-util";
+import {merge, take} from "rxjs";
 
 type Modes = "register" | "login";
 
@@ -27,6 +28,8 @@ export class LoginDialogComponent {
   mode = signal<Modes>("login");
 
   busy = signal(false);
+
+  errorMessage = signal<string | undefined>(undefined);
 
   form = new FormGroup({
     email: new FormControl('', Validators.required),
@@ -56,11 +59,7 @@ export class LoginDialogComponent {
         this.busy.set(false);
         this.dialogRef.close();
       },
-      error: err => {
-        this.busy.set(false);
-        // TODO error UI
-        console.error('Login error', err);
-      }
+      error: err => this.handleError(err)
     });
   }
 
@@ -74,15 +73,39 @@ export class LoginDialogComponent {
           this.login(value);
         })
       },
-      error: err => {
-        this.busy.set(false);
-        if (err instanceof HttpErrorResponse) {
-          if (err.status === 400 && err.message === "User already exists") {
-            console.log("user exists");
-            // TODO invalidate email input, show message
-          }
-        }
-      }
+      error: err => this.handleError(err)
     });
+  }
+
+  private handleError(error: any) {
+    this.busy.set(false);
+    const errorMessage = extractErrorMessage(error)
+    this.errorMessage.set(errorMessage);
+
+    const {email, password} = this.form.controls;
+
+    // set error without invalidating form
+    if (errorMessage === 'Invalid email') {
+      email.setErrors({
+        invalid: true
+      });
+    } else if (errorMessage === 'Invalid credentials') {
+
+      email.setErrors({
+        invalid: true
+      });
+      password.setErrors({
+        invalid: true
+      });
+      // in this case user only needs to fix one input, but form will
+      // remain invalid until user changes both.
+      merge(email.valueChanges, password.valueChanges)
+        .pipe(take(1))
+        .subscribe(() => {
+          this.errorMessage.set(undefined);
+          email.updateValueAndValidity();
+          password.updateValueAndValidity();
+        });
+    }
   }
 }
