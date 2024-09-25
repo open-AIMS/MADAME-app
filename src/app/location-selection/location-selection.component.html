@@ -64,8 +64,9 @@
   <mat-drawer-content>
     <arcgis-map [itemId]="config.arcgisMapItemId()"
                 (arcgisViewClick)="arcgisViewClick($event)">
-      <arcgis-fullscreen position="top-right"></arcgis-fullscreen>
-      <arcgis-zoom position="top-right"></arcgis-zoom>
+      <!-- TODO buttons not stacking when bottom-right, user could just browser-fullscreen -->
+<!--      <arcgis-fullscreen position="bottom-right"></arcgis-fullscreen>-->
+      <arcgis-zoom position="bottom-right"></arcgis-zoom>
       <arcgis-expand position="top-left">
         <arcgis-layer-list></arcgis-layer-list>
       </arcgis-expand>
@@ -95,5 +96,19 @@
         <mat-icon>settings</mat-icon>
       </button>
     </div>
+    @if (authService.profile$ | async; as profile) {
+    <button class="profile-button" mat-mini-fab [matMenuTriggerFor]="profileMenu"
+            [matTooltip]="profile.user.email" matTooltipPosition="left">
+      <mat-icon>account_circle</mat-icon>
+    </button>
+    <mat-menu #profileMenu="matMenu">
+      <button mat-menu-item (click)="authService.logout()">
+        <mat-icon>logout</mat-icon>
+        <span>Logout</span>
+      </button>
+    </mat-menu>
+    } @else {
+      <button class="profile-button" mat-raised-button (click)="openLogin()">Login</button>
+    }
   </mat-drawer-content>
 </mat-drawer-container>

@@ -2,6 +2,9 @@
 @let actionLabel = m === 'register' ? 'Register' : 'Login';
 <h2 mat-dialog-title>{{ actionLabel }}</h2>
 <mat-dialog-content>
+  @if (m === 'register') {
+    <p>Sign up with a new account.</p>
+  }
   <form [formGroup]="form" (ngSubmit)="onSubmit()">
   <mat-form-field>
     <mat-label>Email</mat-label>
@@ -17,9 +20,9 @@
   @if (m === 'login') {
     <button mat-button (click)="mode.set('register')">Sign Up</button>
   } @else {
-    <button mat-button (click)="mode.set('login')">Login</button>
+    <button mat-button (click)="mode.set('login')">I have an account</button>
   }
-<!--  <button type="submit" mat-flat-button [disabled]="!loginForm.form.valid">Register</button>-->
-  <button mat-flat-button [disabled]="!form.valid"
+
+  <button mat-flat-button [disabled]="!form.valid || busy()"
           (click)="onSubmit()">{{ actionLabel }}</button>
 </mat-dialog-actions>

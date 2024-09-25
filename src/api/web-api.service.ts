@@ -1,7 +1,7 @@
 import {inject, Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {environment} from "../environments/environment";
-import {LoginResponse} from "./web-api.types";
+import {LoginResponse, UserProfile} from "./web-api.types";
 
 // TODO import types from API
 
@@ -30,6 +30,6 @@ export class WebApiService {
   }
 
   getProfile() {
-    return this.http.get<{ id: number; email: string;}>(`${this.base}/auth/profile`);
+    return this.http.get<UserProfile>(`${this.base}/auth/profile`);
   }
 }
