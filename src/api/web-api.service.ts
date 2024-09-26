@@ -2,6 +2,7 @@ import {inject, Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {environment} from "../environments/environment";
 import {LoginResponse, UserProfile} from "./web-api.types";
+import {map, Observable} from "rxjs";
 
 // TODO import types from API
 
@@ -27,6 +28,12 @@ export class WebApiService {
 
   login(user: { email: string, password: string }) {
     return this.http.post<LoginResponse>(`${this.base}/auth/login`, user);
+  }
+
+  refreshToken(refreshToken: string): Observable<string> {
+    return this.http.post<{ token: string }>(`${this.base}/auth/token`, { refreshToken }).pipe(
+      map(resp => resp.token)
+    );
   }
 
   getProfile() {
