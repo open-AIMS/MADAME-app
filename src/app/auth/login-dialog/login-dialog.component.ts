@@ -34,9 +34,16 @@ export class LoginDialogComponent {
   form = new FormGroup({
     email: new FormControl('', Validators.required),
     password: new FormControl('', Validators.required)
-  })
+  });
+
+  // error messages related to the email input.
+  private emailErrors = [
+    'Invalid email',
+    'User already exists'
+  ];
 
   onSubmit() {
+    this.resetErrors();
     if (this.form.valid) {
       const value = this.form.value as Credentials;
 
@@ -68,10 +75,8 @@ export class LoginDialogComponent {
     this.busy.set(true);
     this.api.register(value).subscribe({
       next: () => {
-        this.api.getProfile().subscribe(x => {
-          console.log('registered profile, logging in', x);
-          this.login(value);
-        })
+        console.log('registered, logging in', value.email);
+        this.login(value);
       },
       error: err => this.handleError(err)
     });
@@ -84,13 +89,15 @@ export class LoginDialogComponent {
 
     const {email, password} = this.form.controls;
 
-    // set error without invalidating form
-    if (errorMessage === 'Invalid email') {
+    if (this.emailErrors.includes(errorMessage)) {
       email.setErrors({
         invalid: true
       });
+      // clear error message on next change.
+      email.valueChanges
+        .pipe(take(1))
+        .subscribe(() => this.resetErrors());
     } else if (errorMessage === 'Invalid credentials') {
-
       email.setErrors({
         invalid: true
       });
@@ -101,11 +108,18 @@ export class LoginDialogComponent {
       // remain invalid until user changes both.
       merge(email.valueChanges, password.valueChanges)
         .pipe(take(1))
-        .subscribe(() => {
-          this.errorMessage.set(undefined);
-          email.updateValueAndValidity();
-          password.updateValueAndValidity();
-        });
+        .subscribe(() => this.resetErrors());
     }
+  }
+
+  /**
+   * Remove error message and refresh the control validity,
+   * which clears custom errors on controls.
+   */
+  private resetErrors() {
+    const {email, password} = this.form.controls;
+    this.errorMessage.set(undefined);
+    email.updateValueAndValidity();
+    password.updateValueAndValidity();
   }
 }
