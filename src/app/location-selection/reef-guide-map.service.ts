@@ -1,3 +1,4 @@
+import {environment} from "../../environments/environment";
 import {
   Injectable,
   inject,
@@ -22,6 +23,8 @@ import {MatSnackBar} from "@angular/material/snack-bar";
 import {ReefGuideConfigService} from "./reef-guide-config.service";
 import WebTileLayer from "@arcgis/core/layers/WebTileLayer";
 import {isDefined} from "../../util/js-util";
+import esriConfig from "@arcgis/core/config.js";
+import {AuthService} from "../auth/auth.service";
 
 interface CriteriaLayer {
   layer: TileLayer;
@@ -35,6 +38,7 @@ interface CriteriaLayer {
 @Injectable()
 export class ReefGuideMapService {
   readonly config = inject(ReefGuideConfigService);
+  private readonly authService = inject(AuthService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly injector = inject(INJECTOR);
   private readonly api = inject(ReefGuideApiService);
@@ -67,7 +71,43 @@ export class ReefGuideMapService {
     ].filter(isDefined);
   });
 
-  constructor() { }
+  constructor() {
+    this.setupRequestInterceptor();
+  }
+
+  private setupRequestInterceptor() {
+    const apiUrl = environment.reefGuideApiUrl;
+    esriConfig.request.interceptors!.push({
+      urls: [
+        new RegExp(`^${apiUrl}`)
+      ],
+      before: params => {
+        const url = params.url as string;
+        // security double-check that we're only intercepting our API urls.
+        if (url.startsWith(apiUrl)) {
+          const token = this.authService.getAuthToken();
+          if (token) {
+            const headerVal = `Bearer ${token}`;
+            if (params.requestOptions.headers === undefined) {
+              params.requestOptions.headers = {
+                Authorization: headerVal
+              };
+            } else {
+              params.requestOptions.headers.Authorization = headerVal;
+            }
+          } else {
+            // All reef-guide-api layers require authentication, so spare the API
+            // from requests it would reject with a 401 anyway.
+            throw new Error("Not authenticated");
+            // Note: we also have access to an AbortSignal here.
+            // const signal = params.requestOptions.signal as AbortSignal;
+          }
+        } else {
+          console.warn('esri request interceptor intercepted wrong URL!');
+        }
+      }
+    });
+  }
 
   setMap(map: ArcgisMap) {
     this.map = map;
