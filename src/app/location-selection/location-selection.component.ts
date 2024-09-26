@@ -16,6 +16,9 @@ import {MatProgressSpinner} from "@angular/material/progress-spinner";
 import {LayerStyleEditorComponent} from "../widgets/layer-style-editor/layer-style-editor.component";
 import {ReefGuideMapService} from "./reef-guide-map.service";
 import {MatAccordion, MatExpansionModule} from "@angular/material/expansion";
+import {LoginDialogComponent} from "../auth/login-dialog/login-dialog.component";
+import {AuthService} from "../auth/auth.service";
+import {MatMenuModule} from "@angular/material/menu";
 
 type DrawerModes = 'criteria' | 'style';
 
@@ -39,6 +42,7 @@ type DrawerModes = 'criteria' | 'style';
     LayerStyleEditorComponent,
     MatAccordion,
     MatExpansionModule,
+    MatMenuModule
   ],
   providers: [ReefGuideMapService],
   templateUrl: './location-selection.component.html',
@@ -46,6 +50,7 @@ type DrawerModes = 'criteria' | 'style';
 })
 export class LocationSelectionComponent implements AfterViewInit {
   readonly config = inject(ReefGuideConfigService);
+  readonly authService = inject(AuthService);
   readonly api = inject(ReefGuideApiService);
   readonly dialog = inject(MatDialog);
   readonly mapService = inject(ReefGuideMapService);
@@ -75,6 +80,10 @@ export class LocationSelectionComponent implements AfterViewInit {
 
   openConfig() {
     this.dialog.open(ConfigDialogComponent);
+  }
+
+  openLogin() {
+    this.dialog.open(LoginDialogComponent);
   }
 
   /**

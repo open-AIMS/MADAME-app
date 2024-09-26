@@ -1,3 +1,6 @@
+@use '@angular/material' as mat;
+$theme: mat.define-theme();
+
 @import '@esri/calcite-components/dist/calcite/calcite.css';
 
 // ArcGis Theme
@@ -22,6 +25,11 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 .row {
     display: flex;
+}
+
+.error-message {
+  color: mat.get-theme-color($theme, error);
+  font-weight: 500;
 }
 
 mat-tab-group.fixed-height {

@@ -1,0 +1,32 @@
+@let m = mode();
+@let actionLabel = m === 'register' ? 'Register' : 'Login';
+<h2 mat-dialog-title>{{ actionLabel }}</h2>
+<mat-dialog-content>
+  @if (m === 'register') {
+    <p>Sign up with a new account.</p>
+  }
+<!-- FIXME enter on inputs (ngSubmit) not working -->
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <mat-form-field>
+    <mat-label>Email</mat-label>
+    <input formControlName="email" type="email" matInput>
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Password</mat-label>
+    <input formControlName="password" type="password" matInput>
+  </mat-form-field>
+  </form>
+  @if (errorMessage()) {
+    <p class="error-message">{{ errorMessage() }}</p>
+  }
+</mat-dialog-content>
+<mat-dialog-actions>
+  @if (m === 'login') {
+    <button mat-button (click)="mode.set('register')">Sign Up</button>
+  } @else {
+    <button mat-button (click)="mode.set('login')">I have an account</button>
+  }
+
+  <button mat-flat-button [disabled]="!form.valid || busy()"
+          (click)="onSubmit()">{{ actionLabel }}</button>
+</mat-dialog-actions>

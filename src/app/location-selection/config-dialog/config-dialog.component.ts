@@ -2,7 +2,7 @@ import {Component, inject} from '@angular/core';
 import {MatDialogModule, MatDialogRef} from "@angular/material/dialog";
 import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatInputModule} from "@angular/material/input";
-import {FormControl, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {FormControl, ReactiveFormsModule} from "@angular/forms";
 import {MatOption, MatSelect} from "@angular/material/select";
 import {MatListOption, MatSelectionList} from "@angular/material/list";
 import {ALL_REGIONS, MAPS, ReefGuideConfigService} from "../reef-guide-config.service";
@@ -22,7 +22,6 @@ import {MatTabsModule} from "@angular/material/tabs";
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
-    FormsModule,
     MatSelect,
     MatOption,
     MatSelectionList,
