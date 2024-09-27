@@ -9,6 +9,7 @@ export type AuthenticatedUser = {
   user: UserPayload;
   token: string;
   refreshToken: string;
+  expires: number;  // epoch in seconds
 }
 
 @Injectable({
@@ -64,9 +65,10 @@ export class AuthService {
   login(email: string, password: string): Observable<void> {
     return this.api.login({email, password}).pipe(
       map(auth => {
-        this.onAuth(auth.token, auth.refreshToken);
-        this.store();
-        // caller shouldn't have access to token.
+        if (this.onAuth(auth.token, auth.refreshToken)) {
+          this.store();
+        }
+        // map to void, caller shouldn't have access to token.
         return;
       })
     );
@@ -89,8 +91,7 @@ export class AuthService {
       this.refreshHandle = undefined;
     }
 
-    localStorage.removeItem(this.lsToken);
-    localStorage.removeItem(this.lsRefreshToken);
+    this.clearStore();
 
     this._authenticated.set(false);
   }
@@ -104,15 +105,19 @@ export class AuthService {
    * Schedules token refresh.
    * @param token
    * @param refreshToken
+   * @returns false if expired
    */
-  private onAuth(token: string, refreshToken: string) {
-    this.auth = {
-      user: this.extractUserPayload(token),
-      token,
-      refreshToken,
-    };
+  private onAuth(token: string, refreshToken: string): boolean {
+    const auth = this.extractTokenPayload(token, refreshToken);
+    if (auth.expires < Date.now() / 1_000) {
+      console.log("token expired")
+      return false;
+    }
+
+    this.auth = auth;
     this._authenticated.set(true);
     this.scheduleTokenRefresh(token);
+    return true;
   }
 
   private refreshToken() {
@@ -155,12 +160,20 @@ export class AuthService {
     }
   }
 
-  private extractUserPayload(token: string): UserPayload {
+  private extractTokenPayload(token: string, refreshToken: string): AuthenticatedUser {
     const payload = jwtDecode<UserPayload & JwtPayload>(token);
+    if (payload.exp === undefined) {
+      throw new Error('exp field missing in token');
+    }
     return {
-      email: payload.email,
-      id: payload.id,
-      roles: payload.roles
+      user: {
+        email: payload.email,
+        id: payload.id,
+        roles: payload.roles
+      },
+      token,
+      refreshToken,
+      expires: payload.exp
     };
   }
 
@@ -171,9 +184,14 @@ export class AuthService {
     const token = localStorage.getItem(this.lsToken);
     const refreshToken = localStorage.getItem(this.lsRefreshToken);
     if (token != null && refreshToken != null) {
-      this.onAuth(token, refreshToken);
-      this.refreshToken()
-      return true;
+      const accepted = this.onAuth(token, refreshToken);
+      if (accepted) {
+        this.refreshToken()
+        return true;
+      } else {
+        this.clearStore();
+        return false;
+      }
     } else {
       return false;
     }
@@ -189,6 +207,11 @@ export class AuthService {
     const { token, refreshToken } = this.auth;
     localStorage.setItem(this.lsToken, token);
     localStorage.setItem(this.lsRefreshToken, refreshToken);
+  }
+
+  private clearStore() {
+    localStorage.removeItem(this.lsToken);
+    localStorage.removeItem(this.lsRefreshToken);
   }
 
 }
