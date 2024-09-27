@@ -85,11 +85,17 @@ export class AuthService {
    * Called when API indicates user is no longer authenticated.
    */
   unauthenticated() {
-    this.auth = undefined;
     if (this.refreshHandle !== undefined) {
       clearTimeout(this.refreshHandle);
       this.refreshHandle = undefined;
     }
+
+    if (this.auth === undefined) {
+      return;
+    }
+
+    console.log("unauthenticated");
+    this.auth = undefined;
 
     this.clearStore();
 

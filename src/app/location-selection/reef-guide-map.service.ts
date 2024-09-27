@@ -105,6 +105,11 @@ export class ReefGuideMapService {
         } else {
           console.warn('esri request interceptor intercepted wrong URL!');
         }
+      },
+      error: err => {
+        if (err.details.httpStatus === 401) {
+          this.authService.unauthenticated();
+        }
       }
     });
   }
