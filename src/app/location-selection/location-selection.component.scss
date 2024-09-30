@@ -63,6 +63,22 @@ mat-drawer {
   right: 12px;
 }
 
+.center-container{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  padding-top: 12px;
+
+  > .layer-progress {
+    width: 50%;
+    max-width: 800px;
+  }
+}
+
+
 .styling-content {
   padding: 0 8px 16px 8px;
 }

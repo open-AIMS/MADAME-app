@@ -19,6 +19,7 @@ import {MatAccordion, MatExpansionModule} from "@angular/material/expansion";
 import {LoginDialogComponent} from "../auth/login-dialog/login-dialog.component";
 import {AuthService} from "../auth/auth.service";
 import {MatMenuModule} from "@angular/material/menu";
+import {MatProgressBar} from "@angular/material/progress-bar";
 
 type DrawerModes = 'criteria' | 'style';
 
@@ -42,7 +43,8 @@ type DrawerModes = 'criteria' | 'style';
     LayerStyleEditorComponent,
     MatAccordion,
     MatExpansionModule,
-    MatMenuModule
+    MatMenuModule,
+    MatProgressBar
   ],
   providers: [ReefGuideMapService],
   templateUrl: './location-selection.component.html',

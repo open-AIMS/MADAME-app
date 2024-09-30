@@ -100,6 +100,14 @@
           <mat-icon>settings</mat-icon>
         </button>
       </div>
+      <div class="center-container">
+        @let progress = mapService.progress$ | async;
+        @if (progress != null) {
+        <mat-progress-bar class="layer-progress" [value]="progress * 100"
+                          [style.visibility]="progress === 1 ? 'hidden':'visible'">
+        </mat-progress-bar>
+        }
+      </div>
 
       <button class="profile-button" mat-mini-fab [matMenuTriggerFor]="profileMenu"
               [matTooltip]="user?.email" matTooltipPosition="left">

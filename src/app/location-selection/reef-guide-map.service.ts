@@ -15,7 +15,7 @@ import TileLayer from "@arcgis/core/layers/TileLayer";
 import {ReefGuideApiService} from "./reef-guide-api.service";
 import {SelectionCriteria} from "./selection-criteria/selection-criteria.component";
 import {takeUntilDestroyed, toObservable} from "@angular/core/rxjs-interop";
-import {mergeMap, of} from "rxjs";
+import {BehaviorSubject, mergeMap, of, Subject, throttleTime} from "rxjs";
 import {CriteriaRequest, ReadyRegion} from "./selection-criteria/criteria-request.class";
 import ImageryTileLayer from "@arcgis/core/layers/ImageryTileLayer";
 import {createSingleColorRasterFunction} from "../../util/arcgis/arcgis-layer-util";
@@ -49,6 +49,16 @@ export class ReefGuideMapService {
 
   criteriaLayers: Record<string, CriteriaLayer> = {};
 
+  /**
+   * HTTP errors encounter by map layers.
+   */
+  httpErrors: Subject<__esri.Error> = new Subject<__esri.Error>();
+
+  progress$ = new BehaviorSubject<number>(1);
+
+  private readonly pendingRequests = new Set<string>();
+  private pendingHighPoint: number = 0;
+
   private readonly criteriaGroupLayer = signal<GroupLayer | undefined>(undefined);
   private readonly cogAssessRegionsGroupLayer = signal<GroupLayer | undefined>(undefined);
   private readonly tilesAssessRegionsGroupLayer = signal<GroupLayer | undefined>(undefined);
@@ -73,16 +83,46 @@ export class ReefGuideMapService {
 
   constructor() {
     this.setupRequestInterceptor();
+
+    this.httpErrors.pipe(
+      throttleTime(2_000),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(err => {
+      const status = err.details.httpStatus
+      // err.details.url
+      this.snackbar.open(`Map layer error (HTTP ${status})`, 'OK');
+    })
   }
 
   private setupRequestInterceptor() {
     const apiUrl = environment.reefGuideApiUrl;
+
+    /*
+    ArcGIS map seems to have its own queue and do 10 tile requests at a time by default.
+    This makes the progress appear to be doing nothing even though tiles are being loaded.
+    Ideally would get the total pending tiles from ArcGIS SDK.
+     */
+    const onRequestDone = (url: string) => {
+      this.pendingRequests.delete(url);
+      if (this.pendingRequests.size === 0) {
+        // finished, reset
+        this.pendingHighPoint = 0;
+        this.progress$.next(1); // 100%
+      } else {
+        this.progress$.next((this.pendingHighPoint - this.pendingRequests.size) / this.pendingHighPoint)
+      }
+    }
+
     esriConfig.request.interceptors!.push({
       urls: [
         new RegExp(`^${apiUrl}`)
       ],
       before: params => {
         const url = params.url as string;
+        this.pendingRequests.add(url);
+        this.pendingHighPoint = Math.max(this.pendingRequests.size, this.pendingHighPoint);
+        this.progress$.next((this.pendingHighPoint - this.pendingRequests.size) / this.pendingHighPoint)
+
         // security double-check that we're only intercepting our API urls.
         if (url.startsWith(apiUrl)) {
           const token = this.authService.getAuthToken();
@@ -106,9 +146,20 @@ export class ReefGuideMapService {
           console.warn('esri request interceptor intercepted wrong URL!');
         }
       },
+      after: response => {
+        const url = response.url;
+        if (url) {
+          onRequestDone(url);
+        }
+      },
       error: err => {
+        const url = err.details.url;
+        onRequestDone(url);
+
         if (err.details.httpStatus === 401) {
           this.authService.unauthenticated();
+        } else if (err.name !== 'AbortError') { // ignore cancelled requests
+          this.httpErrors.next(err);
         }
       }
     });
