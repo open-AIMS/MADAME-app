@@ -22,6 +22,10 @@ import {HttpErrorResponse} from "@angular/common/http";
 ]
 */
 
+const translateMessage: Record<string, string> = {
+  "Failed to fetch": "Connection error!"
+};
+
 /**
  * Get user-friendly error message from API error.
  * @param error
@@ -30,7 +34,8 @@ export function extractErrorMessage(error: any): string {
   if (error instanceof HttpErrorResponse && error.error) {
     const subError = error.error;
     if (typeof subError.message === 'string') {
-      return subError.message;
+      const msg = subError.message;
+      return translateMessage[msg] ?? msg;
     } else if (Array.isArray(subError)) {
       // possible ZodError
       try {

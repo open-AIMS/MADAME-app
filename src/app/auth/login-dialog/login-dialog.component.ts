@@ -53,8 +53,9 @@ export class LoginDialogComponent {
         this.login(value);
       }
     } else {
-      // shouldn't happen
-      console.warn('submitted invalid form?');
+      // happens when hit enter on email without typing password
+      // mark as touched so errors display.
+      this.form.markAllAsTouched();
     }
   }
 

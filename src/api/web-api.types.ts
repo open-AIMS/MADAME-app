@@ -3,10 +3,15 @@ export type LoginResponse = {
   refreshToken: string;
 };
 
+/**
+ * User properties encoded in the JWT token.
+ */
+export type UserPayload = {
+  email: string;
+  id: number;
+  roles: Array<string>;
+}
+
 export type UserProfile = {
-  user: {
-    email: string;
-    id: number;
-    roles: Array<string>;
-  }
+  user: UserPayload;
 }
