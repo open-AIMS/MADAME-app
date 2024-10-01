@@ -3,32 +3,35 @@ import {ModelRunListComponent} from './model-run-list/model-run-list.component';
 import {ModelRunComponent} from './model-run/model-run.component';
 import {TestMapComponent} from './test/test-map/test-map.component';
 import {LocationSelectionComponent} from "./location-selection/location-selection.component";
-import {SelectionCriteriaComponent} from "./location-selection/selection-criteria/selection-criteria.component";
 
 export const routes: Routes = [
   {
     path: 'runs',
-    component: ModelRunListComponent
+    component: ModelRunListComponent,
+    title: 'MADAME - Model Runs'
   },
   {
     path: 'view-run/:id',
-    component: ModelRunComponent
+    component: ModelRunComponent,
+    title: 'MADAME - View Run'
   },
   {
-    path: 'location-selection',
-    component: LocationSelectionComponent
+    path: 'reef-guide',
+    component: LocationSelectionComponent,
+    title: 'Reef Guide'
   },
   // for now, redirect root to location-selection
   // TODO main nav design and routing
   {
     path: '',
-    redirectTo: 'location-selection',
+    redirectTo: 'reef-guide',
     pathMatch: 'full'
   },
   // Development
   // temporary routes used for development.
   {
     path: 'test-map',
-    component: TestMapComponent
+    component: TestMapComponent,
+    title: 'Test Map'
   }
 ];

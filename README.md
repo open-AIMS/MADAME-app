@@ -2,7 +2,7 @@
 
 Model Assessment and Decision Analysis for Marine Environments web application.
 Prototype Decision Support app for the [ADRIA.jl](https://github.com/open-AIMS/ADRIA.jl)
-platform and CoralBlox model.
+platform and CoralBlox model. This project also contains the Reef Guide app.
 
 ## Angular Developer Setup
 
