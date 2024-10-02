@@ -280,15 +280,31 @@ export class ReefGuideMapService {
 
   /**
    * Show this criteria layer and hide others.
-   * @param criteria
+   * @param criteria layer id
+   * @param show show/hide layer
    */
-  showCriteriaLayer(criteria: string) {
+  showCriteriaLayer(criteria: string, show=true) {
     const criteriaGroupLayer = this.criteriaGroupLayer();
     if (criteriaGroupLayer) {
       criteriaGroupLayer.visible = true;
       for (let id in this.criteriaLayers) {
         const criteriaLayer = this.criteriaLayers[id];
-        criteriaLayer.visible.set(id === criteria);
+        criteriaLayer.visible.set(id === criteria && show);
+      }
+    }
+  }
+
+  /**
+   * Update criteria layers signals based on ArcGIS state.
+   * Note: ideally would subscribe to layer event, but doesn't seem to exist.
+   */
+  updateCriteriaLayerStates() {
+    const criteriaGroupLayer = this.criteriaGroupLayer();
+    if (criteriaGroupLayer) {
+      criteriaGroupLayer.visible = true;
+      for (let id in this.criteriaLayers) {
+        const criteriaLayer = this.criteriaLayers[id];
+        criteriaLayer.visible.set(criteriaLayer.layer.visible);
       }
     }
   }

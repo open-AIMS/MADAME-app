@@ -76,6 +76,9 @@ export class LocationSelectionComponent implements AfterViewInit {
   }
 
   openDrawer(mode: DrawerModes) {
+    if (mode === 'criteria') {
+      this.mapService.updateCriteriaLayerStates();
+    }
     this.drawerMode.set(mode);
     this.drawer.toggle(true);
   }

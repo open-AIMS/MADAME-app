@@ -8,7 +8,7 @@
         <span class="label">{{ c.name }}</span>
         @if (visible != null) {
         <button mat-icon-button class="visibility"
-                (click)="mapService.showCriteriaLayer(c.id)">
+                (click)="mapService.showCriteriaLayer(c.id, !visible)">
           <mat-icon>{{ visible ? 'visibility' : 'visibility_off' }}</mat-icon>
         </button>
         }
