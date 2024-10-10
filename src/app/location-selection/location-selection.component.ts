@@ -73,6 +73,9 @@ export class LocationSelectionComponent implements AfterViewInit {
     console.log("arcgis map click", event);
     // const view = this.map.view;
     // const resp = await view.hitTest(event.detail);
+    const point = event.detail.mapPoint;
+    // point.spatialReference
+    console.log(`Point ${point.x}, ${point.y} Lon/Lat ${point.longitude}, ${point.latitude}`);
   }
 
   openDrawer(mode: DrawerModes) {

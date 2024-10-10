@@ -25,6 +25,8 @@ import WebTileLayer from "@arcgis/core/layers/WebTileLayer";
 import {isDefined} from "../../util/js-util";
 import esriConfig from "@arcgis/core/config.js";
 import {AuthService} from "../auth/auth.service";
+import Editor from "@arcgis/core/widgets/Editor";
+import FeatureLayer from "@arcgis/core/layers/FeatureLayer";
 
 interface CriteriaLayer {
   layer: TileLayer;
@@ -46,6 +48,7 @@ export class ReefGuideMapService {
 
   // map is set shortly after construction
   private map!: ArcgisMap;
+  private editor?: __esri.Editor;
 
   criteriaLayers: Record<string, CriteriaLayer> = {};
 
@@ -231,6 +234,7 @@ export class ReefGuideMapService {
     const layer = new WebTileLayer({
       title: region,
       urlTemplate,
+      maxScale: 100,
       // TODO minScale, different units than zoom
       // https://developers.arcgis.com/javascript/latest/api-reference/esri-layers-WebTileLayer.html#minScale
       // blendMode: 'destination-out'
@@ -294,6 +298,15 @@ export class ReefGuideMapService {
     }
   }
 
+  toggleEditor() {
+    if (this.editor) {
+      this.editor.destroy();
+      this.editor = undefined;
+    } else {
+    this.setupEditor();
+    }
+  }
+
   /**
    * Update criteria layers signals based on ArcGIS state.
    * Note: ideally would subscribe to layer event, but doesn't seem to exist.
@@ -324,10 +337,129 @@ export class ReefGuideMapService {
   private onMapReady() {
     console.log('ReefGuideMapService.onMapReady');
 
+    // limit how far map can zoom.
+    this.map.constraints = {
+      minZoom: 4,
+      maxZoom: 19
+    };
+
     // TODO better to set initial map extent
     this.goHome();
 
     this.addCriteriaLayers();
+  }
+
+  private setupEditor() {
+    this.editor = new Editor({
+      view: this.map.view
+    });
+
+    this.map.view.ui.add(this.editor, 'top-right');
+  }
+
+  /**
+   * WIP
+   * Need to sync with our API, but if we're switching to OpenLayers, then this will need
+   * to largely be re-written.
+   */
+  private addReefNotesLayer() {
+    const layer = new FeatureLayer({
+      title: "Reef Notes",
+      editingEnabled: true,
+      fields: [
+        {
+          name: "ObjectID",
+          alias: "ObjectID",
+          type: "oid"
+        }, {
+          name: "notes",
+          alias: "Notes",
+          type: "string"
+        },
+      ],
+      objectIdField: 'ObjectID',
+      geometryType: 'polygon',
+      source: []
+    });
+    this.map.addLayer(layer);
+
+    layer.on("edits", edits => {
+      console.log('edits', edits);
+
+      for (let f of edits.addedFeatures) {
+        console.log('f', f);
+        f.objectId
+        layer.queryFeatures({objectIds: [f.objectId]}).then(x => {
+          console.log('q', x);
+          // Util.arcgisToGeoJSON()
+        });
+      }
+
+      // @ts-ignore
+      console.log('x', edits.edits);
+
+      /*
+      {
+    "aggregateGeometries": null,
+    "geometry": {
+        "spatialReference": {
+            "latestWkid": 3857,
+            "wkid": 102100
+        },
+        "rings": [
+            [
+                [
+                    16268327.203744985,
+                    -1892548.5535436415
+                ],
+                [
+                    16240687.576183194,
+                    -1884599.1026019813
+                ],
+                [
+                    16271873.88372356,
+                    -1878117.2435364644
+                ],
+                [
+                    16268327.203744985,
+                    -1892548.5535436415
+                ]
+            ]
+        ]
+    },
+    "symbol": null,
+    "attributes": {
+        "notes": "aoue",
+        "ObjectID": 1
+    },
+    "popupTemplate": null
+}
+
+Queried
+{
+    "features": [
+        {
+            "aggregateGeometries": null,
+            "geometry": null,
+            "symbol": null,
+            "attributes": {
+                "ObjectID": 1,
+                "notes": "a"
+            },
+            "popupTemplate": null
+        }
+    ],
+    "geometryType": "esriGeometryPolygon",
+    "spatialReference": {
+        "wkid": 4326
+    }
+}
+       */
+
+    });
+
+    //this.editor.when
+    //this.editor.addHandles()
   }
 
   private async addCriteriaLayers() {

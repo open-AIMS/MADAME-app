@@ -95,9 +95,9 @@
                 matTooltipPosition="right" matTooltip="Layer Style">
           <mat-icon>brush</mat-icon>
         </button>
-        <button mat-mini-fab (click)="openConfig()"
-                matTooltipPosition="right" matTooltip="Configuration">
-          <mat-icon>settings</mat-icon>
+        <button mat-mini-fab (click)="mapService.toggleEditor()"
+                matTooltipPosition="right" matTooltip="Notes">
+          <mat-icon>edit_note</mat-icon>
         </button>
       </div>
       <div class="center-container">
@@ -114,6 +114,10 @@
         <mat-icon>account_circle</mat-icon>
       </button>
       <mat-menu #profileMenu="matMenu">
+        <button mat-menu-item (click)="openConfig()">
+          <mat-icon>settings</mat-icon>
+          <span>Settings</span>
+        </button>
         <button mat-menu-item (click)="authService.logout()">
           <mat-icon>logout</mat-icon>
           <span>Logout</span>

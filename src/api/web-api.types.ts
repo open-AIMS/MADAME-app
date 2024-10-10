@@ -15,3 +15,7 @@ export type UserPayload = {
 export type UserProfile = {
   user: UserPayload;
 }
+
+export type Polygon = any;
+
+export type Note = any;
