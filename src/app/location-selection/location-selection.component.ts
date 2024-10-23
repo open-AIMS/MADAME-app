@@ -1,25 +1,38 @@
-import {AfterViewInit, Component, inject, signal, ViewChild} from '@angular/core';
-import {MatDrawer, MatSidenavModule} from "@angular/material/sidenav";
-import {ArcgisMap, ComponentLibraryModule} from "@arcgis/map-components-angular";
-import {ArcgisMapCustomEvent} from "@arcgis/map-components";
-import {MatButtonModule} from "@angular/material/button";
-import {MatIconModule} from "@angular/material/icon";
-import {MatToolbarModule} from "@angular/material/toolbar";
-import {SelectionCriteria, SelectionCriteriaComponent} from "./selection-criteria/selection-criteria.component";
-import {ReefGuideApiService} from "./reef-guide-api.service";
-import {MatTooltip} from "@angular/material/tooltip";
-import {MatDialog} from "@angular/material/dialog";
-import {ConfigDialogComponent} from "./config-dialog/config-dialog.component";
-import {ReefGuideConfigService} from "./reef-guide-config.service";
-import {AsyncPipe} from "@angular/common";
-import {MatProgressSpinner} from "@angular/material/progress-spinner";
-import {LayerStyleEditorComponent} from "../widgets/layer-style-editor/layer-style-editor.component";
-import {ReefGuideMapService} from "./reef-guide-map.service";
-import {MatAccordion, MatExpansionModule} from "@angular/material/expansion";
-import {LoginDialogComponent} from "../auth/login-dialog/login-dialog.component";
-import {AuthService} from "../auth/auth.service";
-import {MatMenuModule} from "@angular/material/menu";
-import {MatProgressBar} from "@angular/material/progress-bar";
+import {
+  AfterViewInit,
+  Component,
+  inject,
+  signal,
+  ViewChild,
+} from '@angular/core';
+import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
+import {
+  ArcgisMap,
+  ComponentLibraryModule,
+} from '@arcgis/map-components-angular';
+import { ArcgisMapCustomEvent } from '@arcgis/map-components';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import {
+  SelectionCriteria,
+  SelectionCriteriaComponent,
+} from './selection-criteria/selection-criteria.component';
+import { ReefGuideApiService } from './reef-guide-api.service';
+import { MatTooltip } from '@angular/material/tooltip';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfigDialogComponent } from './config-dialog/config-dialog.component';
+import { ReefGuideConfigService } from './reef-guide-config.service';
+import { AsyncPipe, CommonModule } from '@angular/common';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { LayerStyleEditorComponent } from '../widgets/layer-style-editor/layer-style-editor.component';
+import { ReefGuideMapService } from './reef-guide-map.service';
+import { MatAccordion, MatExpansionModule } from '@angular/material/expansion';
+import { LoginDialogComponent } from '../auth/login-dialog/login-dialog.component';
+import { AuthService } from '../auth/auth.service';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatProgressBar } from '@angular/material/progress-bar';
+import { AdminPanelComponent } from '../admin/admin-panel/admin-panel.component';
 
 type DrawerModes = 'criteria' | 'style';
 
@@ -31,6 +44,7 @@ type DrawerModes = 'criteria' | 'style';
   selector: 'app-location-selection',
   standalone: true,
   imports: [
+    CommonModule,
     MatSidenavModule,
     ComponentLibraryModule,
     MatButtonModule,
@@ -44,11 +58,11 @@ type DrawerModes = 'criteria' | 'style';
     MatAccordion,
     MatExpansionModule,
     MatMenuModule,
-    MatProgressBar
+    MatProgressBar,
   ],
   providers: [ReefGuideMapService],
   templateUrl: './location-selection.component.html',
-  styleUrl: './location-selection.component.scss'
+  styleUrl: './location-selection.component.scss',
 })
 export class LocationSelectionComponent implements AfterViewInit {
   readonly config = inject(ReefGuideConfigService);
@@ -62,15 +76,14 @@ export class LocationSelectionComponent implements AfterViewInit {
   @ViewChild(ArcgisMap) map!: ArcgisMap;
   @ViewChild('drawer') drawer!: MatDrawer;
 
-  constructor() {
-  }
+  constructor() {}
 
   ngAfterViewInit() {
     this.mapService.setMap(this.map);
   }
 
   async arcgisViewClick(event: ArcgisMapCustomEvent<__esri.ViewClickEvent>) {
-    console.log("arcgis map click", event);
+    console.log('arcgis map click', event);
     // const view = this.map.view;
     // const resp = await view.hitTest(event.detail);
   }
@@ -81,6 +94,12 @@ export class LocationSelectionComponent implements AfterViewInit {
     }
     this.drawerMode.set(mode);
     this.drawer.toggle(true);
+  }
+
+  openAdminPanel() {
+    this.dialog.open(AdminPanelComponent, {
+      width: '800px',
+    });
   }
 
   openConfig() {
@@ -99,10 +118,10 @@ export class LocationSelectionComponent implements AfterViewInit {
     this.mapService.clearAssessedLayers();
 
     const layerTypes = this.config.assessLayerTypes();
-    if (layerTypes.includes("cog")) {
+    if (layerTypes.includes('cog')) {
       this.mapService.addCOGLayers(criteria);
     }
-    if (layerTypes.includes("tile")) {
+    if (layerTypes.includes('tile')) {
       this.mapService.addTileLayers(criteria);
     }
   }
