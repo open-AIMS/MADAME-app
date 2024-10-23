@@ -1,9 +1,9 @@
 import { environment } from "../../environments/environment";
 import {inject, Injectable} from '@angular/core';
-import {SelectionCriteria} from "./selection-criteria/selection-criteria.component";
 import {HttpClient} from "@angular/common/http";
 import {map, Observable} from "rxjs";
 import {ReefGuideConfigService} from "./reef-guide-config.service";
+import {SelectionCriteria, SiteSuitabilityCriteria} from "./reef-guide-api.types";
 
 @Injectable({
   providedIn: 'root'
@@ -46,6 +46,16 @@ export class ReefGuideApiService {
     return `${url}?${searchParams}`;
   }
 
+  getSiteSuitability(region: string, criteria: SelectionCriteria, suitabilityCriteria: SiteSuitabilityCriteria): Observable<any> {
+    const rtype = 'slopes';
+    const url = new URL(`/suitability/site-suitability/${region}/${rtype}`, this.base);
+    this.addCriteriaToParamsV2(url, criteria);
+    for (const [key, value] of Object.entries(suitabilityCriteria)) {
+      url.searchParams.set(key, value);
+    }
+    return this.http.get(url.toString());
+  }
+
   private addCriteriaToParams(url: URL | URLSearchParams, criteria: SelectionCriteria) {
     const criteriaNames: Array<string> = [];
     const lb: Array<number> = [];
@@ -62,6 +72,14 @@ export class ReefGuideApiService {
     searchParams.set('criteria_names', criteriaNames.join(','));
     searchParams.set('lb', lb.join(','));
     searchParams.set('ub', ub.join(','));
+  }
+
+  private addCriteriaToParamsV2(url: URL | URLSearchParams, criteria: SelectionCriteria) {
+    const searchParams = url instanceof URL ? url.searchParams : url;
+    for (const name in criteria) {
+      const [lower, upper] = criteria[name];
+      searchParams.set(name, `${lower}:${upper}`);
+    }
   }
 
   getCriteriaLayers(): Record<string, string> {

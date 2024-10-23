@@ -1,23 +1,48 @@
 <div class="scrollable">
-<form>
-  @for (c of criteria; track c.id) {
-    @let criteriaLayer = mapService.criteriaLayers[c.id];
-    @let visible = criteriaLayer?.visible();
-    <div class="criteria" [class.visible]="visible === true">
-      <div class="row">
-        <span class="label">{{ c.name }}</span>
-        @if (visible != null) {
-        <button mat-icon-button class="visibility"
-                (click)="mapService.showCriteriaLayer(c.id, !visible)">
-          <mat-icon>{{ visible ? 'visibility' : 'visibility_off' }}</mat-icon>
-        </button>
-        }
+  <form>
+    @for (c of criteria; track c.id) {
+      @let criteriaLayer = mapService.criteriaLayers[c.id] ;
+      @let visible = criteriaLayer?.visible() ;
+      <div class="criteria" [class.visible]="visible === true">
+        <div class="row">
+          <span class="label">{{ c.name }}</span>
+          @if (visible != null) {
+            <button mat-icon-button class="visibility"
+                    (click)="mapService.showCriteriaLayer(c.id, !visible)">
+              <mat-icon>{{ visible ? 'visibility' : 'visibility_off' }}</mat-icon>
+            </button>
+          }
+        </div>
+        <calcite-slider [name]="c.id"
+                        [min]="c.min" [max]="c.max" [step]="c.step ?? 1" snap
+                        [minValue]="c.min" [maxValue]="c.max" labelHandles></calcite-slider>
       </div>
-      <calcite-slider [name]="c.id"
-                      [min]="c.min" [max]="c.max" [step]="c.step ?? 1" snap
-                      [minValue]="c.min" [maxValue]="c.max" labelHandles></calcite-slider>
+    }
+
+    <div class="ss-container">
+      <mat-slide-toggle labelPosition="before"
+                        [checked]="enableSiteSuitability()" (change)="enableSiteSuitability.set($event.checked)">
+        Site Suitability
+      </mat-slide-toggle>
+      @if (enableSiteSuitability()) {
+        <form [formGroup]="siteForm">
+          <div class="row">
+            <mat-form-field>
+              <mat-label>X</mat-label>
+              <input matInput formControlName="xdist">
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>Y</mat-label>
+              <input matInput formControlName="ydist">
+            </mat-form-field>
+          </div>
+          <header class="label">Threshold</header>
+          <mat-slider min="0" max="100" discrete>
+            <input matSliderThumb formControlName="SuitabilityThreshold">
+          </mat-slider>
+        </form>
+      }
     </div>
-  }
-</form>
+  </form>
 </div>
 

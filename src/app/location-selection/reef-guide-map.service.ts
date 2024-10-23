@@ -13,7 +13,6 @@ import {ArcgisMap} from "@arcgis/map-components-angular";
 import GroupLayer from "@arcgis/core/layers/GroupLayer";
 import TileLayer from "@arcgis/core/layers/TileLayer";
 import {ReefGuideApiService} from "./reef-guide-api.service";
-import {SelectionCriteria} from "./selection-criteria/selection-criteria.component";
 import {takeUntilDestroyed, toObservable} from "@angular/core/rxjs-interop";
 import {BehaviorSubject, mergeMap, of, Subject, throttleTime} from "rxjs";
 import {CriteriaRequest, ReadyRegion} from "./selection-criteria/criteria-request.class";
@@ -27,6 +26,9 @@ import esriConfig from "@arcgis/core/config.js";
 import {AuthService} from "../auth/auth.service";
 import Editor from "@arcgis/core/widgets/Editor";
 import FeatureLayer from "@arcgis/core/layers/FeatureLayer";
+import {SelectionCriteria, SiteSuitabilityCriteria} from "./reef-guide-api.types";
+import GeoJSONLayer from "@arcgis/core/layers/GeoJSONLayer";
+
 
 interface CriteriaLayer {
   layer: TileLayer;
@@ -241,6 +243,28 @@ export class ReefGuideMapService {
       // effect also available.
     });
     this.tilesAssessRegionsGroupLayer()!.add(layer);
+  }
+
+  addSiteSuitabilityLayer(criteria: SelectionCriteria, siteCriteria: SiteSuitabilityCriteria) {
+    // TODO multi-region
+    const region = this.config.enabledRegions()[0];
+
+    this.api.getSiteSuitability(region, criteria, siteCriteria).subscribe(geoJson => {
+      console.log('geoJson', geoJson);
+
+      // TODO just give url directly
+      const blob = new Blob([JSON.stringify(geoJson)], {
+        type: "application/json"
+      });
+      const url = URL.createObjectURL(blob);
+
+      const layer = new GeoJSONLayer({
+        title: "Site Suitability",
+        url
+      });
+
+      this.map.addLayer(layer);
+    });
   }
 
   /**

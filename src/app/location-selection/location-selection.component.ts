@@ -5,7 +5,7 @@ import {ArcgisMapCustomEvent} from "@arcgis/map-components";
 import {MatButtonModule} from "@angular/material/button";
 import {MatIconModule} from "@angular/material/icon";
 import {MatToolbarModule} from "@angular/material/toolbar";
-import {SelectionCriteria, SelectionCriteriaComponent} from "./selection-criteria/selection-criteria.component";
+import {SelectionCriteriaComponent} from "./selection-criteria/selection-criteria.component";
 import {ReefGuideApiService} from "./reef-guide-api.service";
 import {MatTooltip} from "@angular/material/tooltip";
 import {MatDialog} from "@angular/material/dialog";
@@ -20,6 +20,7 @@ import {LoginDialogComponent} from "../auth/login-dialog/login-dialog.component"
 import {AuthService} from "../auth/auth.service";
 import {MatMenuModule} from "@angular/material/menu";
 import {MatProgressBar} from "@angular/material/progress-bar";
+import {CriteriaAssessment, SelectionCriteria} from "./reef-guide-api.types";
 
 type DrawerModes = 'criteria' | 'style';
 
@@ -96,9 +97,11 @@ export class LocationSelectionComponent implements AfterViewInit {
 
   /**
    * User submitted new criteria, clear current layers and request new layers.
-   * @param criteria
+   * @param assessment
    */
-  onAssess(criteria: SelectionCriteria) {
+  onAssess(assessment: CriteriaAssessment) {
+    const { criteria, siteSuitability } = assessment;
+
     this.mapService.clearAssessedLayers();
 
     const layerTypes = this.config.assessLayerTypes();
@@ -107,6 +110,10 @@ export class LocationSelectionComponent implements AfterViewInit {
     }
     if (layerTypes.includes("tile")) {
       this.mapService.addTileLayers(criteria);
+    }
+
+    if (siteSuitability) {
+      this.mapService.addSiteSuitabilityLayer(criteria, siteSuitability);
     }
   }
 

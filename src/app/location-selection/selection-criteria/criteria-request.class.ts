@@ -11,7 +11,7 @@ import {
   takeUntil,
 } from "rxjs";
 import {ReefGuideApiService} from "../reef-guide-api.service";
-import {SelectionCriteria} from "./selection-criteria.component";
+import {SelectionCriteria} from "../reef-guide-api.types";
 import {ReefGuideConfigService} from "../reef-guide-config.service";
 import {inject} from "@angular/core";
 
