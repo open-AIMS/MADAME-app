@@ -1,4 +1,4 @@
-import {inject, Injectable, Signal, signal} from '@angular/core';
+import {inject, Injectable, Signal, signal} from "@angular/core";
 import {WebApiService} from "../../api/web-api.service";
 import {UserPayload, UserProfile} from "../../api/web-api.types";
 import {map, Observable, of, retry, switchMap} from "rxjs";
@@ -9,11 +9,11 @@ export type AuthenticatedUser = {
   user: UserPayload;
   token: string;
   refreshToken: string;
-  expires: number;  // epoch in seconds
-}
+  expires: number; // epoch in seconds
+};
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class AuthService {
   /**
@@ -31,9 +31,12 @@ export class AuthService {
 
   private readonly api = inject(WebApiService);
 
-  user$: Observable<UserPayload | undefined> = toObservable(this._authenticated).pipe(
+  user$: Observable<UserPayload | undefined> = toObservable(
+    this._authenticated
+  ).pipe(
     map(isAuthenticated => {
-        return this.auth?.user;
+      console.log(this.auth?.user);
+      return this.auth?.user;
     })
   );
 
@@ -41,7 +44,9 @@ export class AuthService {
    * Emits the profile when authenticated; undefined when unauthenticated.
    * @deprecated not needed unless profile gains more information than token.
    */
-  profile$: Observable<UserProfile | undefined> = toObservable(this._authenticated).pipe(
+  profile$: Observable<UserProfile | undefined> = toObservable(
+    this._authenticated
+  ).pipe(
     switchMap(isAuthenticated => {
       if (isAuthenticated) {
         return this.api.getProfile();
@@ -49,7 +54,7 @@ export class AuthService {
         return of(undefined);
       }
     })
-  )
+  );
 
   private auth?: AuthenticatedUser;
 
@@ -116,7 +121,7 @@ export class AuthService {
   private onAuth(token: string, refreshToken: string): boolean {
     const auth = this.extractTokenPayload(token, refreshToken);
     if (auth.expires < Date.now() / 1_000) {
-      console.log("token expired")
+      console.log("token expired");
       return false;
     }
 
@@ -132,7 +137,8 @@ export class AuthService {
       throw new Error("unauthenticated, can't refresh token");
     }
 
-    this.api.refreshToken(auth.refreshToken)
+    this.api
+      .refreshToken(auth.refreshToken)
       .pipe(retry({count: 2, delay: 2_000}))
       .subscribe({
         next: newToken => {
@@ -143,7 +149,7 @@ export class AuthService {
         error: err => {
           console.error("Refresh token failed!", err);
           this.unauthenticated();
-        }
+        },
       });
   }
 
@@ -166,20 +172,23 @@ export class AuthService {
     }
   }
 
-  private extractTokenPayload(token: string, refreshToken: string): AuthenticatedUser {
+  private extractTokenPayload(
+    token: string,
+    refreshToken: string
+  ): AuthenticatedUser {
     const payload = jwtDecode<UserPayload & JwtPayload>(token);
     if (payload.exp === undefined) {
-      throw new Error('exp field missing in token');
+      throw new Error("exp field missing in token");
     }
     return {
       user: {
         email: payload.email,
         id: payload.id,
-        roles: payload.roles
+        roles: payload.roles,
       },
       token,
       refreshToken,
-      expires: payload.exp
+      expires: payload.exp,
     };
   }
 
@@ -192,7 +201,7 @@ export class AuthService {
     if (token != null && refreshToken != null) {
       const accepted = this.onAuth(token, refreshToken);
       if (accepted) {
-        this.refreshToken()
+        this.refreshToken();
         return true;
       } else {
         this.clearStore();
@@ -210,7 +219,7 @@ export class AuthService {
     if (this.auth === undefined) {
       return;
     }
-    const { token, refreshToken } = this.auth;
+    const {token, refreshToken} = this.auth;
     localStorage.setItem(this.lsToken, token);
     localStorage.setItem(this.lsRefreshToken, refreshToken);
   }
@@ -219,5 +228,4 @@ export class AuthService {
     localStorage.removeItem(this.lsToken);
     localStorage.removeItem(this.lsRefreshToken);
   }
-
 }

@@ -1,6 +1,15 @@
-import {AfterViewInit, Component, inject, signal, ViewChild} from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  inject,
+  signal,
+  ViewChild,
+} from "@angular/core";
 import {MatDrawer, MatSidenavModule} from "@angular/material/sidenav";
-import {ArcgisMap, ComponentLibraryModule} from "@arcgis/map-components-angular";
+import {
+  ArcgisMap,
+  ComponentLibraryModule,
+} from "@arcgis/map-components-angular";
 import {ArcgisMapCustomEvent} from "@arcgis/map-components";
 import {MatButtonModule} from "@angular/material/button";
 import {MatIconModule} from "@angular/material/icon";
@@ -11,7 +20,7 @@ import {MatTooltip} from "@angular/material/tooltip";
 import {MatDialog} from "@angular/material/dialog";
 import {ConfigDialogComponent} from "./config-dialog/config-dialog.component";
 import {ReefGuideConfigService} from "./reef-guide-config.service";
-import {AsyncPipe} from "@angular/common";
+import {AsyncPipe, CommonModule} from "@angular/common";
 import {MatProgressSpinner} from "@angular/material/progress-spinner";
 import {LayerStyleEditorComponent} from "../widgets/layer-style-editor/layer-style-editor.component";
 import {ReefGuideMapService} from "./reef-guide-map.service";
@@ -23,15 +32,16 @@ import {MatProgressBar} from "@angular/material/progress-bar";
 import {CriteriaAssessment} from "./reef-guide-api.types";
 import {toObservable} from "@angular/core/rxjs-interop";
 import {combineLatest, map, Observable, of, switchMap} from "rxjs";
+import {ClusterAdminDialogComponent} from "../cluster/ClusterAdminDialog.component";
 
-type DrawerModes = 'criteria' | 'style';
+type DrawerModes = "criteria" | "style";
 
 /**
  * Prototype of Location Selection app.
  * Map be split-off as its own project in the future.
  */
 @Component({
-  selector: 'app-location-selection',
+  selector: "app-location-selection",
   standalone: true,
   imports: [
     MatSidenavModule,
@@ -46,12 +56,13 @@ type DrawerModes = 'criteria' | 'style';
     LayerStyleEditorComponent,
     MatAccordion,
     MatExpansionModule,
+    CommonModule,
     MatMenuModule,
-    MatProgressBar
+    MatProgressBar,
   ],
   providers: [ReefGuideMapService],
-  templateUrl: './location-selection.component.html',
-  styleUrl: './location-selection.component.scss'
+  templateUrl: "./location-selection.component.html",
+  styleUrl: "./location-selection.component.scss",
 })
 export class LocationSelectionComponent implements AfterViewInit {
   readonly config = inject(ReefGuideConfigService);
@@ -60,7 +71,7 @@ export class LocationSelectionComponent implements AfterViewInit {
   readonly dialog = inject(MatDialog);
   readonly mapService = inject(ReefGuideMapService);
 
-  drawerMode = signal<DrawerModes>('criteria');
+  drawerMode = signal<DrawerModes>("criteria");
 
   /**
    * Assess related layer is loading.
@@ -68,7 +79,7 @@ export class LocationSelectionComponent implements AfterViewInit {
   isAssessing$: Observable<boolean>;
 
   @ViewChild(ArcgisMap) map!: ArcgisMap;
-  @ViewChild('drawer') drawer!: MatDrawer;
+  @ViewChild("drawer") drawer!: MatDrawer;
 
   constructor() {
     this.isAssessing$ = combineLatest([
@@ -76,14 +87,12 @@ export class LocationSelectionComponent implements AfterViewInit {
       toObservable(this.mapService.criteriaRequest).pipe(
         switchMap(cr => {
           if (cr) {
-            return cr.busyRegions$.pipe(
-              map(r => r.size > 0)
-            )
+            return cr.busyRegions$.pipe(map(r => r.size > 0));
           } else {
             return of(false);
           }
-        }),
-      )
+        })
+      ),
     ]).pipe(
       // any busy
       map(vals => vals.includes(true))
@@ -100,11 +109,13 @@ export class LocationSelectionComponent implements AfterViewInit {
     // const resp = await view.hitTest(event.detail);
     const point = event.detail.mapPoint;
     // point.spatialReference
-    console.log(`Point ${point.x}, ${point.y} Lon/Lat ${point.longitude}, ${point.latitude}`);
+    console.log(
+      `Point ${point.x}, ${point.y} Lon/Lat ${point.longitude}, ${point.latitude}`
+    );
   }
 
   openDrawer(mode: DrawerModes) {
-    if (mode === 'criteria') {
+    if (mode === "criteria") {
       this.mapService.updateCriteriaLayerStates();
     }
     this.drawerMode.set(mode);
@@ -117,6 +128,12 @@ export class LocationSelectionComponent implements AfterViewInit {
 
   openLogin() {
     this.dialog.open(LoginDialogComponent);
+  }
+
+  openClusterAdmin() {
+    this.dialog.open(ClusterAdminDialogComponent, {
+      width: "800px",
+    });
   }
 
   /**
@@ -143,9 +160,9 @@ export class LocationSelectionComponent implements AfterViewInit {
 
   getLoadingRegionsMessage(busyRegions: Set<string> | null): string {
     if (busyRegions == null) {
-      return '';
+      return "";
     }
-    const vals = Array.from(busyRegions).join(', ');
+    const vals = Array.from(busyRegions).join(", ");
     return `Loading: ${vals}`;
   }
 }
