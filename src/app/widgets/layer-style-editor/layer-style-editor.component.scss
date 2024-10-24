@@ -1,5 +1,15 @@
-mat-form-field {
-  width: 100%;
+.row {
+  align-items: baseline;
+  gap: 12px;
+
+  .color {
+    width: 42px;
+    height: 42px;
+  }
+
+  mat-form-field {
+    flex: auto;
+  }
 }
 header {
   padding-left: 16px;

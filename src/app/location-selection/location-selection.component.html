@@ -92,7 +92,7 @@ isBusy = isAssessing$ | async;
         <arcgis-legend></arcgis-legend>
       </arcgis-expand>
     </arcgis-map>
-    @if (authService.authenticated()) {
+    @if (authService.authenticated()) { @let user = authService.user$ | async ;
     <div class="map-buttons">
       <div class="row">
         <button
@@ -129,16 +129,25 @@ isBusy = isAssessing$ | async;
       >
         <mat-icon>edit_note</mat-icon>
       </button>
-      @if(authService.isAdmin() | async){
       <button
         mat-mini-fab
+        *ngIf="authService.isAdmin() | async"
         (click)="openAdminPanel()"
         matTooltipPosition="right"
         matTooltip="Manage Users"
       >
         <mat-icon>supervised_user_circle</mat-icon>
       </button>
-      }
+
+      <button
+        mat-mini-fab
+        *ngIf="authService.isAdmin() | async"
+        (click)="openClusterAdmin()"
+        matTooltipPosition="right"
+        matTooltip="Manage Cluster"
+      >
+        <mat-icon>dns</mat-icon>
+      </button>
     </div>
     <div class="center-container">
       @let progress = mapService.progress$ | async; @if (progress != null) {
@@ -151,12 +160,13 @@ isBusy = isAssessing$ | async;
       }
     </div>
     <button
+      class="profile-button"
       mat-mini-fab
-      (click)="openDrawer('style')"
-      matTooltipPosition="right"
-      matTooltip="Layer Style"
+      [matMenuTriggerFor]="profileMenu"
+      [matTooltip]="user?.email"
+      matTooltipPosition="left"
     >
-      <mat-icon>brush</mat-icon>
+      <mat-icon>account_circle</mat-icon>
     </button>
     <mat-menu #profileMenu="matMenu">
       <button mat-menu-item (click)="openConfig()">
