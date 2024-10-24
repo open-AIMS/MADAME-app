@@ -1,16 +1,18 @@
-import {Component, inject, QueryList, ViewChildren} from '@angular/core';
+import {Component, inject, QueryList, signal, ViewChildren} from '@angular/core';
 import {CalciteComponentsModule, CalciteSlider} from "@esri/calcite-components-angular";
 import {MatSliderModule} from "@angular/material/slider";
 import {MatDivider} from "@angular/material/divider";
-import {FormsModule} from "@angular/forms";
+import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {MatButton, MatIconButton} from "@angular/material/button";
 import {MatToolbar} from "@angular/material/toolbar";
 import {MatProgressSpinner} from "@angular/material/progress-spinner";
 import {MatTooltip} from "@angular/material/tooltip";
 import {MatIcon} from "@angular/material/icon";
 import {ReefGuideMapService} from "../reef-guide-map.service";
-
-export type SelectionCriteria = Record<string, [number, number]>;
+import {CriteriaAssessment, SiteSuitabilityCriteria} from "../reef-guide-api.types";
+import {MatFormFieldModule} from "@angular/material/form-field";
+import {MatInput} from "@angular/material/input";
+import {MatSlideToggle} from "@angular/material/slide-toggle";
 
 interface SelectionCriteriaInputDef {
   // field/id used by API
@@ -36,12 +38,17 @@ interface SelectionCriteriaInputDef {
     MatTooltip,
     MatIconButton,
     MatIcon,
+    MatFormFieldModule,
+    MatInput,
+    MatSlideToggle,
+    ReactiveFormsModule,
   ],
   templateUrl: './selection-criteria.component.html',
   styleUrl: './selection-criteria.component.scss'
 })
 export class SelectionCriteriaComponent {
   readonly mapService = inject(ReefGuideMapService);
+  readonly formBuilder = inject(FormBuilder);
 
   /*
   Distance to Nearest Port (NM): 0.0:200.0
@@ -88,14 +95,37 @@ export class SelectionCriteriaComponent {
     }
   ];
 
+  enableSiteSuitability = signal(false);
+
   // form isn't working with Calcite, so we get form data via ViewChildren access
   // @ViewChild('form') form!: NgForm;
 
+  siteForm: FormGroup;
+
   @ViewChildren(CalciteSlider) sliders!: QueryList<CalciteSlider>;
 
-  getCriteria(): SelectionCriteria {
+  constructor() {
+    this.siteForm = this.formBuilder.group({
+      xdist: [450, [Validators.min(1), Validators.required]],
+      ydist: [50, [Validators.min(1), Validators.required]],
+      SuitabilityThreshold: [50, Validators.required]
+    });
+  }
+
+  getCriteria(): CriteriaAssessment {
     const valueEntries = this.sliders.map(s => [s.name, s.value]);
-    return Object.fromEntries(valueEntries);
+    const criteria = Object.fromEntries(valueEntries);
+
+
+    let siteSuitability: SiteSuitabilityCriteria | undefined = undefined;
+    if (this.enableSiteSuitability() && this.siteForm.valid) {
+      siteSuitability = this.siteForm.value;
+    }
+
+    return {
+      criteria,
+      siteSuitability
+    };
   }
 
   /**

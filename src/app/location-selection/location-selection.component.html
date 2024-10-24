@@ -1,5 +1,5 @@
 @let busyRegions = mapService.criteriaRequest()?.busyRegions$ | async ; @let
-isBusy = busyRegions && busyRegions.size > 0 ;
+isBusy = isAssessing$ | async;
 <mat-drawer-container hasBackdrop="false" class="reef-guide">
   <mat-drawer #drawer>
     @switch (drawerMode()) { @case ('criteria') {
@@ -20,7 +20,7 @@ isBusy = busyRegions && busyRegions.size > 0 ;
       <app-selection-criteria #criteria></app-selection-criteria>
       <mat-toolbar>
         @if (isBusy) {
-        <button mat-stroked-button (click)="mapService.cancelCriteriaRequest()">
+        <button mat-stroked-button (click)="mapService.cancelAssess()">
           Cancel
         </button>
 
@@ -41,7 +41,7 @@ isBusy = busyRegions && busyRegions.size > 0 ;
         <mat-progress-spinner
           mode="indeterminate"
           diameter="32"
-          [matTooltip]="getLoadingRegionsMessage(busyRegions!)"
+          [matTooltip]="getLoadingRegionsMessage(busyRegions)"
         >
         </mat-progress-spinner>
         }
@@ -92,7 +92,7 @@ isBusy = busyRegions && busyRegions.size > 0 ;
         <arcgis-legend></arcgis-legend>
       </arcgis-expand>
     </arcgis-map>
-    @if (authService.authenticated()) { @let user = authService.user$ | async ;
+    @if (authService.authenticated()) {
     <div class="map-buttons">
       <div class="row">
         <button
@@ -108,7 +108,7 @@ isBusy = busyRegions && busyRegions.size > 0 ;
           class="criteria-spinner"
           mode="indeterminate"
           diameter="32"
-          [matTooltip]="getLoadingRegionsMessage(busyRegions!)"
+          [matTooltip]="getLoadingRegionsMessage(busyRegions)"
         >
         </mat-progress-spinner>
         }
@@ -123,20 +123,22 @@ isBusy = busyRegions && busyRegions.size > 0 ;
       </button>
       <button
         mat-mini-fab
-        (click)="openConfig()"
+        (click)="mapService.toggleEditor()"
         matTooltipPosition="right"
-        matTooltip="Configuration"
+        matTooltip="Notes"
       >
-        <mat-icon>settings</mat-icon>
+        <mat-icon>edit_note</mat-icon>
       </button>
+      @if(authService.isAdmin() | async){
       <button
         mat-mini-fab
-        *ngIf="((authService.user$ | async)?.roles ?? []).includes('ADMIN')"
         (click)="openAdminPanel()"
-        matTooltip="User Management"
+        matTooltipPosition="right"
+        matTooltip="Manage Users"
       >
-        <mat-icon>admin_panel_settings</mat-icon>
+        <mat-icon>supervised_user_circle</mat-icon>
       </button>
+      }
     </div>
     <div class="center-container">
       @let progress = mapService.progress$ | async; @if (progress != null) {
@@ -148,17 +150,19 @@ isBusy = busyRegions && busyRegions.size > 0 ;
       </mat-progress-bar>
       }
     </div>
-
     <button
-      class="profile-button"
       mat-mini-fab
-      [matMenuTriggerFor]="profileMenu"
-      [matTooltip]="user?.email"
-      matTooltipPosition="left"
+      (click)="openDrawer('style')"
+      matTooltipPosition="right"
+      matTooltip="Layer Style"
     >
-      <mat-icon>account_circle</mat-icon>
+      <mat-icon>brush</mat-icon>
     </button>
     <mat-menu #profileMenu="matMenu">
+      <button mat-menu-item (click)="openConfig()">
+        <mat-icon>settings</mat-icon>
+        <span>Settings</span>
+      </button>
       <button mat-menu-item (click)="authService.logout()">
         <mat-icon>logout</mat-icon>
         <span>Logout</span>

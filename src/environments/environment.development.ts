@@ -1,5 +1,5 @@
 export const environment = {
-  reefGuideApiUrl: 'https://guide-api.reefguide.mds.gbrrestoration.org',
-  adriaApiUrl: 'http://localhost:4200/adria-guide-api',
+  reefGuideApiUrl: 'http://localhost:8000',
+  adriaApiUrl: 'http://localhost:4200/adria-api',
   webApiUrl: 'http://localhost:5000/api',
 };

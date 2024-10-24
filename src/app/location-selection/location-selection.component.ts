@@ -1,3 +1,4 @@
+import { AsyncPipe, CommonModule } from '@angular/common';
 import {
   AfterViewInit,
   Component,
@@ -5,34 +6,33 @@ import {
   signal,
   ViewChild,
 } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
+import { MatAccordion, MatExpansionModule } from '@angular/material/expansion';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatProgressBar } from '@angular/material/progress-bar';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatTooltip } from '@angular/material/tooltip';
+import { ArcgisMapCustomEvent } from '@arcgis/map-components';
 import {
   ArcgisMap,
   ComponentLibraryModule,
 } from '@arcgis/map-components-angular';
-import { ArcgisMapCustomEvent } from '@arcgis/map-components';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import {
-  SelectionCriteria,
-  SelectionCriteriaComponent,
-} from './selection-criteria/selection-criteria.component';
-import { ReefGuideApiService } from './reef-guide-api.service';
-import { MatTooltip } from '@angular/material/tooltip';
-import { MatDialog } from '@angular/material/dialog';
-import { ConfigDialogComponent } from './config-dialog/config-dialog.component';
-import { ReefGuideConfigService } from './reef-guide-config.service';
-import { AsyncPipe, CommonModule } from '@angular/common';
-import { MatProgressSpinner } from '@angular/material/progress-spinner';
-import { LayerStyleEditorComponent } from '../widgets/layer-style-editor/layer-style-editor.component';
-import { ReefGuideMapService } from './reef-guide-map.service';
-import { MatAccordion, MatExpansionModule } from '@angular/material/expansion';
-import { LoginDialogComponent } from '../auth/login-dialog/login-dialog.component';
-import { AuthService } from '../auth/auth.service';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatProgressBar } from '@angular/material/progress-bar';
+import { combineLatest, map, Observable, of, switchMap } from 'rxjs';
 import { AdminPanelComponent } from '../admin/admin-panel/admin-panel.component';
+import { AuthService } from '../auth/auth.service';
+import { LoginDialogComponent } from '../auth/login-dialog/login-dialog.component';
+import { LayerStyleEditorComponent } from '../widgets/layer-style-editor/layer-style-editor.component';
+import { ConfigDialogComponent } from './config-dialog/config-dialog.component';
+import { ReefGuideApiService } from './reef-guide-api.service';
+import { CriteriaAssessment } from './reef-guide-api.types';
+import { ReefGuideConfigService } from './reef-guide-config.service';
+import { ReefGuideMapService } from './reef-guide-map.service';
+import { SelectionCriteriaComponent } from './selection-criteria/selection-criteria.component';
 
 type DrawerModes = 'criteria' | 'style';
 
@@ -73,10 +73,31 @@ export class LocationSelectionComponent implements AfterViewInit {
 
   drawerMode = signal<DrawerModes>('criteria');
 
+  /**
+   * Assess related layer is loading.
+   */
+  isAssessing$: Observable<boolean>;
+
   @ViewChild(ArcgisMap) map!: ArcgisMap;
   @ViewChild('drawer') drawer!: MatDrawer;
 
-  constructor() {}
+  constructor() {
+    this.isAssessing$ = combineLatest([
+      toObservable(this.mapService.siteSuitabilityLoading),
+      toObservable(this.mapService.criteriaRequest).pipe(
+        switchMap((cr) => {
+          if (cr) {
+            return cr.busyRegions$.pipe(map((r) => r.size > 0));
+          } else {
+            return of(false);
+          }
+        })
+      ),
+    ]).pipe(
+      // any busy
+      map((vals) => vals.includes(true))
+    );
+  }
 
   ngAfterViewInit() {
     this.mapService.setMap(this.map);
@@ -86,6 +107,11 @@ export class LocationSelectionComponent implements AfterViewInit {
     console.log('arcgis map click', event);
     // const view = this.map.view;
     // const resp = await view.hitTest(event.detail);
+    const point = event.detail.mapPoint;
+    // point.spatialReference
+    console.log(
+      `Point ${point.x}, ${point.y} Lon/Lat ${point.longitude}, ${point.latitude}`
+    );
   }
 
   openDrawer(mode: DrawerModes) {
@@ -112,9 +138,11 @@ export class LocationSelectionComponent implements AfterViewInit {
 
   /**
    * User submitted new criteria, clear current layers and request new layers.
-   * @param criteria
+   * @param assessment
    */
-  onAssess(criteria: SelectionCriteria) {
+  onAssess(assessment: CriteriaAssessment) {
+    const { criteria, siteSuitability } = assessment;
+
     this.mapService.clearAssessedLayers();
 
     const layerTypes = this.config.assessLayerTypes();
@@ -124,9 +152,16 @@ export class LocationSelectionComponent implements AfterViewInit {
     if (layerTypes.includes('tile')) {
       this.mapService.addTileLayers(criteria);
     }
+
+    if (siteSuitability) {
+      this.mapService.addSiteSuitabilityLayer(criteria, siteSuitability);
+    }
   }
 
-  getLoadingRegionsMessage(busyRegions: Set<string>) {
+  getLoadingRegionsMessage(busyRegions: Set<string> | null): string {
+    if (busyRegions == null) {
+      return '';
+    }
     const vals = Array.from(busyRegions).join(', ');
     return `Loading: ${vals}`;
   }

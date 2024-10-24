@@ -17,3 +17,7 @@ export type UserProfile = {
 };
 
 export type UserRole = 'ADMIN';
+
+export type Polygon = any;
+
+export type Note = any;

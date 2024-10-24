@@ -1,19 +1,19 @@
-import {inject, Injectable, Signal, signal} from '@angular/core';
-import {WebApiService} from "../../api/web-api.service";
-import {UserPayload, UserProfile} from "../../api/web-api.types";
-import {map, Observable, of, retry, switchMap} from "rxjs";
-import {toObservable} from "@angular/core/rxjs-interop";
-import {jwtDecode, JwtPayload} from "jwt-decode";
+import { inject, Injectable, Signal, signal } from '@angular/core';
+import { WebApiService } from '../../api/web-api.service';
+import { UserPayload, UserProfile } from '../../api/web-api.types';
+import { map, Observable, of, retry, switchMap } from 'rxjs';
+import { toObservable } from '@angular/core/rxjs-interop';
+import { jwtDecode, JwtPayload } from 'jwt-decode';
 
 export type AuthenticatedUser = {
   user: UserPayload;
   token: string;
   refreshToken: string;
-  expires: number;  // epoch in seconds
-}
+  expires: number; // epoch in seconds
+};
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
   /**
@@ -31,9 +31,11 @@ export class AuthService {
 
   private readonly api = inject(WebApiService);
 
-  user$: Observable<UserPayload | undefined> = toObservable(this._authenticated).pipe(
-    map(isAuthenticated => {
-        return this.auth?.user;
+  user$: Observable<UserPayload | undefined> = toObservable(
+    this._authenticated
+  ).pipe(
+    map((isAuthenticated) => {
+      return this.auth?.user;
     })
   );
 
@@ -41,20 +43,22 @@ export class AuthService {
    * Emits the profile when authenticated; undefined when unauthenticated.
    * @deprecated not needed unless profile gains more information than token.
    */
-  profile$: Observable<UserProfile | undefined> = toObservable(this._authenticated).pipe(
-    switchMap(isAuthenticated => {
+  profile$: Observable<UserProfile | undefined> = toObservable(
+    this._authenticated
+  ).pipe(
+    switchMap((isAuthenticated) => {
       if (isAuthenticated) {
         return this.api.getProfile();
       } else {
         return of(undefined);
       }
     })
-  )
+  );
 
   private auth?: AuthenticatedUser;
 
-  private lsToken = "jwtToken";
-  private lsRefreshToken = "jwtRefreshToken";
+  private lsToken = 'jwtToken';
+  private lsRefreshToken = 'jwtRefreshToken';
 
   private refreshHandle?: any;
 
@@ -63,13 +67,28 @@ export class AuthService {
   }
 
   login(email: string, password: string): Observable<void> {
-    return this.api.login({email, password}).pipe(
-      map(auth => {
+    return this.api.login({ email, password }).pipe(
+      map((auth) => {
         if (this.onAuth(auth.token, auth.refreshToken)) {
           this.store();
         }
         // map to void, caller shouldn't have access to token.
         return;
+      })
+    );
+  }
+
+  /**
+   * Is the user logged in and admin?
+   * @returns True iff user is logged in and an admin (ADMIN role)
+   */
+  isAdmin(): Observable<boolean> {
+    return this.user$.pipe(
+      map((user) => {
+        if (!user) {
+          return false;
+        }
+        return user.roles.includes('ADMIN');
       })
     );
   }
@@ -94,7 +113,7 @@ export class AuthService {
       return;
     }
 
-    console.log("unauthenticated");
+    console.log('unauthenticated');
     this.auth = undefined;
 
     this.clearStore();
@@ -116,7 +135,7 @@ export class AuthService {
   private onAuth(token: string, refreshToken: string): boolean {
     const auth = this.extractTokenPayload(token, refreshToken);
     if (auth.expires < Date.now() / 1_000) {
-      console.log("token expired")
+      console.log('token expired');
       return false;
     }
 
@@ -132,18 +151,19 @@ export class AuthService {
       throw new Error("unauthenticated, can't refresh token");
     }
 
-    this.api.refreshToken(auth.refreshToken)
-      .pipe(retry({count: 2, delay: 2_000}))
+    this.api
+      .refreshToken(auth.refreshToken)
+      .pipe(retry({ count: 2, delay: 2_000 }))
       .subscribe({
-        next: newToken => {
-          console.log("refreshed token");
+        next: (newToken) => {
+          console.log('refreshed token');
           this.onAuth(newToken, auth.refreshToken);
           this.store();
         },
-        error: err => {
-          console.error("Refresh token failed!", err);
+        error: (err) => {
+          console.error('Refresh token failed!', err);
           this.unauthenticated();
-        }
+        },
       });
   }
 
@@ -155,7 +175,7 @@ export class AuthService {
       const expireTime = payload.exp - payload.iat;
       const refreshIn = expireTime - this.refreshPrior;
       if (refreshIn < 0) {
-        console.warn("Token expiration too soon, not refreshing!");
+        console.warn('Token expiration too soon, not refreshing!');
       } else {
         console.log(`scheduling refresh token in ${refreshIn} seconds`);
         this.refreshHandle = setTimeout(() => {
@@ -166,7 +186,10 @@ export class AuthService {
     }
   }
 
-  private extractTokenPayload(token: string, refreshToken: string): AuthenticatedUser {
+  private extractTokenPayload(
+    token: string,
+    refreshToken: string
+  ): AuthenticatedUser {
     const payload = jwtDecode<UserPayload & JwtPayload>(token);
     if (payload.exp === undefined) {
       throw new Error('exp field missing in token');
@@ -175,11 +198,11 @@ export class AuthService {
       user: {
         email: payload.email,
         id: payload.id,
-        roles: payload.roles
+        roles: payload.roles,
       },
       token,
       refreshToken,
-      expires: payload.exp
+      expires: payload.exp,
     };
   }
 
@@ -192,7 +215,7 @@ export class AuthService {
     if (token != null && refreshToken != null) {
       const accepted = this.onAuth(token, refreshToken);
       if (accepted) {
-        this.refreshToken()
+        this.refreshToken();
         return true;
       } else {
         this.clearStore();
@@ -219,5 +242,4 @@ export class AuthService {
     localStorage.removeItem(this.lsToken);
     localStorage.removeItem(this.lsRefreshToken);
   }
-
 }
