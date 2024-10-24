@@ -1,31 +1,32 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
-import {
-  MatDialog,
-  MatDialogActions,
-  MatDialogContent,
-  MatDialogRef,
-} from '@angular/material/dialog';
-import { MatIconModule } from '@angular/material/icon';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { AuthService } from '../../auth/auth.service';
 import { AdminService, User } from '../admin.service';
-import { UserEditDialogComponent } from '../user-edit/user-edit-dialog.component';
+import { AdminCreateUserDialogComponent } from '../user-create/create-user.component';
+import { UserEditRolesDialogComponent } from '../user-edit-roles/user-edit-roles-dialog.component';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { AdminUpdateUserPasswordDialogComponent } from '../user-update-password/update-password.component';
 
 @Component({
   selector: 'app-admin-panel',
   standalone: true,
   imports: [
     CommonModule,
-    MatTableModule,
-    MatButtonModule,
+    MatDialogModule,
     MatIconModule,
-    MatDialogActions,
-    MatDialogContent,
+    MatButtonModule,
+    MatTableModule,
+    MatMenuModule,
+    AdminCreateUserDialogComponent,
+    UserEditRolesDialogComponent,
   ],
   template: `
     <div class="admin-panel">
-      <h2 mat-dialog-title>User Management</h2>
+      <h2 mat-dialog-title>Admin User Management</h2>
 
       <mat-dialog-content>
         <div class="table-container">
@@ -52,24 +53,33 @@ import { UserEditDialogComponent } from '../user-edit/user-edit-dialog.component
             <ng-container matColumnDef="actions">
               <th mat-header-cell *matHeaderCellDef>Actions</th>
               <td mat-cell *matCellDef="let user">
-                <div class="action-buttons">
-                  <button
-                    mat-icon-button
-                    class="edit-button"
-                    (click)="editUser(user)"
-                    matTooltip="Edit User"
-                  >
-                    <mat-icon>edit</mat-icon>
+                <button
+                  mat-icon-button
+                  [matMenuTriggerFor]="menu"
+                  aria-label="User actions"
+                >
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                  <button mat-menu-item (click)="editUserRoles(user)">
+                    <mat-icon>manage_accounts</mat-icon>
+                    <span>Edit Roles</span>
                   </button>
+                  <button mat-menu-item (click)="changePassword(user)">
+                    <mat-icon>password</mat-icon>
+                    <span>Change Password</span>
+                  </button>
+                  @if ((authService.user$ | async)?.email !== user.email) {
                   <button
-                    mat-icon-button
-                    color="warn"
+                    mat-menu-item
                     (click)="deleteUser(user.id)"
-                    matTooltip="Delete User"
+                    class="delete-action"
                   >
-                    <mat-icon>delete</mat-icon>
+                    <mat-icon color="warn">delete</mat-icon>
+                    <span class="warn-text">Delete User</span>
                   </button>
-                </div>
+                  }
+                </mat-menu>
               </td>
             </ng-container>
 
@@ -153,15 +163,6 @@ import { UserEditDialogComponent } from '../user-edit/user-edit-dialog.component
         }
       }
 
-      .action-buttons {
-        display: flex;
-        gap: 8px;
-
-        .edit-button {
-          color: #1976d2;
-        }
-      }
-
       .dialog-actions {
         padding: 16px 24px;
         background: #fafafa;
@@ -174,13 +175,20 @@ import { UserEditDialogComponent } from '../user-edit/user-edit-dialog.component
         margin: 0;
         max-height: 400px;
       }
+
+      .delete-action {
+        .warn-text {
+          color: #f44336;
+        }
+      }
     `,
   ],
 })
 export class AdminPanelComponent implements OnInit {
-  private dialog = inject(MatDialog);
-  private dialogRef = inject(MatDialogRef<AdminPanelComponent>);
+  private editDialog = inject(MatDialog);
+  private rolesDialog = inject(MatDialog);
   private adminService = inject(AdminService);
+  authService = inject(AuthService);
 
   dataSource = new MatTableDataSource<User>([]);
   displayedColumns = ['email', 'roles', 'actions'];
@@ -196,9 +204,8 @@ export class AdminPanelComponent implements OnInit {
   }
 
   addNewUser() {
-    const dialogRef = this.dialog.open(UserEditDialogComponent, {
+    const dialogRef = this.editDialog.open(AdminCreateUserDialogComponent, {
       width: '400px',
-      data: { mode: 'create' },
     });
 
     dialogRef.afterClosed().subscribe((result) => {
@@ -208,16 +215,23 @@ export class AdminPanelComponent implements OnInit {
     });
   }
 
-  editUser(user: User) {
-    const dialogRef = this.dialog.open(UserEditDialogComponent, {
+  editUserRoles(user: User) {
+    const dialogRef = this.rolesDialog.open(UserEditRolesDialogComponent, {
       width: '400px',
-      data: { mode: 'edit', user },
+      data: { user },
     });
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         this.loadUsers();
       }
+    });
+  }
+
+  changePassword(user: User) {
+    this.rolesDialog.open(AdminUpdateUserPasswordDialogComponent, {
+      width: '400px',
+      data: { user },
     });
   }
 

@@ -33,7 +33,11 @@ export class AdminService {
   }
 
   updatePassword(userId: number, password: string) {
-    return this.http.put(`${this.baseUrl}/${userId}/password`, { password });
+    return this.http.put(
+      `${this.baseUrl}/${userId}/password`,
+      { password },
+      { responseType: 'text' }
+    );
   }
 
   deleteUser(userId: number) {
