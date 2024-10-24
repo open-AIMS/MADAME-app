@@ -1,20 +1,22 @@
 import {environment} from "../../environments/environment";
 import {
-  Injectable,
-  inject,
-  signal,
-  WritableSignal,
+  computed,
+  DestroyRef,
   effect,
+  inject,
+  Injectable,
   INJECTOR,
   runInInjectionContext,
-  DestroyRef, computed, Signal
+  signal,
+  Signal,
+  WritableSignal
 } from '@angular/core';
 import {ArcgisMap} from "@arcgis/map-components-angular";
 import GroupLayer from "@arcgis/core/layers/GroupLayer";
 import TileLayer from "@arcgis/core/layers/TileLayer";
 import {ReefGuideApiService} from "./reef-guide-api.service";
 import {takeUntilDestroyed, toObservable} from "@angular/core/rxjs-interop";
-import {BehaviorSubject, mergeMap, of, Subject, throttleTime} from "rxjs";
+import {BehaviorSubject, mergeMap, of, Subject, takeUntil, throttleTime} from "rxjs";
 import {CriteriaRequest, ReadyRegion} from "./selection-criteria/criteria-request.class";
 import ImageryTileLayer from "@arcgis/core/layers/ImageryTileLayer";
 import {createSingleColorRasterFunction} from "../../util/arcgis/arcgis-layer-util";
@@ -28,6 +30,7 @@ import Editor from "@arcgis/core/widgets/Editor";
 import FeatureLayer from "@arcgis/core/layers/FeatureLayer";
 import {SelectionCriteria, SiteSuitabilityCriteria} from "./reef-guide-api.types";
 import GeoJSONLayer from "@arcgis/core/layers/GeoJSONLayer";
+import {StylableLayer} from "../widgets/layer-style-editor/layer-style-editor.component";
 
 
 interface CriteriaLayer {
@@ -59,7 +62,20 @@ export class ReefGuideMapService {
    */
   httpErrors: Subject<__esri.Error> = new Subject<__esri.Error>();
 
+  /**
+   * Progress on loading incremental map layers, i.e. tiles
+   */
   progress$ = new BehaviorSubject<number>(1);
+
+  private cancelAssess$ = new Subject<void>();
+
+  /**
+   * Site Suitability polygons are loading.
+   *
+   * TODO better map layer management and progress system.
+   * This is too hardcoded, in the future will abstract this, but wait til OpenLayers.
+   */
+  siteSuitabilityLoading = signal(false);
 
   private readonly pendingRequests = new Set<string>();
   private pendingHighPoint: number = 0;
@@ -67,6 +83,7 @@ export class ReefGuideMapService {
   private readonly criteriaGroupLayer = signal<GroupLayer | undefined>(undefined);
   private readonly cogAssessRegionsGroupLayer = signal<GroupLayer | undefined>(undefined);
   private readonly tilesAssessRegionsGroupLayer = signal<GroupLayer | undefined>(undefined);
+  private readonly siteSuitabilityLayer = signal<GeoJSONLayer | undefined>(undefined);
 
   criteriaRequest = signal<CriteriaRequest | undefined>(undefined);
 
@@ -78,11 +95,12 @@ export class ReefGuideMapService {
   /**
    * Layers the user may style
    */
-  styledLayers: Signal<Array<GroupLayer>> = computed(() => {
+  styledLayers: Signal<Array<StylableLayer>> = computed(() => {
     return [
       this.cogAssessRegionsGroupLayer(),
       this.tilesAssessRegionsGroupLayer(),
-      this.criteriaGroupLayer()
+      this.criteriaGroupLayer(),
+      this.siteSuitabilityLayer()
     ].filter(isDefined);
   });
 
@@ -249,28 +267,44 @@ export class ReefGuideMapService {
     // TODO multi-region
     const region = this.config.enabledRegions()[0];
 
-    this.api.getSiteSuitability(region, criteria, siteCriteria).subscribe(geoJson => {
-      console.log('geoJson', geoJson);
+    // TODO signal tap rxjs util
+    this.siteSuitabilityLoading.set(true);
+    this.api.getSiteSuitability(region, criteria, siteCriteria)
+      .pipe(takeUntil(this.cancelAssess$))
+      .subscribe({
+        next: geoJson => {
+          console.log('geoJson', geoJson);
 
-      // TODO just give url directly
-      const blob = new Blob([JSON.stringify(geoJson)], {
-        type: "application/json"
+          // TODO just give url directly
+          const blob = new Blob([JSON.stringify(geoJson)], {
+            type: "application/json"
+          });
+          const url = URL.createObjectURL(blob);
+
+          const layer = new GeoJSONLayer({
+            title: "Site Suitability",
+            url
+          });
+
+          this.map.addLayer(layer);
+          this.siteSuitabilityLayer.set(layer);
+        },
+        error: () => {
+          this.siteSuitabilityLoading.set(false);
+        },
+        complete: () => {
+          // complete or cancel
+          this.siteSuitabilityLoading.set(false);
+        }
       });
-      const url = URL.createObjectURL(blob);
-
-      const layer = new GeoJSONLayer({
-        title: "Site Suitability",
-        url
-      });
-
-      this.map.addLayer(layer);
-    });
   }
 
   /**
-   * Cancel criteria request in progress.
+   * Cancel assess criteria related map layer requests.
    */
-  cancelCriteriaRequest() {
+  cancelAssess() {
+    this.cancelAssess$.next();
+
     const cr = this.criteriaRequest();
     if (cr) {
       cr.cancel();
@@ -283,7 +317,7 @@ export class ReefGuideMapService {
    */
   clearAssessedLayers() {
     // cancel current request if any
-    this.cancelCriteriaRequest();
+    this.cancelAssess();
 
     const groupLayer = this.cogAssessRegionsGroupLayer();
     if (groupLayer) {
@@ -304,6 +338,9 @@ export class ReefGuideMapService {
 
     this.tilesAssessRegionsGroupLayer()?.destroy();
     this.tilesAssessRegionsGroupLayer.set(undefined);
+
+    this.siteSuitabilityLayer()?.destroy();
+    this.siteSuitabilityLayer.set(undefined);
   }
 
   /**
@@ -311,7 +348,7 @@ export class ReefGuideMapService {
    * @param criteria layer id
    * @param show show/hide layer
    */
-  showCriteriaLayer(criteria: string, show=true) {
+  showCriteriaLayer(criteria: string, show = true) {
     const criteriaGroupLayer = this.criteriaGroupLayer();
     if (criteriaGroupLayer) {
       criteriaGroupLayer.visible = true;
@@ -327,7 +364,7 @@ export class ReefGuideMapService {
       this.editor.destroy();
       this.editor = undefined;
     } else {
-    this.setupEditor();
+      this.setupEditor();
     }
   }
 
@@ -487,7 +524,7 @@ Queried
   }
 
   private async addCriteriaLayers() {
-    const { injector } = this;
+    const {injector} = this;
     const layers = this.api.getCriteriaLayers();
 
     const groupLayer = new GroupLayer({
@@ -515,7 +552,7 @@ Queried
 
       effect(() => {
         layer.visible = visible();
-      }, { injector });
+      }, {injector});
     }
 
     this.map.addLayer(groupLayer);

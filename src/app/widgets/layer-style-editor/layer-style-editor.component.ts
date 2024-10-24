@@ -7,7 +7,7 @@ import Layer from "@arcgis/core/layers/Layer";
 
 type BlendModes = BlendLayer["blendMode"];
 
-type GenericLayer = Pick<Layer & BlendLayer, "opacity" | "blendMode">;
+export type StylableLayer = Pick<Layer & BlendLayer, "opacity" | "blendMode" | "id" | "title">;
 
 const BLEND_MODES = ["average",
   "color-burn",
@@ -53,7 +53,7 @@ const BLEND_MODES = ["average",
   styleUrl: './layer-style-editor.component.scss'
 })
 export class LayerStyleEditorComponent {
-  layer = input.required<GenericLayer>();
+  layer = input.required<StylableLayer>();
 
   blendModes = BLEND_MODES;
 

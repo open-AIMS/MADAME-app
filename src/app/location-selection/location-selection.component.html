@@ -1,5 +1,5 @@
 @let busyRegions = mapService.criteriaRequest()?.busyRegions$ | async ;
-@let isBusy = busyRegions && busyRegions.size > 0 ;
+@let isBusy = isAssessing$ | async;
 <mat-drawer-container hasBackdrop="false" class="reef-guide">
   <mat-drawer #drawer>
     @switch (drawerMode()) {
@@ -17,7 +17,7 @@
           <app-selection-criteria #criteria></app-selection-criteria>
           <mat-toolbar>
             @if (isBusy) {
-              <button mat-stroked-button (click)="mapService.cancelCriteriaRequest()">Cancel</button>
+              <button mat-stroked-button (click)="mapService.cancelAssess()">Cancel</button>
 
             } @else if (mapService.showClear()) {
               <button mat-button (click)="mapService.clearAssessedLayers()">Clear</button>
@@ -31,7 +31,7 @@
             }
             @if (isBusy) {
               <mat-progress-spinner mode="indeterminate" diameter="32"
-                                    [matTooltip]="getLoadingRegionsMessage(busyRegions!)">
+                                    [matTooltip]="getLoadingRegionsMessage(busyRegions)">
               </mat-progress-spinner>
             }
             <button mat-flat-button
@@ -87,7 +87,7 @@
           @if (isBusy) {
             <mat-progress-spinner class="criteria-spinner"
                                   mode="indeterminate" diameter="32"
-                                  [matTooltip]="getLoadingRegionsMessage(busyRegions!)">
+                                  [matTooltip]="getLoadingRegionsMessage(busyRegions)">
             </mat-progress-spinner>
           }
         </div>

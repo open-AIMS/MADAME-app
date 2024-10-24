@@ -20,7 +20,9 @@ import {LoginDialogComponent} from "../auth/login-dialog/login-dialog.component"
 import {AuthService} from "../auth/auth.service";
 import {MatMenuModule} from "@angular/material/menu";
 import {MatProgressBar} from "@angular/material/progress-bar";
-import {CriteriaAssessment, SelectionCriteria} from "./reef-guide-api.types";
+import {CriteriaAssessment} from "./reef-guide-api.types";
+import {toObservable} from "@angular/core/rxjs-interop";
+import {combineLatest, map, Observable, of, switchMap} from "rxjs";
 
 type DrawerModes = 'criteria' | 'style';
 
@@ -60,10 +62,32 @@ export class LocationSelectionComponent implements AfterViewInit {
 
   drawerMode = signal<DrawerModes>('criteria');
 
+  /**
+   * Assess related layer is loading.
+   */
+  isAssessing$: Observable<boolean>;
+
   @ViewChild(ArcgisMap) map!: ArcgisMap;
   @ViewChild('drawer') drawer!: MatDrawer;
 
   constructor() {
+    this.isAssessing$ = combineLatest([
+      toObservable(this.mapService.siteSuitabilityLoading),
+      toObservable(this.mapService.criteriaRequest).pipe(
+        switchMap(cr => {
+          if (cr) {
+            return cr.busyRegions$.pipe(
+              map(r => r.size > 0)
+            )
+          } else {
+            return of(false);
+          }
+        }),
+      )
+    ]).pipe(
+      // any busy
+      map(vals => vals.includes(true))
+    );
   }
 
   ngAfterViewInit() {
@@ -100,7 +124,7 @@ export class LocationSelectionComponent implements AfterViewInit {
    * @param assessment
    */
   onAssess(assessment: CriteriaAssessment) {
-    const { criteria, siteSuitability } = assessment;
+    const {criteria, siteSuitability} = assessment;
 
     this.mapService.clearAssessedLayers();
 
@@ -117,7 +141,10 @@ export class LocationSelectionComponent implements AfterViewInit {
     }
   }
 
-  getLoadingRegionsMessage(busyRegions: Set<string>) {
+  getLoadingRegionsMessage(busyRegions: Set<string> | null): string {
+    if (busyRegions == null) {
+      return '';
+    }
     const vals = Array.from(busyRegions).join(', ');
     return `Loading: ${vals}`;
   }
