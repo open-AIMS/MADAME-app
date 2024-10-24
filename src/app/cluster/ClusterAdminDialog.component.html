@@ -1,0 +1,159 @@
+<div class="dialog-container">
+  <h2 mat-dialog-title class="dialog-title">Cluster Administration</h2>
+
+  <mat-dialog-content class="dialog-content">
+    <div class="status-section">
+      <!-- Status Header -->
+      <div class="section-header">
+        <div class="header-content">
+          <h3>Cluster Status</h3>
+          <div class="sync-status" [class.syncing]="isSyncing()">
+            <mat-spinner *ngIf="isSyncing()" diameter="16"></mat-spinner>
+            <span
+              class="sync-info"
+              [matTooltip]="lastSynced() | date : 'medium'"
+            >
+                  Last synced: {{ getLastSyncedText() }}
+              <span class="next-sync" *ngIf="!isSyncing()">
+                    (updates in {{ timeToNextSync() }}s)
+                  </span>
+                </span>
+          </div>
+        </div>
+        <button
+          mat-icon-button
+          [disabled]="isSyncing()"
+          (click)="refreshStatus()"
+          matTooltip="Refresh status"
+        >
+          <mat-icon>refresh</mat-icon>
+        </button>
+      </div>
+
+      <!-- Status Content -->
+      <div *ngIf="status$ | async as status" class="status-content">
+        <!-- Metrics -->
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-label">Running</div>
+            <div class="metric-value">{{ status.runningCount || 0 }}</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Pending</div>
+            <div class="metric-value">{{ status.pendingCount || 0 }}</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Desired</div>
+            <div class="metric-value">{{ status.desiredCount || 0 }}</div>
+          </div>
+        </div>
+
+        <mat-divider class="my-4"></mat-divider>
+
+        <!-- Deployments -->
+        <div *ngIf="status.deployments?.length" class="deployments-section">
+          <h4>Active Deployments</h4>
+          <div class="scrollable-section">
+            <div
+              *ngFor="let deployment of status.deployments"
+              class="deployment-card"
+            >
+              <div class="deployment-header">
+                    <span
+                      class="status-badge"
+                      [class.status-primary]="deployment.status === 'PRIMARY'"
+                    >
+                      {{ deployment.status }}
+                    </span>
+                <span class="deployment-count">
+                      {{ deployment.runningCount }}/{{
+                    deployment.desiredCount
+                  }}
+                  running
+                    </span>
+              </div>
+              <div
+                *ngIf="deployment.rolloutState"
+                class="deployment-state text-truncate"
+                [matTooltip]="deployment.rolloutStateReason"
+              >
+                {{ deployment.rolloutStateReason }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <mat-divider class="my-4"></mat-divider>
+
+        <!-- Events -->
+        <div *ngIf="status.events?.length" class="events-section">
+          <h4>Recent Events</h4>
+          <div class="scrollable-section">
+            <div *ngFor="let event of status.events" class="event-item">
+                  <span class="event-time">{{
+                      event.createdAt | date : "short"
+                    }}</span>
+              <span
+                class="event-message text-truncate"
+                [matTooltip]="event.message"
+              >
+                    {{ event.message }}
+                  </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <mat-divider class="my-4"></mat-divider>
+
+    <!-- Controls -->
+    <div class="controls-section">
+      <h3>Scaling Controls</h3>
+      <form [formGroup]="scaleForm" class="scale-form">
+        <mat-form-field class="w-full">
+          <mat-label>Desired Count</mat-label>
+          <input matInput type="number" formControlName="desiredCount" />
+          <mat-error
+            *ngIf="scaleForm.get('desiredCount')?.errors?.['required']"
+          >
+            Required
+          </mat-error>
+          <mat-error
+            *ngIf="scaleForm.get('desiredCount')?.errors?.['min'] || scaleForm.get('desiredCount')?.errors?.['max']"
+          >
+            Must be between 0 and 10
+          </mat-error>
+        </mat-form-field>
+
+        <div class="action-buttons">
+          <button
+            mat-raised-button
+            color="primary"
+            [disabled]="scaleForm.invalid || busy"
+            (click)="scaleCluster()"
+            matTooltip="Scale the cluster to the specified number of instances"
+            matTooltipPosition="above"
+          >
+            Scale Cluster
+          </button>
+
+          <button
+            mat-raised-button
+            color="accent"
+            [disabled]="busy"
+            (click)="redeployCluster()"
+            matTooltip="Force a new deployment using the latest container image"
+            matTooltipPosition="above"
+          >
+            Force Redeploy
+          </button>
+        </div>
+      </form>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button [mat-dialog-close]>Close</button>
+  </mat-dialog-actions>
+</div>

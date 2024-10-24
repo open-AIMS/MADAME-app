@@ -1,5 +1,5 @@
-@let busyRegions = mapService.criteriaRequest()?.busyRegions$ | async ; @let
-isBusy = isAssessing$ | async;
+@let busyRegions = mapService.criteriaRequest()?.busyRegions$ | async ;
+@let isBusy = isAssessing$ | async;
 <mat-drawer-container hasBackdrop="false" class="reef-guide">
   <mat-drawer #drawer>
     @switch (drawerMode()) { @case ('criteria') {
@@ -134,7 +134,6 @@ isBusy = isAssessing$ | async;
         matTooltipPosition="right"
         matTooltip="Manage Cluster"
         *ngIf="user?.roles?.includes('ADMIN')"
-        matTooltip="Cluster Admin"
         (click)="openClusterAdmin()"
       >
         <mat-icon>dns</mat-icon>

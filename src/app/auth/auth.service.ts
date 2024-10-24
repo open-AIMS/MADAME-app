@@ -35,7 +35,6 @@ export class AuthService {
     this._authenticated
   ).pipe(
     map(isAuthenticated => {
-      console.log(this.auth?.user);
       return this.auth?.user;
     })
   );
@@ -125,6 +124,7 @@ export class AuthService {
       return false;
     }
 
+    console.log('onAuth', auth);
     this.auth = auth;
     this._authenticated.set(true);
     this.scheduleTokenRefresh(token);
