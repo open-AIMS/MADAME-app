@@ -49,7 +49,7 @@ export class ReefGuideApiService {
   getSiteSuitability(region: string, criteria: SelectionCriteria, suitabilityCriteria: SiteSuitabilityCriteria): Observable<any> {
     const rtype = 'slopes';
     const url = new URL(`/suitability/site-suitability/${region}/${rtype}`, this.base);
-    this.addCriteriaToParamsV2(url, criteria);
+    this.addCriteriaToParams(url, criteria);
     for (const [key, value] of Object.entries(suitabilityCriteria)) {
       url.searchParams.set(key, value);
     }
@@ -57,24 +57,6 @@ export class ReefGuideApiService {
   }
 
   private addCriteriaToParams(url: URL | URLSearchParams, criteria: SelectionCriteria) {
-    const criteriaNames: Array<string> = [];
-    const lb: Array<number> = [];
-    const ub: Array<number> = [];
-
-    for (let name in criteria) {
-      criteriaNames.push(name);
-      const [lower, upper] = criteria[name];
-      lb.push(lower);
-      ub.push(upper);
-    }
-
-    const searchParams = url instanceof URL ? url.searchParams : url;
-    searchParams.set('criteria_names', criteriaNames.join(','));
-    searchParams.set('lb', lb.join(','));
-    searchParams.set('ub', ub.join(','));
-  }
-
-  private addCriteriaToParamsV2(url: URL | URLSearchParams, criteria: SelectionCriteria) {
     const searchParams = url instanceof URL ? url.searchParams : url;
     for (const name in criteria) {
       const [lower, upper] = criteria[name];
