@@ -1,4 +1,4 @@
-import { AsyncPipe, CommonModule } from '@angular/common';
+import {AsyncPipe, CommonModule} from '@angular/common';
 import {
   AfterViewInit,
   Component,
@@ -6,33 +6,33 @@ import {
   signal,
   ViewChild,
 } from '@angular/core';
-import { toObservable } from '@angular/core/rxjs-interop';
-import { MatButtonModule } from '@angular/material/button';
-import { MatDialog } from '@angular/material/dialog';
-import { MatAccordion, MatExpansionModule } from '@angular/material/expansion';
-import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatProgressBar } from '@angular/material/progress-bar';
-import { MatProgressSpinner } from '@angular/material/progress-spinner';
-import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatTooltip } from '@angular/material/tooltip';
-import { ArcgisMapCustomEvent } from '@arcgis/map-components';
+import {toObservable} from '@angular/core/rxjs-interop';
+import {MatButtonModule} from '@angular/material/button';
+import {MatDialog} from '@angular/material/dialog';
+import {MatAccordion, MatExpansionModule} from '@angular/material/expansion';
+import {MatIconModule} from '@angular/material/icon';
+import {MatMenuModule} from '@angular/material/menu';
+import {MatProgressBar} from '@angular/material/progress-bar';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {MatDrawer, MatSidenavModule} from '@angular/material/sidenav';
+import {MatToolbarModule} from '@angular/material/toolbar';
+import {MatTooltip} from '@angular/material/tooltip';
+import {ArcgisMapCustomEvent} from '@arcgis/map-components';
 import {
   ArcgisMap,
   ComponentLibraryModule,
 } from '@arcgis/map-components-angular';
-import { combineLatest, map, Observable, of, switchMap } from 'rxjs';
-import { AdminPanelComponent } from '../admin/admin-panel/admin-panel.component';
-import { AuthService } from '../auth/auth.service';
-import { LoginDialogComponent } from '../auth/login-dialog/login-dialog.component';
-import { LayerStyleEditorComponent } from '../widgets/layer-style-editor/layer-style-editor.component';
-import { ConfigDialogComponent } from './config-dialog/config-dialog.component';
-import { ReefGuideApiService } from './reef-guide-api.service';
-import { CriteriaAssessment } from './reef-guide-api.types';
-import { ReefGuideConfigService } from './reef-guide-config.service';
-import { ReefGuideMapService } from './reef-guide-map.service';
-import { SelectionCriteriaComponent } from './selection-criteria/selection-criteria.component';
+import {combineLatest, map, Observable, of, switchMap} from 'rxjs';
+import {AdminPanelComponent} from '../admin/admin-panel/admin-panel.component';
+import {AuthService} from '../auth/auth.service';
+import {LoginDialogComponent} from '../auth/login-dialog/login-dialog.component';
+import {LayerStyleEditorComponent} from '../widgets/layer-style-editor/layer-style-editor.component';
+import {ConfigDialogComponent} from './config-dialog/config-dialog.component';
+import {ReefGuideApiService} from './reef-guide-api.service';
+import {CriteriaAssessment} from './reef-guide-api.types';
+import {ReefGuideConfigService} from './reef-guide-config.service';
+import {ReefGuideMapService} from './reef-guide-map.service';
+import {SelectionCriteriaComponent} from './selection-criteria/selection-criteria.component';
 
 type DrawerModes = 'criteria' | 'style';
 
@@ -85,9 +85,9 @@ export class LocationSelectionComponent implements AfterViewInit {
     this.isAssessing$ = combineLatest([
       toObservable(this.mapService.siteSuitabilityLoading),
       toObservable(this.mapService.criteriaRequest).pipe(
-        switchMap((cr) => {
+        switchMap(cr => {
           if (cr) {
-            return cr.busyRegions$.pipe(map((r) => r.size > 0));
+            return cr.busyRegions$.pipe(map(r => r.size > 0));
           } else {
             return of(false);
           }
@@ -95,7 +95,7 @@ export class LocationSelectionComponent implements AfterViewInit {
       ),
     ]).pipe(
       // any busy
-      map((vals) => vals.includes(true))
+      map(vals => vals.includes(true))
     );
   }
 
@@ -141,7 +141,7 @@ export class LocationSelectionComponent implements AfterViewInit {
    * @param assessment
    */
   onAssess(assessment: CriteriaAssessment) {
-    const { criteria, siteSuitability } = assessment;
+    const {criteria, siteSuitability} = assessment;
 
     this.mapService.clearAssessedLayers();
 

@@ -1,9 +1,9 @@
-import { inject, Injectable, Signal, signal } from '@angular/core';
-import { WebApiService } from '../../api/web-api.service';
-import { UserPayload, UserProfile } from '../../api/web-api.types';
-import { map, Observable, of, retry, switchMap } from 'rxjs';
-import { toObservable } from '@angular/core/rxjs-interop';
-import { jwtDecode, JwtPayload } from 'jwt-decode';
+import {inject, Injectable, Signal, signal} from '@angular/core';
+import {WebApiService} from '../../api/web-api.service';
+import {UserPayload, UserProfile} from '../../api/web-api.types';
+import {map, Observable, of, retry, switchMap} from 'rxjs';
+import {toObservable} from '@angular/core/rxjs-interop';
+import {jwtDecode, JwtPayload} from 'jwt-decode';
 
 export type AuthenticatedUser = {
   user: UserPayload;
@@ -34,7 +34,7 @@ export class AuthService {
   user$: Observable<UserPayload | undefined> = toObservable(
     this._authenticated
   ).pipe(
-    map((isAuthenticated) => {
+    map(isAuthenticated => {
       return this.auth?.user;
     })
   );
@@ -46,7 +46,7 @@ export class AuthService {
   profile$: Observable<UserProfile | undefined> = toObservable(
     this._authenticated
   ).pipe(
-    switchMap((isAuthenticated) => {
+    switchMap(isAuthenticated => {
       if (isAuthenticated) {
         return this.api.getProfile();
       } else {
@@ -67,8 +67,8 @@ export class AuthService {
   }
 
   login(email: string, password: string): Observable<void> {
-    return this.api.login({ email, password }).pipe(
-      map((auth) => {
+    return this.api.login({email, password}).pipe(
+      map(auth => {
         if (this.onAuth(auth.token, auth.refreshToken)) {
           this.store();
         }
@@ -84,7 +84,7 @@ export class AuthService {
    */
   isAdmin(): Observable<boolean> {
     return this.user$.pipe(
-      map((user) => {
+      map(user => {
         if (!user) {
           return false;
         }
@@ -153,14 +153,14 @@ export class AuthService {
 
     this.api
       .refreshToken(auth.refreshToken)
-      .pipe(retry({ count: 2, delay: 2_000 }))
+      .pipe(retry({count: 2, delay: 2_000}))
       .subscribe({
-        next: (newToken) => {
+        next: newToken => {
           console.log('refreshed token');
           this.onAuth(newToken, auth.refreshToken);
           this.store();
         },
-        error: (err) => {
+        error: err => {
           console.error('Refresh token failed!', err);
           this.unauthenticated();
         },
@@ -233,7 +233,7 @@ export class AuthService {
     if (this.auth === undefined) {
       return;
     }
-    const { token, refreshToken } = this.auth;
+    const {token, refreshToken} = this.auth;
     localStorage.setItem(this.lsToken, token);
     localStorage.setItem(this.lsRefreshToken, refreshToken);
   }
