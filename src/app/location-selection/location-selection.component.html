@@ -129,15 +129,6 @@
       >
         <mat-icon>edit_note</mat-icon>
       </button>
-      <button
-        mat-mini-fab
-        matTooltipPosition="right"
-        matTooltip="Manage Cluster"
-        *ngIf="user?.roles?.includes('ADMIN')"
-        (click)="openClusterAdmin()"
-      >
-        <mat-icon>dns</mat-icon>
-      </button>
     </div>
     <div class="center-container">
       @let progress = mapService.progress$ | async; @if (progress != null) {
@@ -163,6 +154,14 @@
       <button mat-menu-item (click)="openConfig()">
         <mat-icon>settings</mat-icon>
         <span>Settings</span>
+      </button>
+      <button
+        mat-menu-item
+        *ngIf="user?.roles?.includes('ADMIN')"
+        (click)="openClusterAdmin()"
+      >
+        <mat-icon>dns</mat-icon>
+        <span>Manage Cluster</span>
       </button>
       <button mat-menu-item (click)="authService.logout()">
         <mat-icon>logout</mat-icon>
