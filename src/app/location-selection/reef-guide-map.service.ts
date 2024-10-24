@@ -19,7 +19,11 @@ import {takeUntilDestroyed, toObservable} from "@angular/core/rxjs-interop";
 import {BehaviorSubject, mergeMap, of, Subject, takeUntil, throttleTime} from "rxjs";
 import {CriteriaRequest, ReadyRegion} from "./selection-criteria/criteria-request.class";
 import ImageryTileLayer from "@arcgis/core/layers/ImageryTileLayer";
-import {createSingleColorRasterFunction} from "../../util/arcgis/arcgis-layer-util";
+import {
+  ColorRGBA,
+  createGlobalPolygonLayer,
+  createSingleColorRasterFunction
+} from "../../util/arcgis/arcgis-layer-util";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {ReefGuideConfigService} from "./reef-guide-config.service";
 import WebTileLayer from "@arcgis/core/layers/WebTileLayer";
@@ -54,6 +58,8 @@ export class ReefGuideMapService {
   // map is set shortly after construction
   private map!: ArcgisMap;
   private editor?: __esri.Editor;
+
+  assessColor: ColorRGBA = [241, 192, 12, 1];
 
   criteriaLayers: Record<string, CriteriaLayer> = {};
 
@@ -236,8 +242,10 @@ export class ReefGuideMapService {
 
     const tilesGroup = new GroupLayer({
       title,
-      blendMode: 'destination-out'
+      // blendMode: 'destination-out',
+      visibilityMode: 'inherited'
     });
+
     this.tilesAssessRegionsGroupLayer.set(tilesGroup);
     this.map.addLayer(tilesGroup);
 
@@ -251,16 +259,25 @@ export class ReefGuideMapService {
     const urlTemplate = this.api.tileUrlForCriteria(region, criteria);
     console.log('urlTemplate', urlTemplate);
 
+    // Need a group for each layer and the graphic behind it to blend with.
+    const groupLayer = new GroupLayer({
+      title: region,
+      listMode: 'hide-children',
+    });
+    groupLayer.add(createGlobalPolygonLayer(this.assessColor));
+
     const layer = new WebTileLayer({
       title: region,
       urlTemplate,
       maxScale: 100,
       // TODO minScale, different units than zoom
       // https://developers.arcgis.com/javascript/latest/api-reference/esri-layers-WebTileLayer.html#minScale
-      // blendMode: 'destination-out'
+      blendMode: 'destination-in',
       // effect also available.
     });
-    this.tilesAssessRegionsGroupLayer()!.add(layer);
+    groupLayer.add(layer);
+
+    this.tilesAssessRegionsGroupLayer()!.add(groupLayer);
   }
 
   addSiteSuitabilityLayer(criteria: SelectionCriteria, siteCriteria: SiteSuitabilityCriteria) {
@@ -390,7 +407,7 @@ export class ReefGuideMapService {
       url: region.cogUrl,
       opacity: 0.5,
       // gold color
-      rasterFunction: createSingleColorRasterFunction([1, 241, 192, 12])
+      rasterFunction: createSingleColorRasterFunction(this.assessColor)
     });
     groupLayer.add(layer);
   }
