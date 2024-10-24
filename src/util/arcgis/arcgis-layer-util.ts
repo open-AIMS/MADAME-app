@@ -118,6 +118,7 @@ export function createSingleColorRasterFunction(color: ColorRGBA) {
  */
 export function createGlobalPolygonLayer(color: ColorRGBA) {
   const graphicsLayer = new GraphicsLayer({
+    id: 'global_polygon_layer',
     title: ''
   });
 
@@ -140,4 +141,20 @@ export function createGlobalPolygonLayer(color: ColorRGBA) {
   graphicsLayer.add(polygonGraphic);
 
   return graphicsLayer;
+}
+
+export function changePolygonLayerColor(layer: GraphicsLayer, color: string) {
+  const polygon = layer.graphics.at(0);
+  polygon.symbol = new SimpleFillSymbol({
+    color
+  });
+}
+
+/**
+ * Get hex color value from polygon layer.
+ * @param layer
+ */
+export function getPolygonLayerColor(layer: GraphicsLayer): string {
+  const polygon = layer.graphics.at(0);
+  return polygon.symbol.color.toHex();
 }
