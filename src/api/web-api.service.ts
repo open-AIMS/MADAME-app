@@ -86,10 +86,18 @@ export class WebApiService {
   }
 
   scaleCluster(desiredCount: number) {
-    return this.http.post<void>(`${this.base}/admin/scale`, {desiredCount});
+    return this.http.post(
+      `${this.base}/admin/scale`,
+      {desiredCount},
+      {responseType: "text"}
+    );
   }
 
   redeployCluster() {
-    return this.http.post<void>(`${this.base}/admin/redeploy`, {});
+    return this.http.post(
+      `${this.base}/admin/redeploy`,
+      {},
+      {responseType: "text"}
+    );
   }
 }

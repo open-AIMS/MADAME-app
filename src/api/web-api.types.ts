@@ -10,11 +10,13 @@ export type UserPayload = {
   email: string;
   id: number;
   roles: Array<string>;
-}
+};
 
 export type UserProfile = {
   user: UserPayload;
-}
+};
+
+export type UserRole = 'ADMIN';
 
 export type Polygon = any;
 
