@@ -1,22 +1,22 @@
-import { Component, inject, signal } from '@angular/core';
+import {Component, inject, signal} from '@angular/core';
 import {
   FormControl,
   FormGroup,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { MatButton } from '@angular/material/button';
-import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { merge, take } from 'rxjs';
-import { extractErrorMessage } from '../../../api/api-util';
-import { WebApiService } from '../../../api/web-api.service';
-import { AuthService } from '../auth.service';
+import {MatButton} from '@angular/material/button';
+import {MatDialogModule, MatDialogRef} from '@angular/material/dialog';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {merge, take} from 'rxjs';
+import {extractErrorMessage} from '../../../api/api-util';
+import {WebApiService} from '../../../api/web-api.service';
+import {AuthService} from '../auth.service';
 
 type Modes = 'register' | 'login';
 
-type Credentials = { email: string; password: string };
+type Credentials = {email: string; password: string};
 
 @Component({
   selector: 'app-login-dialog',
@@ -75,7 +75,7 @@ export class LoginDialogComponent {
         this.busy.set(false);
         this.dialogRef.close();
       },
-      error: (err) => this.handleError(err),
+      error: err => this.handleError(err),
     });
   }
 
@@ -87,7 +87,7 @@ export class LoginDialogComponent {
         console.log('registered, logging in', value.email);
         this.login(value);
       },
-      error: (err) => this.handleError(err),
+      error: err => this.handleError(err),
     });
   }
 
@@ -96,7 +96,7 @@ export class LoginDialogComponent {
     const errorMessage = extractErrorMessage(error);
     this.errorMessage.set(errorMessage);
 
-    const { email, password } = this.form.controls;
+    const {email, password} = this.form.controls;
 
     if (this.emailErrors.includes(errorMessage)) {
       email.setErrors({
@@ -124,7 +124,7 @@ export class LoginDialogComponent {
    * which clears custom errors on controls.
    */
   private resetErrors() {
-    const { email, password } = this.form.controls;
+    const {email, password} = this.form.controls;
     this.errorMessage.set(undefined);
     email.updateValueAndValidity();
     password.updateValueAndValidity();
