@@ -46,6 +46,6 @@ jobs:
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
-              repo: context.repo.name,
+              repo: context.repo.repo,
               body: '❌ Code formatting check failed. Please run `npm run format:write` locally and commit the changes.'
             })
