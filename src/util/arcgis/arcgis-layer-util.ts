@@ -134,14 +134,14 @@ export function createGlobalPolygonLayer(color: ColorRGBA) {
   });
 
   const polygon = new Polygon({
+    // `as any` workaround. rings argument works, but types not happy
     rings: [
-      // @ts-expect-error
       [-180, -90],
       [180, -90],
       [180, 90],
       [-180, 90],
       [-180, -90],
-    ],
+    ] as any,
   });
 
   const fillSymbol = new SimpleFillSymbol({
