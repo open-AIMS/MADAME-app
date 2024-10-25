@@ -8,9 +8,8 @@ describe('ReefMapComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ReefMapComponent]
-    })
-    .compileComponents();
+      imports: [ReefMapComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ReefMapComponent);
     component = fixture.componentInstance;

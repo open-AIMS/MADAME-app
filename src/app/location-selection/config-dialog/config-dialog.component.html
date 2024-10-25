@@ -17,15 +17,17 @@
       @if (arcgisMap.value === 'CUSTOM') {
         <mat-form-field>
           <mat-label>ArcGIS Map Item ID</mat-label>
-          <input matInput [formControl]="mapItemId">
+          <input matInput [formControl]="mapItemId" />
         </mat-form-field>
       }
 
       @if (arcgisItemUrl | async; as url) {
-        <a mat-icon-button
-           [href]="url"
-           target="_blank"
-           matTooltip="Open item on ArcGIS">
+        <a
+          mat-icon-button
+          [href]="url"
+          target="_blank"
+          matTooltip="Open item on ArcGIS"
+        >
           <mat-icon>map</mat-icon>
         </a>
       }
@@ -39,7 +41,7 @@
       </mat-selection-list>
     </mat-tab>
     <mat-tab label="Developer">
-      <mat-form-field style="width: 100%; margin-top: 16px;">
+      <mat-form-field style="width: 100%; margin-top: 16px">
         <mat-label>Layer Type for Assess</mat-label>
         <mat-select multiple [formControl]="assessLayerTypes">
           <mat-option value="tile">Tiles</mat-option>
@@ -47,16 +49,19 @@
         </mat-select>
       </mat-form-field>
 
-      <mat-checkbox [formControl]="parallelRegionRequests"
-                    matTooltip="Request region layers simultaneously">
+      <mat-checkbox
+        [formControl]="parallelRegionRequests"
+        matTooltip="Request region layers simultaneously"
+      >
         Parallel COG requests
       </mat-checkbox>
 
-      <mat-checkbox [formControl]="mockCOGS"
-                    matTooltip="Always use mock COGs regardless of criteria selection">
+      <mat-checkbox
+        [formControl]="mockCOGS"
+        matTooltip="Always use mock COGs regardless of criteria selection"
+      >
         Mock COG Requests
       </mat-checkbox>
-
     </mat-tab>
   </mat-tab-group>
 </mat-dialog-content>
@@ -64,4 +69,3 @@
   <button mat-button (click)="dialogRef.close()">Cancel</button>
   <button mat-flat-button (click)="save()">Save</button>
 </mat-dialog-actions>
-

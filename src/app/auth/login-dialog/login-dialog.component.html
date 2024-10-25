@@ -5,18 +5,28 @@
   @if (m === 'register') {
     <p>Sign up with a new account.</p>
   }
-<!-- FIXME enter on inputs (ngSubmit) not working -->
+  <!-- FIXME enter on inputs (ngSubmit) not working -->
   <form [formGroup]="form" (ngSubmit)="onSubmit()">
-  <mat-form-field>
-    <mat-label>Email</mat-label>
-    <input formControlName="email" type="email" matInput autocomplete="username"
-           (keydown.enter)="onSubmit()">
-  </mat-form-field>
-  <mat-form-field>
-    <mat-label>Password</mat-label>
-    <input formControlName="password" type="password" matInput autocomplete="current-password"
-           (keydown.enter)="onSubmit()">
-  </mat-form-field>
+    <mat-form-field>
+      <mat-label>Email</mat-label>
+      <input
+        formControlName="email"
+        type="email"
+        matInput
+        autocomplete="username"
+        (keydown.enter)="onSubmit()"
+      />
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Password</mat-label>
+      <input
+        formControlName="password"
+        type="password"
+        matInput
+        autocomplete="current-password"
+        (keydown.enter)="onSubmit()"
+      />
+    </mat-form-field>
   </form>
   @if (errorMessage()) {
     <p class="error-message">{{ errorMessage() }}</p>
@@ -29,6 +39,11 @@
     <button mat-button (click)="mode.set('login')">I have an account</button>
   }
 
-  <button mat-flat-button [disabled]="!form.valid || busy()"
-          (click)="onSubmit()">{{ actionLabel }}</button>
+  <button
+    mat-flat-button
+    [disabled]="!form.valid || busy()"
+    (click)="onSubmit()"
+  >
+    {{ actionLabel }}
+  </button>
 </mat-dialog-actions>

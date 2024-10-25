@@ -6,7 +6,9 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "format:check": "prettier --check \"src/**/*.{ts,js,json,html,scss,md}\" \"!**/node_modules/**\" \"!**/dist/**\"",
+    "format:write": "prettier --write \"src/**/*.{ts,js,json,html,scss,md}\" \"!**/node_modules/**\" \"!**/dist/**\""
   },
   "private": true,
   "dependencies": {

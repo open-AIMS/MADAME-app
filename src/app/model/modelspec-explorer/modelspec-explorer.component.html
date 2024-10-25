@@ -1,82 +1,95 @@
 @if (data(); as data) {
-<mat-tab-group>
-  <mat-tab label="Intervention">
-    <ng-template matTabContent>
-      <app-table [data]="componentRows()['Intervention']"
-        [displayedColumns]="displayedColumns()"></app-table>
-    </ng-template>
-  </mat-tab>
-  <mat-tab label="Environment">
-    <ng-template matTabContent>
-      <app-table [data]="componentRows()['EnvironmentalLayer']"
-        [displayedColumns]="displayedColumns()"></app-table>
-    </ng-template>
-  </mat-tab>
-  <mat-tab label="Coral">
-    <!-- TODO heritability field by itself? -->
-    <ng-template matTabContent>
-      <table mat-table [dataSource]="coralDataSource">
-        <ng-container matColumnDef="name">
-          <th mat-header-cell *matHeaderCellDef>Coral Group</th>
-          <td mat-cell *matCellDef="let row">{{ row.name }}</td>
-        </ng-container>
+  <mat-tab-group>
+    <mat-tab label="Intervention">
+      <ng-template matTabContent>
+        <app-table
+          [data]="componentRows()['Intervention']"
+          [displayedColumns]="displayedColumns()"
+        ></app-table>
+      </ng-template>
+    </mat-tab>
+    <mat-tab label="Environment">
+      <ng-template matTabContent>
+        <app-table
+          [data]="componentRows()['EnvironmentalLayer']"
+          [displayedColumns]="displayedColumns()"
+        ></app-table>
+      </ng-template>
+    </mat-tab>
+    <mat-tab label="Coral">
+      <!-- TODO heritability field by itself? -->
+      <ng-template matTabContent>
+        <table mat-table [dataSource]="coralDataSource">
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Coral Group</th>
+            <td mat-cell *matCellDef="let row">{{ row.name }}</td>
+          </ng-container>
 
-        <ng-container matColumnDef="growth_rate">
-          <th mat-header-cell *matHeaderCellDef>Growth Rate</th>
-          <td mat-cell *matCellDef="let row">{{ row.growth_rate.val }}</td>
-        </ng-container>
+          <ng-container matColumnDef="growth_rate">
+            <th mat-header-cell *matHeaderCellDef>Growth Rate</th>
+            <td mat-cell *matCellDef="let row">{{ row.growth_rate.val }}</td>
+          </ng-container>
 
-        <ng-container matColumnDef="fecundity">
-          <th mat-header-cell *matHeaderCellDef>Fecundity</th>
-          <td mat-cell *matCellDef="let row">{{ row.fecundity.val }}</td>
-        </ng-container>
+          <ng-container matColumnDef="fecundity">
+            <th mat-header-cell *matHeaderCellDef>Fecundity</th>
+            <td mat-cell *matCellDef="let row">{{ row.fecundity.val }}</td>
+          </ng-container>
 
-        <ng-container matColumnDef="mean_colony_diameter_m">
-          <th mat-header-cell *matHeaderCellDef>Mean Colony Diameter (m)</th>
-          <td mat-cell *matCellDef="let row">{{ row.mean_colony_diameter_m.val }}</td>
-        </ng-container>
+          <ng-container matColumnDef="mean_colony_diameter_m">
+            <th mat-header-cell *matHeaderCellDef>Mean Colony Diameter (m)</th>
+            <td mat-cell *matCellDef="let row">
+              {{ row.mean_colony_diameter_m.val }}
+            </td>
+          </ng-container>
 
-        <ng-container matColumnDef="mb_rate">
-          <th mat-header-cell *matHeaderCellDef>MB Rate</th>
-          <td mat-cell *matCellDef="let row">{{ row.mb_rate.val }}</td>
-        </ng-container>
+          <ng-container matColumnDef="mb_rate">
+            <th mat-header-cell *matHeaderCellDef>MB Rate</th>
+            <td mat-cell *matCellDef="let row">{{ row.mb_rate.val }}</td>
+          </ng-container>
 
-        <ng-container matColumnDef="dist_mean">
-          <th mat-header-cell *matHeaderCellDef>Dist Mean</th>
-          <td mat-cell *matCellDef="let row">{{ row.dist_mean.val }}</td>
-        </ng-container>
+          <ng-container matColumnDef="dist_mean">
+            <th mat-header-cell *matHeaderCellDef>Dist Mean</th>
+            <td mat-cell *matCellDef="let row">{{ row.dist_mean.val }}</td>
+          </ng-container>
 
-        <ng-container matColumnDef="dist_std">
-          <th mat-header-cell *matHeaderCellDef>Dist STD</th>
-          <td mat-cell *matCellDef="let row">{{ row.dist_std.val }}</td>
-        </ng-container>
+          <ng-container matColumnDef="dist_std">
+            <th mat-header-cell *matHeaderCellDef>Dist STD</th>
+            <td mat-cell *matCellDef="let row">{{ row.dist_std.val }}</td>
+          </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="coralColumns; sticky: true"></tr>
-        <tr mat-row *matRowDef="let row; columns: coralColumns;"></tr>
-      </table>
-    </ng-template>
-  </mat-tab>
-  <mat-tab label="Misc">
-    <ng-template matTabContent>
-      <h3 class="mat-headline-small">Seed Criteria Weights</h3>
-      <app-table [data]="componentRows()['SeedCriteriaWeights']"
-        [displayedColumns]="displayedColumns()"></app-table>
+          <tr mat-header-row *matHeaderRowDef="coralColumns; sticky: true"></tr>
+          <tr mat-row *matRowDef="let row; columns: coralColumns"></tr>
+        </table>
+      </ng-template>
+    </mat-tab>
+    <mat-tab label="Misc">
+      <ng-template matTabContent>
+        <h3 class="mat-headline-small">Seed Criteria Weights</h3>
+        <app-table
+          [data]="componentRows()['SeedCriteriaWeights']"
+          [displayedColumns]="displayedColumns()"
+        ></app-table>
 
-      <h3 class="mat-headline-small">Fog Criteria Weights</h3>
-      <app-table [data]="componentRows()['FogCriteriaWeights']"
-        [displayedColumns]="displayedColumns()"></app-table>
+        <h3 class="mat-headline-small">Fog Criteria Weights</h3>
+        <app-table
+          [data]="componentRows()['FogCriteriaWeights']"
+          [displayedColumns]="displayedColumns()"
+        ></app-table>
 
-      <h3 class="mat-headline-small">Depth Thresholds</h3>
-      <app-table [data]="componentRows()['decision.DepthThresholds']"
-        [displayedColumns]="displayedColumns()"></app-table>
-
-    </ng-template>
-  </mat-tab>
-  <mat-tab label="Raw Table">
-    <ng-template matTabContent>
-      <app-table [data]="modelspecTable().rows"
-        [displayedColumns]="modelspecTable().columns"></app-table>
-    </ng-template>
-  </mat-tab>
-</mat-tab-group>
+        <h3 class="mat-headline-small">Depth Thresholds</h3>
+        <app-table
+          [data]="componentRows()['decision.DepthThresholds']"
+          [displayedColumns]="displayedColumns()"
+        ></app-table>
+      </ng-template>
+    </mat-tab>
+    <mat-tab label="Raw Table">
+      <ng-template matTabContent>
+        <app-table
+          [data]="modelspecTable().rows"
+          [displayedColumns]="modelspecTable().columns"
+        ></app-table>
+      </ng-template>
+    </mat-tab>
+  </mat-tab-group>
 }

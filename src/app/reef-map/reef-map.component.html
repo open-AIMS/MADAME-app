@@ -1,7 +1,9 @@
-<arcgis-map [itemId]="mapItemId"
-            (arcgisViewReadyChange)="arcgisViewReadyChange($event)"
-            (arcgisViewLayerviewCreate)="arcgisViewLayerviewCreate($event)"
-            (arcgisViewClick)="arcgisViewClick($event)">
+<arcgis-map
+  [itemId]="mapItemId"
+  (arcgisViewReadyChange)="arcgisViewReadyChange($event)"
+  (arcgisViewLayerviewCreate)="arcgisViewLayerviewCreate($event)"
+  (arcgisViewClick)="arcgisViewClick($event)"
+>
   <arcgis-fullscreen position="top-right"></arcgis-fullscreen>
   <arcgis-zoom position="top-right"></arcgis-zoom>
   <arcgis-expand position="top-left">
@@ -13,9 +15,16 @@
 </arcgis-map>
 <div class="timestep-container">
   @if (yearExtent$ | async; as extent) {
-  <app-time-slider [min]="extent[0]" [max]="extent[1]" (valueChange)="onYearRange($event)"></app-time-slider>
+    <app-time-slider
+      [min]="extent[0]"
+      [max]="extent[1]"
+      (valueChange)="onYearRange($event)"
+    ></app-time-slider>
   }
-  <mat-progress-spinner mode="indeterminate" diameter="24"
-                        [style.visibility]="(timestepLoading$ | async) ? 'visible' : 'hidden'">
+  <mat-progress-spinner
+    mode="indeterminate"
+    diameter="24"
+    [style.visibility]="(timestepLoading$ | async) ? 'visible' : 'hidden'"
+  >
   </mat-progress-spinner>
 </div>

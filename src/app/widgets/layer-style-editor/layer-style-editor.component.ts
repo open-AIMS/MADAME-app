@@ -1,59 +1,63 @@
-import {Component, computed, input} from '@angular/core';
-import {MatFormFieldModule} from "@angular/material/form-field";
-import {MatSelectModule} from "@angular/material/select";
-import BlendLayer from "@arcgis/core/layers/mixins/BlendLayer";
-import {MatSliderModule} from "@angular/material/slider";
-import Layer from "@arcgis/core/layers/Layer";
-import GroupLayer from "@arcgis/core/layers/GroupLayer";
-import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer";
-import {changePolygonLayerColor, getPolygonLayerColor} from "../../../util/arcgis/arcgis-layer-util";
+import { Component, computed, input } from '@angular/core';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+import BlendLayer from '@arcgis/core/layers/mixins/BlendLayer';
+import { MatSliderModule } from '@angular/material/slider';
+import Layer from '@arcgis/core/layers/Layer';
+import GroupLayer from '@arcgis/core/layers/GroupLayer';
+import GraphicsLayer from '@arcgis/core/layers/GraphicsLayer';
+import {
+  changePolygonLayerColor,
+  getPolygonLayerColor,
+} from '../../../util/arcgis/arcgis-layer-util';
 
-type BlendModes = BlendLayer["blendMode"];
+type BlendModes = BlendLayer['blendMode'];
 
-export type StylableLayer = Pick<Layer & BlendLayer, "opacity" | "blendMode" | "id" | "title">;
+export type StylableLayer = Pick<
+  Layer & BlendLayer,
+  'opacity' | 'blendMode' | 'id' | 'title'
+>;
 
-const BLEND_MODES = ["average",
-  "color-burn",
-  "color-dodge",
-  "color",
-  "darken",
-  "destination-atop",
-  "destination-in",
-  "destination-out",
-  "destination-over",
-  "difference",
-  "exclusion",
-  "hard-light",
-  "hue",
-  "invert",
-  "lighten",
-  "lighter",
-  "luminosity",
-  "minus",
-  "multiply",
-  "normal", // default
-  "overlay",
-  "plus",
-  "reflect",
-  "saturation",
-  "screen",
-  "soft-light",
-  "source-atop",
-  "source-in",
-  "source-out",
-  "vivid-light",
-  "xor"];
+const BLEND_MODES = [
+  'average',
+  'color-burn',
+  'color-dodge',
+  'color',
+  'darken',
+  'destination-atop',
+  'destination-in',
+  'destination-out',
+  'destination-over',
+  'difference',
+  'exclusion',
+  'hard-light',
+  'hue',
+  'invert',
+  'lighten',
+  'lighter',
+  'luminosity',
+  'minus',
+  'multiply',
+  'normal', // default
+  'overlay',
+  'plus',
+  'reflect',
+  'saturation',
+  'screen',
+  'soft-light',
+  'source-atop',
+  'source-in',
+  'source-out',
+  'vivid-light',
+  'xor',
+];
 
 @Component({
   selector: 'app-layer-style-editor',
   standalone: true,
-  imports: [
-    MatFormFieldModule,
-    MatSelectModule,
-    MatSliderModule,
-  ],
+  imports: [MatFormFieldModule, MatSelectModule, MatSliderModule],
   templateUrl: './layer-style-editor.component.html',
-  styleUrl: './layer-style-editor.component.scss'
+  styleUrl: './layer-style-editor.component.scss',
 })
 export class LayerStyleEditorComponent {
   layer = input.required<StylableLayer>();
@@ -72,14 +76,13 @@ export class LayerStyleEditorComponent {
       this.iteratePolygonLayers(layer, graphicsLayer => {
         color = getPolygonLayerColor(graphicsLayer);
         return false;
-      })
+      });
     }
 
     return color;
   });
 
-  constructor() {
-  }
+  constructor() {}
 
   onBlendModeChange(value: BlendModes) {
     const layer = this.layer();
@@ -101,7 +104,10 @@ export class LayerStyleEditorComponent {
   }
 
   // HACK for tile layers until abstraction work
-  private iteratePolygonLayers(layer: StylableLayer, fn: (graphicsLayer: GraphicsLayer) => boolean) {
+  private iteratePolygonLayers(
+    layer: StylableLayer,
+    fn: (graphicsLayer: GraphicsLayer) => boolean
+  ) {
     if (layer instanceof GroupLayer) {
       layer.layers.forEach(subGroup => {
         if (subGroup instanceof GroupLayer) {
@@ -112,7 +118,7 @@ export class LayerStyleEditorComponent {
             }
           }
         }
-      })
+      });
     }
   }
 }

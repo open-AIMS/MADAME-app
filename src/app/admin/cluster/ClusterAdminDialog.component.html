@@ -8,15 +8,12 @@
         <h3>Cluster Status</h3>
         <div class="sync-status" [class.syncing]="isSyncing()">
           <mat-spinner *ngIf="isSyncing()" diameter="16"></mat-spinner>
-          <span
-            class="sync-info"
-            [matTooltip]="lastSynced() | date : 'medium'"
-          >
-                Last synced: {{ getLastSyncedText() }}
+          <span class="sync-info" [matTooltip]="lastSynced() | date: 'medium'">
+            Last synced: {{ getLastSyncedText() }}
             <span class="next-sync" *ngIf="!isSyncing()">
-                  (updates in {{ timeToNextSync() }}s)
-                </span>
-              </span>
+              (updates in {{ timeToNextSync() }}s)
+            </span>
+          </span>
         </div>
       </div>
       <button
@@ -58,18 +55,16 @@
             class="deployment-card"
           >
             <div class="deployment-header">
-                  <span
-                    class="status-badge"
-                    [class.status-primary]="deployment.status === 'PRIMARY'"
-                  >
-                    {{ deployment.status }}
-                  </span>
+              <span
+                class="status-badge"
+                [class.status-primary]="deployment.status === 'PRIMARY'"
+              >
+                {{ deployment.status }}
+              </span>
               <span class="deployment-count">
-                    {{ deployment.runningCount }}/{{
-                  deployment.desiredCount
-                }}
+                {{ deployment.runningCount }}/{{ deployment.desiredCount }}
                 running
-                  </span>
+              </span>
             </div>
             <div
               *ngIf="deployment.rolloutState"
@@ -89,15 +84,15 @@
         <h4>Recent Events</h4>
         <div class="scrollable-section">
           <div *ngFor="let event of status.events" class="event-item">
-                <span class="event-time">{{
-                    event.createdAt | date : "short"
-                  }}</span>
+            <span class="event-time">{{
+              event.createdAt | date: 'short'
+            }}</span>
             <span
               class="event-message text-truncate"
               [matTooltip]="event.message"
             >
-                  {{ event.message }}
-                </span>
+              {{ event.message }}
+            </span>
           </div>
         </div>
       </div>
@@ -113,13 +108,14 @@
       <mat-form-field>
         <mat-label>Desired Count</mat-label>
         <input matInput type="number" formControlName="desiredCount" />
-        <mat-error
-          *ngIf="scaleForm.get('desiredCount')?.errors?.['required']"
-        >
+        <mat-error *ngIf="scaleForm.get('desiredCount')?.errors?.['required']">
           Required
         </mat-error>
         <mat-error
-          *ngIf="scaleForm.get('desiredCount')?.errors?.['min'] || scaleForm.get('desiredCount')?.errors?.['max']"
+          *ngIf="
+            scaleForm.get('desiredCount')?.errors?.['min'] ||
+            scaleForm.get('desiredCount')?.errors?.['max']
+          "
         >
           Must be between 0 and 10
         </mat-error>
