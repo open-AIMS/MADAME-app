@@ -1,19 +1,26 @@
-import {Component, inject} from '@angular/core';
-import {MatDialogModule, MatDialogRef} from "@angular/material/dialog";
-import {MatFormFieldModule} from "@angular/material/form-field";
-import {MatInputModule} from "@angular/material/input";
-import {FormControl, ReactiveFormsModule} from "@angular/forms";
-import {MatOption, MatSelect} from "@angular/material/select";
-import {MatListOption, MatSelectionList} from "@angular/material/list";
-import {ALL_REGIONS, MAPS, ReefGuideConfigService} from "../reef-guide-config.service";
-import {MatButton, MatIconAnchor, MatIconButton} from "@angular/material/button";
-import {MatIcon} from "@angular/material/icon";
-import {MatTooltip} from "@angular/material/tooltip";
-import {combineLatest, map, Observable, startWith} from "rxjs";
-import {AsyncPipe} from "@angular/common";
-import {MatCheckbox} from "@angular/material/checkbox";
-import {MatTabsModule} from "@angular/material/tabs";
-
+import { Component, inject } from '@angular/core';
+import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { MatOption, MatSelect } from '@angular/material/select';
+import { MatListOption, MatSelectionList } from '@angular/material/list';
+import {
+  ALL_REGIONS,
+  MAPS,
+  ReefGuideConfigService,
+} from '../reef-guide-config.service';
+import {
+  MatButton,
+  MatIconAnchor,
+  MatIconButton,
+} from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { MatTooltip } from '@angular/material/tooltip';
+import { combineLatest, map, Observable, startWith } from 'rxjs';
+import { AsyncPipe } from '@angular/common';
+import { MatCheckbox } from '@angular/material/checkbox';
+import { MatTabsModule } from '@angular/material/tabs';
 
 @Component({
   selector: 'app-config-dialog',
@@ -34,14 +41,14 @@ import {MatTabsModule} from "@angular/material/tabs";
     MatIconAnchor,
     AsyncPipe,
     MatCheckbox,
-    MatTabsModule
+    MatTabsModule,
   ],
   templateUrl: './config-dialog.component.html',
-  styleUrl: './config-dialog.component.scss'
+  styleUrl: './config-dialog.component.scss',
 })
 export class ConfigDialogComponent {
   readonly config = inject(ReefGuideConfigService);
-  readonly dialogRef = inject(MatDialogRef<ConfigDialogComponent>)
+  readonly dialogRef = inject(MatDialogRef<ConfigDialogComponent>);
 
   mapChoices = MAPS;
   regionChoices = ALL_REGIONS;
@@ -60,27 +67,31 @@ export class ConfigDialogComponent {
     // TODO required if arcgisMap=CUSTOM
     this.mapItemId = new FormControl(this.config.customArcgisMapItemId());
     this.regions = new FormControl(this.config.enabledRegions());
-    this.parallelRegionRequests = new FormControl(this.config.parallelRegionRequests());
+    this.parallelRegionRequests = new FormControl(
+      this.config.parallelRegionRequests()
+    );
     this.assessLayerTypes = new FormControl(this.config.assessLayerTypes());
     this.mockCOGS = new FormControl(this.config.mockCOGS());
 
     // determine ArcGIS item URL for the current selection.
     this.arcgisItemUrl = combineLatest([
       this.arcgisMap.valueChanges.pipe(startWith(this.arcgisMap.value)),
-      this.mapItemId.valueChanges.pipe(startWith(this.mapItemId.value))
-    ]).pipe(map(([mapId, customItemId]) => {
-      let itemId: string;
-      if (mapId === 'CUSTOM') {
-        itemId = customItemId;
-      } else {
-        const map = MAPS.find(m => m.id === mapId);
-        if (map === undefined) {
-          return undefined;
+      this.mapItemId.valueChanges.pipe(startWith(this.mapItemId.value)),
+    ]).pipe(
+      map(([mapId, customItemId]) => {
+        let itemId: string;
+        if (mapId === 'CUSTOM') {
+          itemId = customItemId;
+        } else {
+          const map = MAPS.find(m => m.id === mapId);
+          if (map === undefined) {
+            return undefined;
+          }
+          itemId = map.arcgisItemId;
         }
-        itemId = map.arcgisItemId;
-      }
-      return `https://aimsgov.maps.arcgis.com/home/item.html?id=${itemId}`;
-    }));
+        return `https://aimsgov.maps.arcgis.com/home/item.html?id=${itemId}`;
+      })
+    );
   }
 
   save() {
@@ -118,7 +129,7 @@ export class ConfigDialogComponent {
     this.dialogRef.close();
 
     if (reload) {
-      alert("App needs to reload");
+      alert('App needs to reload');
       window.location.reload();
     }
   }

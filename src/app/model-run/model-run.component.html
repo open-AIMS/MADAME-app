@@ -7,58 +7,62 @@
   <mat-tab label="Details">
     <ng-template matTabContent>
       <div class="content">
-      @defer (when run()) {
-        @if (run(); as run) {
-          <h2 class="mat-headline-small">{{ run.title }}</h2>
-          <p *ngIf="run.desc">{{ run.desc }}</p>
-          <table class="info-table">
-            <tr *ngIf="run.creator">
-              <th>Creator:</th>
-              <td>{{ run.creator }}</td>
-            </tr>
-            <tr *ngIf="run.publish_date">
-              <th>Publish Date:</th>
-              <td>{{ run.publish_date | date }}</td>
-            </tr>
-            <tr>
-              <th>Invoked:</th>
-              <td>{{ run.invoke_time }}
-                @if (run.runtime) {
-                  , took <em>{{ run.runtime }}</em>
-                }
-              </td>
-            </tr>
-            <tr>
-              <th>Model:</th>
-              <td>{{ run.model_name }} {{ run.model_version }}</td>
-            </tr>
-            <tr *ngIf="run.handle_id">
-              <th>Data:</th>
-              <td><a href="https://mds.gbrrestoration.org/">M&DS</a></td>
-            </tr>
-          </table>
+        @defer (when run()) {
+          @if (run(); as run) {
+            <h2 class="mat-headline-small">{{ run.title }}</h2>
+            <p *ngIf="run.desc">{{ run.desc }}</p>
+            <table class="info-table">
+              <tr *ngIf="run.creator">
+                <th>Creator:</th>
+                <td>{{ run.creator }}</td>
+              </tr>
+              <tr *ngIf="run.publish_date">
+                <th>Publish Date:</th>
+                <td>{{ run.publish_date | date }}</td>
+              </tr>
+              <tr>
+                <th>Invoked:</th>
+                <td>
+                  {{ run.invoke_time }}
+                  @if (run.runtime) {
+                    , took <em>{{ run.runtime }}</em>
+                  }
+                </td>
+              </tr>
+              <tr>
+                <th>Model:</th>
+                <td>{{ run.model_name }} {{ run.model_version }}</td>
+              </tr>
+              <tr *ngIf="run.handle_id">
+                <th>Data:</th>
+                <td><a href="https://mds.gbrrestoration.org/">M&DS</a></td>
+              </tr>
+            </table>
+          }
+        } @placeholder {
+          <p>Loading...</p>
         }
-      } @placeholder {
-        <p>Loading...</p>
-      }
       </div>
     </ng-template>
   </mat-tab>
   <mat-tab label="Parameters">
     <ng-template matTabContent>
-      <app-modelspec-explorer [data]="modelspecDataframe$ | async"></app-modelspec-explorer>
+      <app-modelspec-explorer
+        [data]="modelspecDataframe$ | async"
+      ></app-modelspec-explorer>
     </ng-template>
   </mat-tab>
   <mat-tab label="Scenarios">
     <ng-template matTabContent>
       @if (scenariosTable$ | async; as table) {
-        <app-table [data]="table.rows" [displayedColumns]="table.columns"></app-table>
+        <app-table
+          [data]="table.rows"
+          [displayedColumns]="table.columns"
+        ></app-table>
       }
     </ng-template>
   </mat-tab>
-  <mat-tab label="Site Ranking">
-    TODO
-  </mat-tab>
+  <mat-tab label="Site Ranking"> TODO </mat-tab>
   <mat-tab label="Map">
     <ng-template matTabContent>
       <app-reef-map></app-reef-map>

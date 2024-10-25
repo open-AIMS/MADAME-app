@@ -8,9 +8,8 @@ describe('SelectionCriteriaComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SelectionCriteriaComponent]
-    })
-    .compileComponents();
+      imports: [SelectionCriteriaComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(SelectionCriteriaComponent);
     component = fixture.componentInstance;

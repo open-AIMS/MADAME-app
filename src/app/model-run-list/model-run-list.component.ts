@@ -10,38 +10,43 @@ import { map, Observable } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 
 interface ModelRun {
-    id: string;
-    title: string;
-    desc?: string;
-    handle_id?: string;
+  id: string;
+  title: string;
+  desc?: string;
+  handle_id?: string;
 }
 
 @Component({
-    selector: 'app-model-run-list',
-    standalone: true,
-    templateUrl: './model-run-list.component.html',
-    styleUrl: './model-run-list.component.scss',
-    imports: [MatCardModule, MatButtonModule, MatRippleModule, MatIconModule, RouterLink, AsyncPipe]
+  selector: 'app-model-run-list',
+  standalone: true,
+  templateUrl: './model-run-list.component.html',
+  styleUrl: './model-run-list.component.scss',
+  imports: [
+    MatCardModule,
+    MatButtonModule,
+    MatRippleModule,
+    MatIconModule,
+    RouterLink,
+    AsyncPipe,
+  ],
 })
 export class ModelRunListComponent {
+  runs$: Observable<Array<ModelRun>>;
 
-    runs$: Observable<Array<ModelRun>>;
-
-    constructor(private api: AdriaApiService) {
-        this.runs$ = this.api.getResultSets().pipe(
-            map(ids => {
-                const x: Array<ModelRun> = [
-                    ...ids.map(id => {
-                        return {
-                            id,
-                            title: id,
-                        }
-                    }),
-                    ...MODEL_RUNS
-                ]
-                return x;
-    })
-        );
-    }
-
+  constructor(private api: AdriaApiService) {
+    this.runs$ = this.api.getResultSets().pipe(
+      map(ids => {
+        const x: Array<ModelRun> = [
+          ...ids.map(id => {
+            return {
+              id,
+              title: id,
+            };
+          }),
+          ...MODEL_RUNS,
+        ];
+        return x;
+      })
+    );
+  }
 }

@@ -1,20 +1,22 @@
-import { environment } from "../../environments/environment";
-import {inject, Injectable} from '@angular/core';
-import {HttpClient} from "@angular/common/http";
-import {map, Observable} from "rxjs";
-import {ReefGuideConfigService} from "./reef-guide-config.service";
-import {SelectionCriteria, SiteSuitabilityCriteria} from "./reef-guide-api.types";
+import { environment } from '../../environments/environment';
+import { inject, Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { map, Observable } from 'rxjs';
+import { ReefGuideConfigService } from './reef-guide-config.service';
+import {
+  SelectionCriteria,
+  SiteSuitabilityCriteria,
+} from './reef-guide-api.types';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ReefGuideApiService {
   private readonly config = inject(ReefGuideConfigService);
 
   private readonly base: string = environment.reefGuideApiUrl;
 
-  constructor(private http: HttpClient) {
-  }
+  constructor(private http: HttpClient) {}
 
   /**
    * Get URL of COGeoTiff layer matching selection criteria.
@@ -46,9 +48,16 @@ export class ReefGuideApiService {
     return `${url}?${searchParams}`;
   }
 
-  getSiteSuitability(region: string, criteria: SelectionCriteria, suitabilityCriteria: SiteSuitabilityCriteria): Observable<any> {
+  getSiteSuitability(
+    region: string,
+    criteria: SelectionCriteria,
+    suitabilityCriteria: SiteSuitabilityCriteria
+  ): Observable<any> {
     const rtype = 'slopes';
-    const url = new URL(`/suitability/site-suitability/${region}/${rtype}`, this.base);
+    const url = new URL(
+      `/suitability/site-suitability/${region}/${rtype}`,
+      this.base
+    );
     this.addCriteriaToParams(url, criteria);
     for (const [key, value] of Object.entries(suitabilityCriteria)) {
       url.searchParams.set(key, value);
@@ -56,7 +65,10 @@ export class ReefGuideApiService {
     return this.http.get(url.toString());
   }
 
-  private addCriteriaToParams(url: URL | URLSearchParams, criteria: SelectionCriteria) {
+  private addCriteriaToParams(
+    url: URL | URLSearchParams,
+    criteria: SelectionCriteria
+  ) {
     const searchParams = url instanceof URL ? url.searchParams : url;
     for (const name in criteria) {
       const [lower, upper] = criteria[name];
@@ -67,15 +79,19 @@ export class ReefGuideApiService {
   getCriteriaLayers(): Record<string, string> {
     // TODO return from API instead of hardcoding.
     return {
-      Depth: "https://tiles.arcgis.com/tiles/wfyOCawpdks4prqC/arcgis/rest/services/GBR_bathymetry/MapServer",
-      Slope: "https://tiles.arcgis.com/tiles/wfyOCawpdks4prqC/arcgis/rest/services/GBR_slope_data/MapServer",
+      Depth:
+        'https://tiles.arcgis.com/tiles/wfyOCawpdks4prqC/arcgis/rest/services/GBR_bathymetry/MapServer',
+      Slope:
+        'https://tiles.arcgis.com/tiles/wfyOCawpdks4prqC/arcgis/rest/services/GBR_slope_data/MapServer',
       // TODO Turbidity criteria layer
       // Turbidity: "",
-      WavesHs: "https://tiles.arcgis.com/tiles/wfyOCawpdks4prqC/arcgis/rest/services/GBR_wave_Hs_data/MapServer",
-      WavesTp: "https://tiles.arcgis.com/tiles/wfyOCawpdks4prqC/arcgis/rest/services/GBR_waves_Tp/MapServer"
-    // Note: ArcGIS has an alternate WMTS URL
-    // https://tiles.arcgis.com/tiles/wfyOCawpdks4prqC/arcgis/rest/services/GBR_waves_Tp/MapServer/WMTS/1.0.0/WMTSCapabilities.xml
-    }
+      WavesHs:
+        'https://tiles.arcgis.com/tiles/wfyOCawpdks4prqC/arcgis/rest/services/GBR_wave_Hs_data/MapServer',
+      WavesTp:
+        'https://tiles.arcgis.com/tiles/wfyOCawpdks4prqC/arcgis/rest/services/GBR_waves_Tp/MapServer',
+      // Note: ArcGIS has an alternate WMTS URL
+      // https://tiles.arcgis.com/tiles/wfyOCawpdks4prqC/arcgis/rest/services/GBR_waves_Tp/MapServer/WMTS/1.0.0/WMTSCapabilities.xml
+    };
   }
 
   /**
@@ -84,11 +100,14 @@ export class ReefGuideApiService {
    * @param url
    */
   toObjectURL(url: string): Observable<string> {
-    return this.http.get(url, { responseType: "blob"}).pipe(
+    return this.http.get(url, { responseType: 'blob' }).pipe(
       map(blob => {
         // warn if we're doing this for files > 100mb
         if (blob.size > 100_000_000) {
-          console.warn(`Blob size=${blob.size} for ${url}, createObjectURL`, blob.size);
+          console.warn(
+            `Blob size=${blob.size} for ${url}, createObjectURL`,
+            blob.size
+          );
         }
 
         return URL.createObjectURL(blob);

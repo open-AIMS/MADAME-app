@@ -1,11 +1,13 @@
 import { U } from '@angular/cdk/keycodes';
 import { DataFrame } from '../types/api.type';
 
-
 /**
  * Convert the dataframe to row objects.
  */
-export function dataframeToRowObjects(data: DataFrame | null | undefined, indexes?: Array<number>): Array<any> {
+export function dataframeToRowObjects(
+  data: DataFrame | null | undefined,
+  indexes?: Array<number>
+): Array<any> {
   if (data == null || data.columns.length === 0) {
     return [];
   }
@@ -49,11 +51,16 @@ export function dataframeToTable(data: DataFrame): SimpleTable {
   return {
     rows: dataframeToRowObjects(data),
     // all columns
-    columns: data.colindex.names
-  }
+    columns: data.colindex.names,
+  };
 }
 
-export function dataframeFind(data: DataFrame, colname: string, fn: (val: any) => boolean, returnColname: string): any | undefined {
+export function dataframeFind(
+  data: DataFrame,
+  colname: string,
+  fn: (val: any) => boolean,
+  returnColname: string
+): any | undefined {
   const { columns, colindex } = data;
   const { lookup, names } = colindex;
 

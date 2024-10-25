@@ -4,44 +4,44 @@ import {
   inject,
   signal,
   ViewChild,
-} from "@angular/core";
-import {MatDrawer, MatSidenavModule} from "@angular/material/sidenav";
+} from '@angular/core';
+import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
 import {
   ArcgisMap,
   ComponentLibraryModule,
-} from "@arcgis/map-components-angular";
-import {ArcgisMapCustomEvent} from "@arcgis/map-components";
-import {MatButtonModule} from "@angular/material/button";
-import {MatIconModule} from "@angular/material/icon";
-import {MatToolbarModule} from "@angular/material/toolbar";
-import {SelectionCriteriaComponent} from "./selection-criteria/selection-criteria.component";
-import {ReefGuideApiService} from "./reef-guide-api.service";
-import {MatTooltip} from "@angular/material/tooltip";
-import {MatDialog} from "@angular/material/dialog";
-import {ConfigDialogComponent} from "./config-dialog/config-dialog.component";
-import {ReefGuideConfigService} from "./reef-guide-config.service";
-import {AsyncPipe, CommonModule} from "@angular/common";
-import {MatProgressSpinner} from "@angular/material/progress-spinner";
-import {LayerStyleEditorComponent} from "../widgets/layer-style-editor/layer-style-editor.component";
-import {ReefGuideMapService} from "./reef-guide-map.service";
-import {MatAccordion, MatExpansionModule} from "@angular/material/expansion";
-import {LoginDialogComponent} from "../auth/login-dialog/login-dialog.component";
-import {AuthService} from "../auth/auth.service";
-import {MatMenuModule} from "@angular/material/menu";
-import {MatProgressBar} from "@angular/material/progress-bar";
-import {CriteriaAssessment} from "./reef-guide-api.types";
-import {toObservable} from "@angular/core/rxjs-interop";
-import {combineLatest, map, Observable, of, switchMap} from "rxjs";
-import {ClusterAdminDialogComponent} from "../cluster/ClusterAdminDialog.component";
+} from '@arcgis/map-components-angular';
+import { ArcgisMapCustomEvent } from '@arcgis/map-components';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { SelectionCriteriaComponent } from './selection-criteria/selection-criteria.component';
+import { ReefGuideApiService } from './reef-guide-api.service';
+import { MatTooltip } from '@angular/material/tooltip';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfigDialogComponent } from './config-dialog/config-dialog.component';
+import { ReefGuideConfigService } from './reef-guide-config.service';
+import { AsyncPipe, CommonModule } from '@angular/common';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { LayerStyleEditorComponent } from '../widgets/layer-style-editor/layer-style-editor.component';
+import { ReefGuideMapService } from './reef-guide-map.service';
+import { MatAccordion, MatExpansionModule } from '@angular/material/expansion';
+import { LoginDialogComponent } from '../auth/login-dialog/login-dialog.component';
+import { AuthService } from '../auth/auth.service';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatProgressBar } from '@angular/material/progress-bar';
+import { CriteriaAssessment } from './reef-guide-api.types';
+import { toObservable } from '@angular/core/rxjs-interop';
+import { combineLatest, map, Observable, of, switchMap } from 'rxjs';
+import { ClusterAdminDialogComponent } from '../cluster/ClusterAdminDialog.component';
 
-type DrawerModes = "criteria" | "style";
+type DrawerModes = 'criteria' | 'style';
 
 /**
  * Prototype of Location Selection app.
  * Map be split-off as its own project in the future.
  */
 @Component({
-  selector: "app-location-selection",
+  selector: 'app-location-selection',
   standalone: true,
   imports: [
     MatSidenavModule,
@@ -61,8 +61,8 @@ type DrawerModes = "criteria" | "style";
     MatProgressBar,
   ],
   providers: [ReefGuideMapService],
-  templateUrl: "./location-selection.component.html",
-  styleUrl: "./location-selection.component.scss",
+  templateUrl: './location-selection.component.html',
+  styleUrl: './location-selection.component.scss',
 })
 export class LocationSelectionComponent implements AfterViewInit {
   readonly config = inject(ReefGuideConfigService);
@@ -71,7 +71,7 @@ export class LocationSelectionComponent implements AfterViewInit {
   readonly dialog = inject(MatDialog);
   readonly mapService = inject(ReefGuideMapService);
 
-  drawerMode = signal<DrawerModes>("criteria");
+  drawerMode = signal<DrawerModes>('criteria');
 
   /**
    * Assess related layer is loading.
@@ -79,7 +79,7 @@ export class LocationSelectionComponent implements AfterViewInit {
   isAssessing$: Observable<boolean>;
 
   @ViewChild(ArcgisMap) map!: ArcgisMap;
-  @ViewChild("drawer") drawer!: MatDrawer;
+  @ViewChild('drawer') drawer!: MatDrawer;
 
   constructor() {
     this.isAssessing$ = combineLatest([
@@ -104,7 +104,7 @@ export class LocationSelectionComponent implements AfterViewInit {
   }
 
   async arcgisViewClick(event: ArcgisMapCustomEvent<__esri.ViewClickEvent>) {
-    console.log("arcgis map click", event);
+    console.log('arcgis map click', event);
     // const view = this.map.view;
     // const resp = await view.hitTest(event.detail);
     const point = event.detail.mapPoint;
@@ -115,7 +115,7 @@ export class LocationSelectionComponent implements AfterViewInit {
   }
 
   openDrawer(mode: DrawerModes) {
-    if (mode === "criteria") {
+    if (mode === 'criteria') {
       this.mapService.updateCriteriaLayerStates();
     }
     this.drawerMode.set(mode);
@@ -132,7 +132,7 @@ export class LocationSelectionComponent implements AfterViewInit {
 
   openClusterAdmin() {
     this.dialog.open(ClusterAdminDialogComponent, {
-      width: "800px",
+      width: '800px',
     });
   }
 
@@ -141,15 +141,15 @@ export class LocationSelectionComponent implements AfterViewInit {
    * @param assessment
    */
   onAssess(assessment: CriteriaAssessment) {
-    const {criteria, siteSuitability} = assessment;
+    const { criteria, siteSuitability } = assessment;
 
     this.mapService.clearAssessedLayers();
 
     const layerTypes = this.config.assessLayerTypes();
-    if (layerTypes.includes("cog")) {
+    if (layerTypes.includes('cog')) {
       this.mapService.addCOGLayers(criteria);
     }
-    if (layerTypes.includes("tile")) {
+    if (layerTypes.includes('tile')) {
       this.mapService.addTileLayers(criteria);
     }
 
@@ -160,9 +160,9 @@ export class LocationSelectionComponent implements AfterViewInit {
 
   getLoadingRegionsMessage(busyRegions: Set<string> | null): string {
     if (busyRegions == null) {
-      return "";
+      return '';
     }
-    const vals = Array.from(busyRegions).join(", ");
+    const vals = Array.from(busyRegions).join(', ');
     return `Loading: ${vals}`;
   }
 }

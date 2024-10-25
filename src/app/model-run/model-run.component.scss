@@ -1,31 +1,31 @@
 :host {
-    display: flex;
-    flex-direction: column;
-    flex-wrap: nowrap;
-    align-items: flex-start;
-    height: 100%;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+  height: 100%;
 }
 
 mat-expansion-panel {
-    margin: 16px 0 8px 16px;
-    flex: none;
+  margin: 16px 0 8px 16px;
+  flex: none;
 }
 
 button {
-    margin-left: 16px;
-    flex: none;
+  margin-left: 16px;
+  flex: none;
 }
 
 mat-tab-group {
-    width: 100%;
-    flex: 1 1 auto;
-    overflow: auto;
+  width: 100%;
+  flex: 1 1 auto;
+  overflow: auto;
 }
 
 app-reef-map {
-    display: block;
-    width: 100%;
-    height: 100%;
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .content {

@@ -1,8 +1,8 @@
-import {inject, Injectable} from "@angular/core";
-import {HttpClient} from "@angular/common/http";
-import {environment} from "../environments/environment";
-import {LoginResponse, Note, Polygon, UserProfile} from "./web-api.types";
-import {map, Observable} from "rxjs";
+import { inject, Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../environments/environment';
+import { LoginResponse, Note, Polygon, UserProfile } from './web-api.types';
+import { map, Observable } from 'rxjs';
 
 // TODO import types from API
 
@@ -13,7 +13,7 @@ import {map, Observable} from "rxjs";
  * This service provides authentication endpoints, which is used by AuthService.
  */
 @Injectable({
-  providedIn: "root",
+  providedIn: 'root',
 })
 export class WebApiService {
   private readonly http = inject(HttpClient);
@@ -22,17 +22,20 @@ export class WebApiService {
 
   constructor() {}
 
-  register(user: {email: string; password: string}) {
-    return this.http.post<{userId: number}>(`${this.base}/auth/register`, user);
+  register(user: { email: string; password: string }) {
+    return this.http.post<{ userId: number }>(
+      `${this.base}/auth/register`,
+      user
+    );
   }
 
-  login(user: {email: string; password: string}) {
+  login(user: { email: string; password: string }) {
     return this.http.post<LoginResponse>(`${this.base}/auth/login`, user);
   }
 
   refreshToken(refreshToken: string): Observable<string> {
     return this.http
-      .post<{token: string}>(`${this.base}/auth/token`, {refreshToken})
+      .post<{ token: string }>(`${this.base}/auth/token`, { refreshToken })
       .pipe(map(resp => resp.token));
   }
 
@@ -78,7 +81,7 @@ export class WebApiService {
   }
 
   updateNote(id: string, content: string) {
-    return this.http.put(`${this.base}/notes/${id}`, {content});
+    return this.http.put(`${this.base}/notes/${id}`, { content });
   }
 
   getClusterStatus() {
@@ -86,7 +89,7 @@ export class WebApiService {
   }
 
   scaleCluster(desiredCount: number) {
-    return this.http.post<void>(`${this.base}/admin/scale`, {desiredCount});
+    return this.http.post<void>(`${this.base}/admin/scale`, { desiredCount });
   }
 
   redeployCluster() {

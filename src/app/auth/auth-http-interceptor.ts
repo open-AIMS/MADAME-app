@@ -1,9 +1,16 @@
-import {HttpErrorResponse, HttpHandlerFn, HttpRequest} from "@angular/common/http";
-import {inject} from "@angular/core";
-import {AuthService} from "./auth.service";
-import {tap} from "rxjs";
+import {
+  HttpErrorResponse,
+  HttpHandlerFn,
+  HttpRequest,
+} from '@angular/common/http';
+import { inject } from '@angular/core';
+import { AuthService } from './auth.service';
+import { tap } from 'rxjs';
 
-export function authInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn) {
+export function authInterceptor(
+  req: HttpRequest<unknown>,
+  next: HttpHandlerFn
+) {
   const authService = inject(AuthService);
   const authToken = authService.getAuthToken();
   if (authToken === undefined) {
@@ -22,7 +29,7 @@ export function authInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn) 
             authService.unauthenticated();
           }
         }
-      }
+      },
     })
   );
 }

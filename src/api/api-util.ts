@@ -1,4 +1,4 @@
-import {HttpErrorResponse} from "@angular/common/http";
+import { HttpErrorResponse } from '@angular/common/http';
 
 // Example HTTP 400 Zod error
 /*
@@ -23,7 +23,7 @@ import {HttpErrorResponse} from "@angular/common/http";
 */
 
 const translateMessage: Record<string, string> = {
-  "Failed to fetch": "Connection error!"
+  'Failed to fetch': 'Connection error!',
 };
 
 /**
@@ -42,10 +42,10 @@ export function extractErrorMessage(error: any): string {
         return subError[0].errors.issues[0].message;
       } catch (e) {
         // pass
-        console.warn("Unable to get error message", error);
+        console.warn('Unable to get error message', error);
       }
     }
   }
 
-  return "Unknown error";
+  return 'Unknown error';
 }

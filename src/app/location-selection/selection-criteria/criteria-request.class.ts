@@ -9,11 +9,11 @@ import {
   of,
   Subject,
   takeUntil,
-} from "rxjs";
-import {ReefGuideApiService} from "../reef-guide-api.service";
-import {SelectionCriteria} from "../reef-guide-api.types";
-import {ReefGuideConfigService} from "../reef-guide-config.service";
-import {inject} from "@angular/core";
+} from 'rxjs';
+import { ReefGuideApiService } from '../reef-guide-api.service';
+import { SelectionCriteria } from '../reef-guide-api.types';
+import { ReefGuideConfigService } from '../reef-guide-config.service';
+import { inject } from '@angular/core';
 
 /**
  * Region layer data that is ready to be loaded.
@@ -50,12 +50,11 @@ export class CriteriaRequest {
    */
   regionError$ = this.regionError.pipe(takeUntil(this.cancel$));
 
-  constructor(criteria: SelectionCriteria,
-              regions$: Observable<string>) {
+  constructor(criteria: SelectionCriteria, regions$: Observable<string>) {
     const api = this.api;
 
     // avoid repeating values
-    regions$ = regions$.pipe(distinct())
+    regions$ = regions$.pipe(distinct());
 
     // parallel requests or sequential according to config.
     const mapFn = this.config.parallelRegionRequests() ? mergeMap : concatMap;
@@ -70,7 +69,7 @@ export class CriteriaRequest {
             return {
               region,
               cogUrl: blobUrl,
-              originalUrl: url
+              originalUrl: url,
             };
           }),
           catchError(err => {

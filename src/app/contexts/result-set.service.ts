@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import {AdriaApiService} from "../adria-api.service";
-import {Observable, shareReplay, Subject, switchMap} from "rxjs";
-import {ResultSetInfo} from "../../types/api.type";
+import { AdriaApiService } from '../adria-api.service';
+import { Observable, shareReplay, Subject, switchMap } from 'rxjs';
+import { ResultSetInfo } from '../../types/api.type';
 
 @Injectable()
 export class ResultSetService {
@@ -9,13 +9,13 @@ export class ResultSetService {
     if (this._id) {
       return this._id;
     } else {
-      throw new Error("ResultSet id missing in context");
+      throw new Error('ResultSet id missing in context');
     }
   }
 
   set id(value: string) {
     if (this._id) {
-      throw new Error("cannot change id once set");
+      throw new Error('cannot change id once set');
     }
     this._id = value;
     this.id$.next(value);
@@ -31,7 +31,6 @@ export class ResultSetService {
     this.info$ = this.id$.pipe(
       switchMap(id => api.getResultSetInfo(id)),
       shareReplay(1)
-    )
+    );
   }
-
 }

@@ -1,25 +1,25 @@
-import {Component, DestroyRef, inject, OnInit, signal} from "@angular/core";
-import {MatDialogModule, MatDialogRef} from "@angular/material/dialog";
+import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import {
   FormBuilder,
   FormGroup,
   ReactiveFormsModule,
   Validators,
-} from "@angular/forms";
-import {WebApiService} from "../../api/web-api.service";
-import {CommonModule} from "@angular/common";
-import {MatFormFieldModule} from "@angular/material/form-field";
-import {MatInputModule} from "@angular/material/input";
-import {MatButtonModule} from "@angular/material/button";
-import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
-import {MatIconModule} from "@angular/material/icon";
-import {MatTooltipModule} from "@angular/material/tooltip";
-import {MatDividerModule} from "@angular/material/divider";
-import {interval, merge, startWith, Subject, switchMap, tap} from "rxjs";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+} from '@angular/forms';
+import { WebApiService } from '../../api/web-api.service';
+import { CommonModule } from '@angular/common';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDividerModule } from '@angular/material/divider';
+import { interval, merge, startWith, Subject, switchMap, tap } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
-  selector: "app-cluster-admin-dialog",
+  selector: 'app-cluster-admin-dialog',
   standalone: true,
   imports: [
     CommonModule,
@@ -33,8 +33,8 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
     MatDialogModule,
     MatDividerModule,
   ],
-  templateUrl: "./ClusterAdminDialog.component.html",
-  styleUrl: "./ClusterAdminDialog.component.scss"
+  templateUrl: './ClusterAdminDialog.component.html',
+  styleUrl: './ClusterAdminDialog.component.scss',
 })
 export class ClusterAdminDialogComponent implements OnInit {
   private readonly api = inject(WebApiService);
@@ -68,7 +68,7 @@ export class ClusterAdminDialogComponent implements OnInit {
   constructor() {
     this.scaleForm = this.fb.group({
       desiredCount: [
-        "",
+        '',
         [Validators.required, Validators.min(0), Validators.max(10)],
       ],
     });
@@ -96,7 +96,7 @@ export class ClusterAdminDialogComponent implements OnInit {
 
   getLastSyncedText(): string {
     const lastSync = this.lastSynced();
-    if (!lastSync) return "Never";
+    if (!lastSync) return 'Never';
 
     const seconds = Math.floor(
       (new Date().getTime() - lastSync.getTime()) / 1000
