@@ -18,7 +18,7 @@ import {catchError, finalize, tap} from 'rxjs/operators';
 import {of} from 'rxjs';
 import {UserRole} from '../../../../api/web-api.types';
 import {MatIconModule} from '@angular/material/icon';
-import { WebApiService } from '../../../../api/web-api.service';
+import {WebApiService} from '../../../../api/web-api.service';
 
 interface CreateUserForm {
   email: FormControl<string>;
@@ -66,7 +66,7 @@ export class AdminCreateUserDialogComponent {
     }),
     roles: new FormControl<UserRole[]>([], {
       nonNullable: true,
-      validators: [Validators.required],
+      validators: [],
     }),
   });
 
