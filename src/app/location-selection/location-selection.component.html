@@ -168,17 +168,11 @@
           <span>Logout</span>
         </button>
         @if (authService.isAdmin() | async) {
-          <button
-            mat-menu-item
-            (click)="openAdminPanel()"
-          >
+          <button mat-menu-item (click)="openAdminPanel()">
             <mat-icon>supervised_user_circle</mat-icon>
             <span>Manage Users</span>
           </button>
-          <button
-            mat-menu-item
-            (click)="openClusterAdmin()"
-          >
+          <button mat-menu-item (click)="openClusterAdmin()">
             <mat-icon>dns</mat-icon>
             <span>Manage Cluster</span>
           </button>

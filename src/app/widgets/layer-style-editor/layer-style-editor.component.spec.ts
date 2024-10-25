@@ -8,9 +8,8 @@ describe('LayerStyleEditorComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [LayerStyleEditorComponent]
-    })
-    .compileComponents();
+      imports: [LayerStyleEditorComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(LayerStyleEditorComponent);
     component = fixture.componentInstance;

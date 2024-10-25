@@ -1,6 +1,13 @@
-import {computed, effect, Injectable, Signal, signal, WritableSignal} from '@angular/core';
+import {
+  computed,
+  effect,
+  Injectable,
+  Signal,
+  signal,
+  WritableSignal,
+} from '@angular/core';
 
-type AssessLayerTypes = "tile" | "cog";
+type AssessLayerTypes = 'tile' | 'cog';
 
 interface StoredConfig {
   arcgisMap: string;
@@ -8,10 +15,10 @@ interface StoredConfig {
   enabledRegions: Array<string>;
   parallelRegionRequests: boolean;
   assessLayerTypes: Array<AssessLayerTypes>;
-  mockCOGS: boolean
+  mockCOGS: boolean;
 }
 
-const VALUE_SEPARATOR = "\x1F";
+const VALUE_SEPARATOR = '\x1F';
 function getArray(val: string): Array<string> {
   return val.split(VALUE_SEPARATOR);
 }
@@ -24,11 +31,13 @@ function getBoolean(val: string): boolean {
  * Functions for converting localstorage string value for
  * variables that aren't a string type.
  */
-const configVarGetters: Partial<Record<keyof StoredConfig, (val: string) => any>> = {
+const configVarGetters: Partial<
+  Record<keyof StoredConfig, (val: string) => any>
+> = {
   enabledRegions: getArray,
   assessLayerTypes: getArray,
   parallelRegionRequests: getBoolean,
-  mockCOGS: getBoolean
+  mockCOGS: getBoolean,
 };
 
 interface Map {
@@ -40,25 +49,32 @@ interface Map {
 
 export const MAPS: Array<Map> = [
   // minimalistic map, loads quicker, useful for development
-  {id: "simple", name: 'Simple', arcgisItemId: 'd7404f1b7eed4269b0028a0a6b698000'},
+  {
+    id: 'simple',
+    name: 'Simple',
+    arcgisItemId: 'd7404f1b7eed4269b0028a0a6b698000',
+  },
   // Decision Sim prototype
-  {id: "DecisionSim", name: 'Decision Sim 2 v1_5 GS', arcgisItemId: 'fee03c9e65a8413f8b0bb8c158c7f040'}
-]
+  {
+    id: 'DecisionSim',
+    name: 'Decision Sim 2 v1_5 GS',
+    arcgisItemId: 'fee03c9e65a8413f8b0bb8c158c7f040',
+  },
+];
 
 const DEFAULT_MAP = MAPS[0];
 
 export const ALL_REGIONS = [
-  "Townsville-Whitsunday",
-  "Cairns-Cooktown",
-  "Mackay-Capricorn",
-  "FarNorthern"
+  'Townsville-Whitsunday',
+  'Cairns-Cooktown',
+  'Mackay-Capricorn',
+  'FarNorthern',
 ];
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ReefGuideConfigService {
-
   /**
    * ID of predefined ArcGIS map.
    */
@@ -111,7 +127,9 @@ export class ReefGuideConfigService {
       } else {
         let map = MAPS.find(m => m.id === mapId);
         if (map === undefined) {
-          console.warn(`No Map found with id="${mapId}", defaulting to "${DEFAULT_MAP.id}"`);
+          console.warn(
+            `No Map found with id="${mapId}", defaulting to "${DEFAULT_MAP.id}"`
+          );
           map = DEFAULT_MAP;
         }
         return map.arcgisItemId;
@@ -119,14 +137,20 @@ export class ReefGuideConfigService {
     });
 
     this.enabledRegions = signal(this.get('enabledRegions', ALL_REGIONS));
-    this.parallelRegionRequests = signal(this.get('parallelRegionRequests', true));
+    this.parallelRegionRequests = signal(
+      this.get('parallelRegionRequests', true)
+    );
     this.assessLayerTypes = signal(this.get('assessLayerTypes', ['tile']));
     this.mockCOGS = signal(this.get('mockCOGS', false));
 
     effect(() => this.set('arcgisMap', this.arcgisMap()));
-    effect(() => this.set('customArcgisMapItemId', this.customArcgisMapItemId()));
+    effect(() =>
+      this.set('customArcgisMapItemId', this.customArcgisMapItemId())
+    );
     effect(() => this.set('enabledRegions', this.enabledRegions()));
-    effect(() => this.set('parallelRegionRequests', this.parallelRegionRequests()));
+    effect(() =>
+      this.set('parallelRegionRequests', this.parallelRegionRequests())
+    );
     effect(() => this.set('assessLayerTypes', this.assessLayerTypes()));
     effect(() => this.set('mockCOGS', this.mockCOGS()));
 
@@ -134,12 +158,20 @@ export class ReefGuideConfigService {
     // effects are async, so run in microtask.
     Promise.resolve().then(() => {
       this.readonly = false;
-    })
+    });
   }
 
-  private get<K extends keyof StoredConfig, V = StoredConfig[K]>(key: K): V | undefined;
-  private get<K extends keyof StoredConfig, V = StoredConfig[K]>(key: K, dflt: V): V;
-  private get<K extends keyof StoredConfig, V = StoredConfig[K]>(key: K, dflt?: V): V | undefined {
+  private get<K extends keyof StoredConfig, V = StoredConfig[K]>(
+    key: K
+  ): V | undefined;
+  private get<K extends keyof StoredConfig, V = StoredConfig[K]>(
+    key: K,
+    dflt: V
+  ): V;
+  private get<K extends keyof StoredConfig, V = StoredConfig[K]>(
+    key: K,
+    dflt?: V
+  ): V | undefined {
     let val = localStorage.getItem(`${this.prefix}${key}`);
     if (val == null) {
       return dflt ?? undefined;
@@ -149,7 +181,10 @@ export class ReefGuideConfigService {
     }
   }
 
-  private set<K extends keyof StoredConfig, V = StoredConfig[K]>(key: K, value: V) {
+  private set<K extends keyof StoredConfig, V = StoredConfig[K]>(
+    key: K,
+    value: V
+  ) {
     if (this.readonly) {
       return;
     }

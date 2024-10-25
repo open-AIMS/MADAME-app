@@ -1,6 +1,6 @@
-import {inject, Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {environment} from '../environments/environment';
+import { inject, Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../environments/environment';
 import {
   LoginResponse,
   Note,
@@ -9,7 +9,7 @@ import {
   UserProfile,
   UserRole,
 } from './web-api.types';
-import {map, Observable} from 'rxjs';
+import { map, Observable } from 'rxjs';
 
 // TODO import types from API
 
@@ -30,17 +30,20 @@ export class WebApiService {
 
   constructor() {}
 
-  register(user: {email: string; password: string}) {
-    return this.http.post<{userId: number}>(`${this.base}/auth/register`, user);
+  register(user: { email: string; password: string }) {
+    return this.http.post<{ userId: number }>(
+      `${this.base}/auth/register`,
+      user
+    );
   }
 
-  login(user: {email: string; password: string}) {
+  login(user: { email: string; password: string }) {
     return this.http.post<LoginResponse>(`${this.base}/auth/login`, user);
   }
 
   refreshToken(refreshToken: string): Observable<string> {
     return this.http
-      .post<{token: string}>(`${this.base}/auth/token`, {refreshToken})
+      .post<{ token: string }>(`${this.base}/auth/token`, { refreshToken })
       .pipe(map(resp => resp.token));
   }
 
@@ -86,7 +89,7 @@ export class WebApiService {
   }
 
   updateNote(id: string, content: string) {
-    return this.http.put(`${this.base}/notes/${id}`, {content});
+    return this.http.put(`${this.base}/notes/${id}`, { content });
   }
 
   getClusterStatus() {
@@ -94,7 +97,7 @@ export class WebApiService {
   }
 
   scaleCluster(desiredCount: number) {
-    return this.http.post(`${this.base}/admin/scale`, {desiredCount});
+    return this.http.post(`${this.base}/admin/scale`, { desiredCount });
   }
 
   redeployCluster() {
@@ -109,16 +112,16 @@ export class WebApiService {
     return this.http.get<User>(`${this.baseUsers}/${id}`);
   }
 
-  createUser(userData: {email: string; password: string; roles: UserRole[]}) {
-    return this.http.post<{id: number}>(this.baseUsers, userData);
+  createUser(userData: { email: string; password: string; roles: UserRole[] }) {
+    return this.http.post<{ id: number }>(this.baseUsers, userData);
   }
 
   updateUserRoles(userId: number, roles: UserRole[]) {
-    return this.http.put<User>(`${this.baseUsers}/${userId}/roles`, {roles});
+    return this.http.put<User>(`${this.baseUsers}/${userId}/roles`, { roles });
   }
 
   updatePassword(userId: number, password: string) {
-    return this.http.put(`${this.baseUsers}/${userId}/password`, {password});
+    return this.http.put(`${this.baseUsers}/${userId}/password`, { password });
   }
 
   deleteUser(userId: number) {

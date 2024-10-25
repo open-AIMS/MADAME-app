@@ -8,9 +8,8 @@ describe('ModelspecExplorerComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ModelspecExplorerComponent]
-    })
-    .compileComponents();
+      imports: [ModelspecExplorerComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ModelspecExplorerComponent);
     component = fixture.componentInstance;

@@ -1,28 +1,28 @@
-import {CommonModule} from '@angular/common';
-import {Component, DestroyRef, inject, signal} from '@angular/core';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import { CommonModule } from '@angular/common';
+import { Component, DestroyRef, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   FormControl,
   FormGroup,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import {MatButtonModule} from '@angular/material/button';
+import { MatButtonModule } from '@angular/material/button';
 import {
   MAT_DIALOG_DATA,
   MatDialogModule,
   MatDialogRef,
 } from '@angular/material/dialog';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatIconModule} from '@angular/material/icon';
-import {MatInputModule} from '@angular/material/input';
-import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
-import {MatSelectModule} from '@angular/material/select';
-import {MatSnackBar} from '@angular/material/snack-bar';
-import {of} from 'rxjs';
-import {catchError, finalize, tap} from 'rxjs/operators';
-import {WebApiService} from '../../../../api/web-api.service';
-import {User} from '../../../../api/web-api.types';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { of } from 'rxjs';
+import { catchError, finalize, tap } from 'rxjs/operators';
+import { WebApiService } from '../../../../api/web-api.service';
+import { User } from '../../../../api/web-api.types';
 
 interface UpdatePasswordForm {
   password: FormControl<string>;
@@ -52,7 +52,7 @@ export class AdminUpdateUserPasswordDialogComponent {
   );
   private readonly snackBar = inject(MatSnackBar);
   private readonly destroyRef = inject(DestroyRef);
-  private readonly data = inject<{user: User}>(MAT_DIALOG_DATA);
+  private readonly data = inject<{ user: User }>(MAT_DIALOG_DATA);
 
   readonly isSubmitting = signal(false);
   hidePassword = true;
@@ -92,7 +92,7 @@ export class AdminUpdateUserPasswordDialogComponent {
               error.message ||
                 'Failed to update user password. Please try again.',
               'Close',
-              {duration: 5000}
+              { duration: 5000 }
             );
             return of(null);
           }),

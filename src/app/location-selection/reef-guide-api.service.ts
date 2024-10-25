@@ -1,8 +1,8 @@
-import {environment} from '../../environments/environment';
-import {inject, Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {map, Observable} from 'rxjs';
-import {ReefGuideConfigService} from './reef-guide-config.service';
+import { environment } from '../../environments/environment';
+import { inject, Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { map, Observable } from 'rxjs';
+import { ReefGuideConfigService } from './reef-guide-config.service';
 import {
   SelectionCriteria,
   SiteSuitabilityCriteria,
@@ -100,7 +100,7 @@ export class ReefGuideApiService {
    * @param url
    */
   toObjectURL(url: string): Observable<string> {
-    return this.http.get(url, {responseType: 'blob'}).pipe(
+    return this.http.get(url, { responseType: 'blob' }).pipe(
       map(blob => {
         // warn if we're doing this for files > 100mb
         if (blob.size > 100_000_000) {

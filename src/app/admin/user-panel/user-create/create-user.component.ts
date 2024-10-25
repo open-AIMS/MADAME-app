@@ -1,24 +1,24 @@
-import {CommonModule} from '@angular/common';
-import {Component, inject, DestroyRef, signal} from '@angular/core';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import { CommonModule } from '@angular/common';
+import { Component, inject, DestroyRef, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   FormControl,
   FormGroup,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import {MatButtonModule} from '@angular/material/button';
-import {MatDialogModule, MatDialogRef} from '@angular/material/dialog';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
-import {MatSelectModule} from '@angular/material/select';
-import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
-import {MatSnackBar} from '@angular/material/snack-bar';
-import {catchError, finalize, tap} from 'rxjs/operators';
-import {of} from 'rxjs';
-import {UserRole} from '../../../../api/web-api.types';
-import {MatIconModule} from '@angular/material/icon';
-import {WebApiService} from '../../../../api/web-api.service';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { catchError, finalize, tap } from 'rxjs/operators';
+import { of } from 'rxjs';
+import { UserRole } from '../../../../api/web-api.types';
+import { MatIconModule } from '@angular/material/icon';
+import { WebApiService } from '../../../../api/web-api.service';
 
 interface CreateUserForm {
   email: FormControl<string>;
@@ -105,7 +105,7 @@ export class AdminCreateUserDialogComponent {
             this.snackBar.open(
               error.message || 'Failed to create user. Please try again.',
               'Close',
-              {duration: 5000}
+              { duration: 5000 }
             );
             return of(null);
           }),

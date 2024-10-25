@@ -1,16 +1,16 @@
-import {CommonModule} from '@angular/common';
-import {Component, inject} from '@angular/core';
-import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
-import {MatButtonModule} from '@angular/material/button';
+import { CommonModule } from '@angular/common';
+import { Component, inject } from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
 import {
   MAT_DIALOG_DATA,
   MatDialogModule,
   MatDialogRef,
 } from '@angular/material/dialog';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
-import {MatSelectModule} from '@angular/material/select';
-import {User, UserRole} from '../../../../api/web-api.types';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { User, UserRole } from '../../../../api/web-api.types';
 import { WebApiService } from '../../../../api/web-api.service';
 
 @Component({
@@ -33,7 +33,7 @@ export class UserEditRolesDialogComponent {
   readonly dialogRef = inject(MatDialogRef<UserEditRolesDialogComponent>);
   readonly availableRoles: UserRole[] = ['ADMIN'];
 
-  data = inject<{user?: User}>(MAT_DIALOG_DATA);
+  data = inject<{ user?: User }>(MAT_DIALOG_DATA);
 
   userForm = new FormGroup({
     roles: new FormControl<UserRole[]>([]),
