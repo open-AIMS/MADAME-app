@@ -2,7 +2,7 @@ name: Code Formatting Check
 
 on:
   pull_request:
-    branches: [main, develop]
+    branches: [main]
 
 jobs:
   format-check:
