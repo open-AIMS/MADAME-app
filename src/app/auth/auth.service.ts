@@ -13,7 +13,7 @@ export type AuthenticatedUser = {
 };
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: "root",
 })
 export class AuthService {
   /**
