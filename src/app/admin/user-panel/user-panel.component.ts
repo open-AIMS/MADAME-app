@@ -34,8 +34,9 @@ export class AdminPanelComponent implements OnInit {
   private webApiService = inject(WebApiService);
   authService = inject(AuthService);
 
-  dataSource = new MatTableDataSource<User>([]);
+  tableUsersList = new MatTableDataSource<User>([]);
   displayedColumns = ['email', 'roles', 'actions'];
+  selectedUser: User | undefined = undefined;
 
   ngOnInit() {
     this.loadUsers();
@@ -43,7 +44,7 @@ export class AdminPanelComponent implements OnInit {
 
   loadUsers() {
     this.webApiService.getUsers().subscribe(users => {
-      this.dataSource.data = users;
+      this.tableUsersList.data = users;
     });
   }
 

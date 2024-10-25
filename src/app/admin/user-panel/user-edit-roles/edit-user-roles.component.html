@@ -5,7 +5,7 @@
 
       <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
         <mat-dialog-content>
-          <mat-form-field appearance="outline">
+          <mat-form-field>
             <mat-label>Roles</mat-label>
             <mat-select formControlName="roles" multiple>
               <mat-option *ngFor="let role of availableRoles" [value]="role">

@@ -167,22 +167,22 @@
           <mat-icon>logout</mat-icon>
           <span>Logout</span>
         </button>
-        <button
-          mat-menu-item
-          *ngIf="authService.isAdmin() | async"
-          (click)="openAdminPanel()"
-        >
-          <mat-icon>supervised_user_circle</mat-icon>
-          <span>Manage Users</span>
-        </button>
-        <button
-          mat-menu-item
-          *ngIf="authService.isAdmin() | async"
-          (click)="openClusterAdmin()"
-        >
-          <mat-icon>dns</mat-icon>
-          <span>Manage Cluster</span>
-        </button>
+        @if (authService.isAdmin() | async) {
+          <button
+            mat-menu-item
+            (click)="openAdminPanel()"
+          >
+            <mat-icon>supervised_user_circle</mat-icon>
+            <span>Manage Users</span>
+          </button>
+          <button
+            mat-menu-item
+            (click)="openClusterAdmin()"
+          >
+            <mat-icon>dns</mat-icon>
+            <span>Manage Cluster</span>
+          </button>
+        }
       </mat-menu>
     } @else {
       <button class="profile-button" mat-raised-button (click)="openLogin()">

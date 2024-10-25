@@ -49,10 +49,10 @@ export class UserEditRolesDialogComponent {
   }
 
   onSubmit() {
-    if (this.userForm.valid) {
+    if (this.userForm.valid && this.data.user?.id) {
       const userData = this.userForm.value;
       const operation = this.webApiService.updateUserRoles(
-        this.data.user?.id!,
+        this.data.user.id,
         userData.roles!
       );
 
