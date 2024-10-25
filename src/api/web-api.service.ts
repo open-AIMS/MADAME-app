@@ -1,24 +1,32 @@
-import {inject, Injectable} from "@angular/core";
-import {HttpClient} from "@angular/common/http";
-import {environment} from "../environments/environment";
-import {LoginResponse, Note, Polygon, UserProfile} from "./web-api.types";
-import {map, Observable} from "rxjs";
+import {inject, Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {environment} from '../environments/environment';
+import {
+  LoginResponse,
+  Note,
+  Polygon,
+  User,
+  UserProfile,
+  UserRole,
+} from './web-api.types';
+import {map, Observable} from 'rxjs';
 
 // TODO import types from API
 
 /**
- * MADAME/ReefGuide Web API
- * https://github.com/open-AIMS/reefguide-web-api
+ * MADAME/ReefGuide Web API - see https://github.com/open-AIMS/reefguide-web-api
  *
  * This service provides authentication endpoints, which is used by AuthService.
+ *
+ * It also provides admin endpoints for controlling clusters and managing users.
  */
 @Injectable({
-  providedIn: "root",
+  providedIn: 'root',
 })
 export class WebApiService {
   private readonly http = inject(HttpClient);
-
   base = environment.webApiUrl;
+  baseUsers = `${environment.webApiUrl}/users`;
 
   constructor() {}
 
@@ -86,10 +94,34 @@ export class WebApiService {
   }
 
   scaleCluster(desiredCount: number) {
-    return this.http.post<void>(`${this.base}/admin/scale`, {desiredCount});
+    return this.http.post(`${this.base}/admin/scale`, {desiredCount});
   }
 
   redeployCluster() {
-    return this.http.post<void>(`${this.base}/admin/redeploy`, {});
+    return this.http.post(`${this.base}/admin/redeploy`, {});
+  }
+
+  getUsers() {
+    return this.http.get<User[]>(this.baseUsers);
+  }
+
+  getUser(id: number) {
+    return this.http.get<User>(`${this.baseUsers}/${id}`);
+  }
+
+  createUser(userData: {email: string; password: string; roles: UserRole[]}) {
+    return this.http.post<{id: number}>(this.baseUsers, userData);
+  }
+
+  updateUserRoles(userId: number, roles: UserRole[]) {
+    return this.http.put<User>(`${this.baseUsers}/${userId}/roles`, {roles});
+  }
+
+  updatePassword(userId: number, password: string) {
+    return this.http.put(`${this.baseUsers}/${userId}/password`, {password});
+  }
+
+  deleteUser(userId: number) {
+    return this.http.delete(`${this.baseUsers}/${userId}`);
   }
 }

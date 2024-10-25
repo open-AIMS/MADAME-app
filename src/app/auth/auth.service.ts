@@ -1,9 +1,9 @@
 import {inject, Injectable, Signal, signal} from "@angular/core";
-import {WebApiService} from "../../api/web-api.service";
-import {UserPayload, UserProfile} from "../../api/web-api.types";
-import {map, Observable, of, retry, switchMap} from "rxjs";
 import {toObservable} from "@angular/core/rxjs-interop";
 import {jwtDecode, JwtPayload} from "jwt-decode";
+import {map, Observable, of, retry, switchMap} from "rxjs";
+import {WebApiService} from "../../api/web-api.service";
+import {UserPayload, UserProfile} from "../../api/web-api.types";
 
 export type AuthenticatedUser = {
   user: UserPayload;
@@ -79,6 +79,21 @@ export class AuthService {
   }
 
   /**
+   * Is the user logged in and admin?
+   * @returns True iff user is logged in and an admin (ADMIN role)
+   */
+  isAdmin(): Observable<boolean> {
+    return this.user$.pipe(
+      map(user => {
+        if (!user) {
+          return false;
+        }
+        return user.roles.includes("ADMIN");
+      })
+    );
+  }
+
+  /**
    * Explicit logout request by user.
    */
   logout() {
@@ -124,7 +139,7 @@ export class AuthService {
       return false;
     }
 
-    console.log('onAuth', auth);
+    console.log("onAuth", auth);
     this.auth = auth;
     this._authenticated.set(true);
     this.scheduleTokenRefresh(token);
