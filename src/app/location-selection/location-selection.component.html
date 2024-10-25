@@ -1,81 +1,88 @@
-@let busyRegions = mapService.criteriaRequest()?.busyRegions$ | async ; @let
-isBusy = isAssessing$ | async;
+@let busyRegions = mapService.criteriaRequest()?.busyRegions$ | async;
+@let isBusy = isAssessing$ | async;
 <mat-drawer-container hasBackdrop="false" class="reef-guide">
   <mat-drawer #drawer>
-    @switch (drawerMode()) { @case ('criteria') {
-    <div class="drawer-content">
-      <mat-toolbar>
-        <span>Criteria</span>
-        <button
-          mat-button
-          (click)="criteria.reset()"
-          matTooltip="Reset all criteria to min/max"
-        >
-          Reset
-        </button>
-        <button mat-icon-button (click)="drawer.toggle(false)">
-          <mat-icon>close</mat-icon>
-        </button>
-      </mat-toolbar>
-      <app-selection-criteria #criteria></app-selection-criteria>
-      <mat-toolbar>
-        @if (isBusy) {
-        <button mat-stroked-button (click)="mapService.cancelAssess()">
-          Cancel
-        </button>
-
-        } @else if (mapService.showClear()) {
-        <button mat-button (click)="mapService.clearAssessedLayers()">
-          Clear
-        </button>
-        }
-        <span style="flex: auto"></span>
-        @if (config.mockCOGS() && config.assessLayerTypes().includes('cog')) {
-        <mat-icon
-          color="warn"
-          matTooltip="using mock COGS, criteria have no effect on COG layer"
-        >
-          warning
-        </mat-icon>
-        } @if (isBusy) {
-        <mat-progress-spinner
-          mode="indeterminate"
-          diameter="32"
-          [matTooltip]="getLoadingRegionsMessage(busyRegions)"
-        >
-        </mat-progress-spinner>
-        }
-        <button
-          mat-flat-button
-          [disabled]="isBusy"
-          (click)="onAssess(criteria.getCriteria())"
-        >
-          Assess
-        </button>
-      </mat-toolbar>
-    </div>
-    } @case ('style') {
-    <mat-toolbar>
-      <span>Layer Styling</span>
-      <button mat-icon-button (click)="drawer.toggle(false)">
-        <mat-icon>close</mat-icon>
-      </button>
-    </mat-toolbar>
-    <div class="styling-content">
-      <mat-accordion>
-        @for (layer of mapService.styledLayers(); track layer.id) {
-        <mat-expansion-panel>
-          <mat-expansion-panel-header>{{
-            layer.title
-          }}</mat-expansion-panel-header>
-          <ng-template matExpansionPanelContent>
-            <app-layer-style-editor [layer]="layer"></app-layer-style-editor>
-          </ng-template>
-        </mat-expansion-panel>
-        }
-      </mat-accordion>
-    </div>
-    } }
+    @switch (drawerMode()) {
+      @case ('criteria') {
+        <div class="drawer-content">
+          <mat-toolbar>
+            <span>Criteria</span>
+            <button
+              mat-button
+              (click)="criteria.reset()"
+              matTooltip="Reset all criteria to min/max"
+            >
+              Reset
+            </button>
+            <button mat-icon-button (click)="drawer.toggle(false)">
+              <mat-icon>close</mat-icon>
+            </button>
+          </mat-toolbar>
+          <app-selection-criteria #criteria></app-selection-criteria>
+          <mat-toolbar>
+            @if (isBusy) {
+              <button mat-stroked-button (click)="mapService.cancelAssess()">
+                Cancel
+              </button>
+            } @else if (mapService.showClear()) {
+              <button mat-button (click)="mapService.clearAssessedLayers()">
+                Clear
+              </button>
+            }
+            <span style="flex: auto"></span>
+            @if (
+              config.mockCOGS() && config.assessLayerTypes().includes('cog')
+            ) {
+              <mat-icon
+                color="warn"
+                matTooltip="using mock COGS, criteria have no effect on COG layer"
+              >
+                warning
+              </mat-icon>
+            }
+            @if (isBusy) {
+              <mat-progress-spinner
+                mode="indeterminate"
+                diameter="32"
+                [matTooltip]="getLoadingRegionsMessage(busyRegions)"
+              >
+              </mat-progress-spinner>
+            }
+            <button
+              mat-flat-button
+              [disabled]="isBusy"
+              (click)="onAssess(criteria.getCriteria())"
+            >
+              Assess
+            </button>
+          </mat-toolbar>
+        </div>
+      }
+      @case ('style') {
+        <mat-toolbar>
+          <span>Layer Styling</span>
+          <button mat-icon-button (click)="drawer.toggle(false)">
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-toolbar>
+        <div class="styling-content">
+          <mat-accordion>
+            @for (layer of mapService.styledLayers(); track layer.id) {
+              <mat-expansion-panel>
+                <mat-expansion-panel-header>{{
+                  layer.title
+                }}</mat-expansion-panel-header>
+                <ng-template matExpansionPanelContent>
+                  <app-layer-style-editor
+                    [layer]="layer"
+                  ></app-layer-style-editor>
+                </ng-template>
+              </mat-expansion-panel>
+            }
+          </mat-accordion>
+        </div>
+      }
+    }
   </mat-drawer>
   <mat-drawer-content>
     <arcgis-map
@@ -92,96 +99,95 @@ isBusy = isAssessing$ | async;
         <arcgis-legend></arcgis-legend>
       </arcgis-expand>
     </arcgis-map>
-    @if (authService.authenticated()) { @let user = authService.user$ | async ;
-    <div class="map-buttons">
-      <div class="row">
+    @if (authService.authenticated()) {
+      @let user = authService.user$ | async;
+      <div class="map-buttons">
+        <div class="row">
+          <button
+            mat-mini-fab
+            (click)="openDrawer('criteria')"
+            matTooltipPosition="right"
+            matTooltip="Adjust criteria"
+          >
+            <mat-icon>linear_scale</mat-icon>
+          </button>
+          @if (isBusy) {
+            <mat-progress-spinner
+              class="criteria-spinner"
+              mode="indeterminate"
+              diameter="32"
+              [matTooltip]="getLoadingRegionsMessage(busyRegions)"
+            >
+            </mat-progress-spinner>
+          }
+        </div>
         <button
           mat-mini-fab
-          (click)="openDrawer('criteria')"
+          (click)="openDrawer('style')"
           matTooltipPosition="right"
-          matTooltip="Adjust criteria"
+          matTooltip="Layer Style"
         >
-          <mat-icon>linear_scale</mat-icon>
+          <mat-icon>brush</mat-icon>
         </button>
-        @if (isBusy) {
-        <mat-progress-spinner
-          class="criteria-spinner"
-          mode="indeterminate"
-          diameter="32"
-          [matTooltip]="getLoadingRegionsMessage(busyRegions)"
+        <button
+          mat-mini-fab
+          (click)="mapService.toggleEditor()"
+          matTooltipPosition="right"
+          matTooltip="Notes"
         >
-        </mat-progress-spinner>
+          <mat-icon>edit_note</mat-icon>
+        </button>
+      </div>
+      <div class="center-container">
+        @let progress = mapService.progress$ | async;
+        @if (progress != null) {
+          <mat-progress-bar
+            class="layer-progress"
+            [value]="progress * 100"
+            [style.visibility]="progress === 1 ? 'hidden' : 'visible'"
+          >
+          </mat-progress-bar>
         }
       </div>
       <button
+        class="profile-button"
         mat-mini-fab
-        (click)="openDrawer('style')"
-        matTooltipPosition="right"
-        matTooltip="Layer Style"
+        [matMenuTriggerFor]="profileMenu"
+        [matTooltip]="user?.email"
+        matTooltipPosition="left"
       >
-        <mat-icon>brush</mat-icon>
+        <mat-icon>account_circle</mat-icon>
       </button>
-      <button
-        mat-mini-fab
-        (click)="mapService.toggleEditor()"
-        matTooltipPosition="right"
-        matTooltip="Notes"
-      >
-        <mat-icon>edit_note</mat-icon>
-      </button>
-      <button
-        mat-mini-fab
-        *ngIf="authService.isAdmin() | async"
-        (click)="openAdminPanel()"
-        matTooltipPosition="right"
-        matTooltip="Manage Users"
-      >
-        <mat-icon>supervised_user_circle</mat-icon>
-      </button>
-
-      <button
-        mat-mini-fab
-        *ngIf="authService.isAdmin() | async"
-        (click)="openClusterAdmin()"
-        matTooltipPosition="right"
-        matTooltip="Manage Cluster"
-      >
-        <mat-icon>dns</mat-icon>
-      </button>
-    </div>
-    <div class="center-container">
-      @let progress = mapService.progress$ | async; @if (progress != null) {
-      <mat-progress-bar
-        class="layer-progress"
-        [value]="progress * 100"
-        [style.visibility]="progress === 1 ? 'hidden' : 'visible'"
-      >
-      </mat-progress-bar>
-      }
-    </div>
-    <button
-      class="profile-button"
-      mat-mini-fab
-      [matMenuTriggerFor]="profileMenu"
-      [matTooltip]="user?.email"
-      matTooltipPosition="left"
-    >
-      <mat-icon>account_circle</mat-icon>
-    </button>
-    <mat-menu #profileMenu="matMenu">
-      <button mat-menu-item (click)="openConfig()">
-        <mat-icon>settings</mat-icon>
-        <span>Settings</span>
-      </button>
-      <button mat-menu-item (click)="authService.logout()">
-        <mat-icon>logout</mat-icon>
-        <span>Logout</span>
-      </button>
-    </mat-menu>
+      <mat-menu #profileMenu="matMenu">
+        <button mat-menu-item (click)="openConfig()">
+          <mat-icon>settings</mat-icon>
+          <span>Settings</span>
+        </button>
+        <button mat-menu-item (click)="authService.logout()">
+          <mat-icon>logout</mat-icon>
+          <span>Logout</span>
+        </button>
+        <button
+          mat-menu-item
+          *ngIf="authService.isAdmin() | async"
+          (click)="openAdminPanel()"
+        >
+          <mat-icon>supervised_user_circle</mat-icon>
+          <span>Manage Users</span>
+        </button>
+        <button
+          mat-menu-item
+          *ngIf="authService.isAdmin() | async"
+          (click)="openClusterAdmin()"
+        >
+          <mat-icon>dns</mat-icon>
+          <span>Manage Cluster</span>
+        </button>
+      </mat-menu>
     } @else {
-    <button class="profile-button" mat-raised-button (click)="openLogin()">
-      Login
-    </button>
+      <button class="profile-button" mat-raised-button (click)="openLogin()">
+        Login
+      </button>
     }
   </mat-drawer-content>
 </mat-drawer-container>

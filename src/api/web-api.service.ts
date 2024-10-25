@@ -1,8 +1,8 @@
-import {inject, Injectable} from "@angular/core";
-import {HttpClient} from "@angular/common/http";
-import {environment} from "../environments/environment";
-import {LoginResponse, Note, Polygon, UserProfile} from "./web-api.types";
-import {map, Observable} from "rxjs";
+import {inject, Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {environment} from '../environments/environment';
+import {LoginResponse, Note, Polygon, User, UserProfile, UserRole} from './web-api.types';
+import {map, Observable} from 'rxjs';
 
 // TODO import types from API
 
@@ -13,12 +13,12 @@ import {map, Observable} from "rxjs";
  * This service provides authentication endpoints, which is used by AuthService.
  */
 @Injectable({
-  providedIn: "root",
+  providedIn: 'root',
 })
 export class WebApiService {
   private readonly http = inject(HttpClient);
-
   base = environment.webApiUrl;
+  baseUrl = `${environment.webApiUrl}/users`;
 
   constructor() {}
 
@@ -89,7 +89,7 @@ export class WebApiService {
     return this.http.post(
       `${this.base}/admin/scale`,
       {desiredCount},
-      {responseType: "text"}
+      {responseType: 'text'}
     );
   }
 
@@ -97,7 +97,35 @@ export class WebApiService {
     return this.http.post(
       `${this.base}/admin/redeploy`,
       {},
-      {responseType: "text"}
+      {responseType: 'text'}
     );
+  }
+
+  getUsers() {
+    return this.http.get<User[]>(this.baseUrl);
+  }
+
+  getUser(id: number) {
+    return this.http.get<User>(`${this.baseUrl}/${id}`);
+  }
+
+  createUser(userData: {email: string; password: string; roles: UserRole[]}) {
+    return this.http.post<{id: number}>(this.baseUrl, userData);
+  }
+
+  updateUserRoles(userId: number, roles: UserRole[]) {
+    return this.http.put<User>(`${this.baseUrl}/${userId}/roles`, {roles});
+  }
+
+  updatePassword(userId: number, password: string) {
+    return this.http.put(
+      `${this.baseUrl}/${userId}/password`,
+      {password},
+      {responseType: 'text'}
+    );
+  }
+
+  deleteUser(userId: number) {
+    return this.http.delete(`${this.baseUrl}/${userId}`);
   }
 }

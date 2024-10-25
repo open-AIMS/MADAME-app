@@ -12,7 +12,6 @@ import {
   withInterceptors,
 } from '@angular/common/http';
 import { authInterceptor } from './auth/auth-http-interceptor';
-import { AdminService } from './admin/admin.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -20,6 +19,5 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes, withComponentInputBinding()),
     provideAnimationsAsync(),
     provideHttpClient(withFetch(), withInterceptors([authInterceptor])),
-    AdminService,
   ],
 };

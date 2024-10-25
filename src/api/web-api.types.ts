@@ -21,3 +21,9 @@ export type UserRole = 'ADMIN';
 export type Polygon = any;
 
 export type Note = any;
+
+export interface User {
+  id: number;
+  email: string;
+  roles: UserRole[];
+}

@@ -1,0 +1,75 @@
+    <div class="admin-panel">
+      <h2 mat-dialog-title>Admin User Management</h2>
+
+      <mat-dialog-content>
+        <div class="table-container">
+          <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+            <!-- Email Column -->
+            <ng-container matColumnDef="email">
+              <th mat-header-cell *matHeaderCellDef>Email</th>
+              <td mat-cell *matCellDef="let user">{{ user.email }}</td>
+            </ng-container>
+
+            <!-- Roles Column -->
+            <ng-container matColumnDef="roles">
+              <th mat-header-cell *matHeaderCellDef>Roles</th>
+              <td mat-cell *matCellDef="let user">
+                <div class="role-chips">
+                  <span class="role-chip" *ngFor="let role of user.roles">
+                    {{ role }}
+                  </span>
+                </div>
+              </td>
+            </ng-container>
+
+            <!-- Actions Column -->
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>Actions</th>
+              <td mat-cell *matCellDef="let user">
+                <button
+                  mat-icon-button
+                  [matMenuTriggerFor]="menu"
+                  aria-label="User actions"
+                >
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                  <button mat-menu-item (click)="editUserRoles(user)">
+                    <mat-icon>manage_accounts</mat-icon>
+                    <span>Edit Roles</span>
+                  </button>
+                  <button mat-menu-item (click)="changePassword(user)">
+                    <mat-icon>password</mat-icon>
+                    <span>Change Password</span>
+                  </button>
+                  @if ((authService.user$ | async)?.email !== user.email) {
+                    <button
+                      mat-menu-item
+                      (click)="deleteUser(user.id)"
+                      class="delete-action"
+                    >
+                      <mat-icon color="warn">delete</mat-icon>
+                      <span class="warn-text">Delete User</span>
+                    </button>
+                  }
+                </mat-menu>
+              </td>
+            </ng-container>
+
+            <tr
+              mat-header-row
+              *matHeaderRowDef="displayedColumns; sticky: true"
+            ></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+          </table>
+        </div>
+      </mat-dialog-content>
+
+      <mat-dialog-actions align="end" class="dialog-actions">
+        <button mat-flat-button color="primary" (click)="addNewUser()">
+          <mat-icon>add</mat-icon>
+          Add User
+        </button>
+        <button mat-button mat-dialog-close>Close</button>
+      </mat-dialog-actions>
+    </div>
