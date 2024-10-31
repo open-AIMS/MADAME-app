@@ -24,8 +24,8 @@
           [max]="c.max"
           [step]="c.step ?? 1"
           snap
-          [minValue]="c.min"
-          [maxValue]="c.max"
+          [minValue]="c.minValue ?? c.min"
+          [maxValue]="c.maxValue ?? c.max"
           labelHandles
         ></calcite-slider>
       </div>

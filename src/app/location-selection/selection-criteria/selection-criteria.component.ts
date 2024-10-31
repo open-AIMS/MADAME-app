@@ -38,7 +38,9 @@ interface SelectionCriteriaInputDef {
   name: string;
   desc?: string;
   min: number;
+  minValue?: number;
   max: number;
+  maxValue?: number;
   step?: number;
 }
 
@@ -78,8 +80,10 @@ export class SelectionCriteriaComponent {
       id: 'Depth',
       name: 'Depth (m)',
       // Bathy: -9.0:-2.0
-      min: -10,
-      max: 0,
+      // UI is positive, but API takes negative numbers
+      min: 0,
+      max: 16,
+      maxValue: 10,
       step: 0.5,
     },
     {
@@ -100,7 +104,8 @@ export class SelectionCriteriaComponent {
       id: 'WavesHs',
       name: ' Significant Wave Height (Hs)',
       min: 0,
-      max: 1,
+      max: 6,
+      maxValue: 1,
       step: 0.1,
     },
     {
@@ -108,7 +113,8 @@ export class SelectionCriteriaComponent {
       name: 'Wave Period',
       // Wave Period: 0.0:6.0
       min: 0,
-      max: 6,
+      max: 9,
+      maxValue: 6,
       step: 0.5,
     },
   ];
@@ -133,6 +139,10 @@ export class SelectionCriteriaComponent {
   getCriteria(): CriteriaAssessment {
     const valueEntries = this.sliders.map(s => [s.name, s.value]);
     const criteria = Object.fromEntries(valueEntries);
+
+    // convert Depth to negative values required by API. [-10, -2]
+    const depth = criteria.Depth;
+    criteria.Depth =[-depth[1], -depth[0]];
 
     let siteSuitability: SiteSuitabilityCriteria | undefined = undefined;
     if (this.enableSiteSuitability() && this.siteForm.valid) {
