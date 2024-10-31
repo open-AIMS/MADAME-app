@@ -156,12 +156,18 @@ export class SelectionCriteriaComponent {
   }
 
   /**
-   * Reset all criteria to min/max.
+   * Reset all criteria to default values.
    */
   reset() {
+    const { criteria } = this;
     this.sliders.forEach(s => {
-      s.minValue = s.min;
-      s.maxValue = s.max;
+      const c = criteria.find(c => c.id === s.name);
+      if (c === undefined) {
+        console.warn(`No criteria with id="${s.name}"`, s);
+        return;
+      }
+      s.minValue = c.minValue ?? c.min;
+      s.maxValue = c.maxValue ?? c.max;
     });
   }
 }
