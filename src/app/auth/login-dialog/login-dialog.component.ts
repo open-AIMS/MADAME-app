@@ -13,6 +13,7 @@ import { merge, take } from 'rxjs';
 import { extractErrorMessage } from '../../../api/api-util';
 import { WebApiService } from '../../../api/web-api.service';
 import { AuthService } from '../auth.service';
+import {MatProgressBar} from "@angular/material/progress-bar";
 
 type Modes = 'register' | 'login';
 
@@ -27,6 +28,7 @@ type Credentials = { email: string; password: string };
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
+    MatProgressBar,
   ],
   templateUrl: './login-dialog.component.html',
   styleUrl: './login-dialog.component.scss',
@@ -70,6 +72,7 @@ export class LoginDialogComponent {
   private login(value: Credentials) {
     console.info('login', value.email);
     this.busy.set(true);
+    this.form.disable();
     this.authService.login(value.email, value.password).subscribe({
       next: () => {
         this.busy.set(false);
@@ -82,6 +85,7 @@ export class LoginDialogComponent {
   private register(value: Credentials) {
     console.info('register', value.email);
     this.busy.set(true);
+    this.form.disable();
     this.api.register(value).subscribe({
       next: () => {
         console.log('registered, logging in', value.email);
@@ -93,6 +97,7 @@ export class LoginDialogComponent {
 
   private handleError(error: any) {
     this.busy.set(false);
+    this.form.enable();
     const errorMessage = extractErrorMessage(error);
     this.errorMessage.set(errorMessage);
 

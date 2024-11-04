@@ -1,5 +1,6 @@
 @let m = mode();
 @let actionLabel = m === 'register' ? 'Register' : 'Login';
+@let isBusy = busy();
 <h2 mat-dialog-title>{{ actionLabel }}</h2>
 <mat-dialog-content>
   @if (m === 'register') {
@@ -28,6 +29,7 @@
       />
     </mat-form-field>
   </form>
+  <mat-progress-bar mode="indeterminate" [style.visibility]="isBusy?'visible':'hidden'"></mat-progress-bar>
   @if (errorMessage()) {
     <p class="error-message">{{ errorMessage() }}</p>
   }
@@ -41,7 +43,7 @@
 
   <button
     mat-flat-button
-    [disabled]="!form.valid || busy()"
+    [disabled]="!form.valid || isBusy"
     (click)="onSubmit()"
   >
     {{ actionLabel }}
