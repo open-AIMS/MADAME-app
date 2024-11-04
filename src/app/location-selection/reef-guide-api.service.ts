@@ -51,13 +51,13 @@ export class ReefGuideApiService {
     return `${url}?${searchParams}`;
   }
 
-  getSiteSuitability(
+  siteSuitabilityUrlForCriteria(
     region: string,
     criteria: SelectionCriteria,
     suitabilityCriteria: SiteSuitabilityCriteria
-  ): Observable<any> {
+  ): string {
     if (this.config.mockSiteSuitability()) {
-      return this.http.get(`${this.publicBase}/example-site-suitability/${region}.json`)
+      return `${this.publicBase}/example-site-suitability/${region}.json`;
     }
 
     const rtype = 'slopes';
@@ -69,7 +69,16 @@ export class ReefGuideApiService {
     for (const [key, value] of Object.entries(suitabilityCriteria)) {
       url.searchParams.set(key, value);
     }
-    return this.http.get(url.toString());
+    return url.toString();
+  }
+
+  getSiteSuitability(
+    region: string,
+    criteria: SelectionCriteria,
+    suitabilityCriteria: SiteSuitabilityCriteria
+  ): Observable<any> {
+    const url = this.siteSuitabilityUrlForCriteria(region, criteria, suitabilityCriteria);
+    return this.http.get(url);
   }
 
   private addCriteriaToParams(

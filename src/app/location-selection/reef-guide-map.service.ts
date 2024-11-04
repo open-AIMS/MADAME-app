@@ -16,14 +16,7 @@ import GroupLayer from '@arcgis/core/layers/GroupLayer';
 import TileLayer from '@arcgis/core/layers/TileLayer';
 import { ReefGuideApiService } from './reef-guide-api.service';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
-import {
-  BehaviorSubject,
-  mergeMap,
-  of,
-  Subject,
-  takeUntil,
-  throttleTime,
-} from 'rxjs';
+import { BehaviorSubject, mergeMap, of, Subject, throttleTime } from 'rxjs';
 import {
   CriteriaRequest,
   ReadyRegion,
@@ -255,7 +248,7 @@ export class ReefGuideMapService {
     }
     const groupLayer = new GroupLayer({
       title,
-      listMode: 'hide-children'
+      listMode: 'hide-children',
     });
     this.cogAssessRegionsGroupLayer.set(groupLayer);
     this.map.addLayer(groupLayer);
@@ -331,37 +324,21 @@ export class ReefGuideMapService {
     this.map.addLayer(groupLayer);
     this.siteSuitabilityLayer.set(groupLayer);
 
-    // TODO signal tap rxjs util
+    // TODO[OpenLayers] site suitability loading indicator
     // rework multi-request progress tracking, review CriteriaRequest
-    this.siteSuitabilityLoading.set(true);
+    // this.siteSuitabilityLoading.set(true);
     for (const region of regions) {
-      this.api
-        .getSiteSuitability(region, criteria, siteCriteria)
-        .pipe(takeUntil(this.cancelAssess$))
-        .subscribe({
-          next: geoJson => {
-            // TODO[OpenLayers] avoid ObjectURL, just give url directly
-            // this was the example code, but only benefit is it makes progress tracking easier.
-            const blob = new Blob([JSON.stringify(geoJson)], {
-              type: 'application/json',
-            });
-            const url = URL.createObjectURL(blob);
+      const url = this.api.siteSuitabilityUrlForCriteria(
+        region,
+        criteria,
+        siteCriteria
+      );
+      const layer = new GeoJSONLayer({
+        title: `Site Suitability (${region})`,
+        url,
+      });
 
-            const layer = new GeoJSONLayer({
-              title: `Site Suitability (${region})`,
-              url,
-            });
-
-            groupLayer.add(layer);
-          },
-          error: () => {
-            this.siteSuitabilityLoading.set(false);
-          },
-          complete: () => {
-            // complete or cancel
-            this.siteSuitabilityLoading.set(false);
-          },
-        });
+      groupLayer.add(layer);
     }
   }
 
