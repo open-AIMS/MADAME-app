@@ -107,7 +107,7 @@ export class ReefGuideMapService {
   private readonly tilesAssessRegionsGroupLayer = signal<
     GroupLayer | undefined
   >(undefined);
-  private readonly siteSuitabilityLayer = signal<GeoJSONLayer | undefined>(
+  private readonly siteSuitabilityLayer = signal<GroupLayer | undefined>(
     undefined
   );
 
@@ -255,6 +255,7 @@ export class ReefGuideMapService {
     }
     const groupLayer = new GroupLayer({
       title,
+      listMode: 'hide-children'
     });
     this.cogAssessRegionsGroupLayer.set(groupLayer);
     this.map.addLayer(groupLayer);
@@ -321,40 +322,47 @@ export class ReefGuideMapService {
     criteria: SelectionCriteria,
     siteCriteria: SiteSuitabilityCriteria
   ) {
-    // TODO multi-region
-    const region = this.config.enabledRegions()[0];
+    const regions = this.config.enabledRegions();
+
+    const groupLayer = new GroupLayer({
+      title: 'Site Suitability',
+      listMode: 'hide-children',
+    });
+    this.map.addLayer(groupLayer);
+    this.siteSuitabilityLayer.set(groupLayer);
 
     // TODO signal tap rxjs util
+    // rework multi-request progress tracking, review CriteriaRequest
     this.siteSuitabilityLoading.set(true);
-    this.api
-      .getSiteSuitability(region, criteria, siteCriteria)
-      .pipe(takeUntil(this.cancelAssess$))
-      .subscribe({
-        next: geoJson => {
-          console.log('geoJson', geoJson);
+    for (const region of regions) {
+      this.api
+        .getSiteSuitability(region, criteria, siteCriteria)
+        .pipe(takeUntil(this.cancelAssess$))
+        .subscribe({
+          next: geoJson => {
+            // TODO[OpenLayers] avoid ObjectURL, just give url directly
+            // this was the example code, but only benefit is it makes progress tracking easier.
+            const blob = new Blob([JSON.stringify(geoJson)], {
+              type: 'application/json',
+            });
+            const url = URL.createObjectURL(blob);
 
-          // TODO just give url directly
-          const blob = new Blob([JSON.stringify(geoJson)], {
-            type: 'application/json',
-          });
-          const url = URL.createObjectURL(blob);
+            const layer = new GeoJSONLayer({
+              title: `Site Suitability (${region})`,
+              url,
+            });
 
-          const layer = new GeoJSONLayer({
-            title: 'Site Suitability',
-            url,
-          });
-
-          this.map.addLayer(layer);
-          this.siteSuitabilityLayer.set(layer);
-        },
-        error: () => {
-          this.siteSuitabilityLoading.set(false);
-        },
-        complete: () => {
-          // complete or cancel
-          this.siteSuitabilityLoading.set(false);
-        },
-      });
+            groupLayer.add(layer);
+          },
+          error: () => {
+            this.siteSuitabilityLoading.set(false);
+          },
+          complete: () => {
+            // complete or cancel
+            this.siteSuitabilityLoading.set(false);
+          },
+        });
+    }
   }
 
   /**

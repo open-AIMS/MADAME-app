@@ -16,6 +16,9 @@ export class ReefGuideApiService {
 
   private readonly base: string = environment.reefGuideApiUrl;
 
+  // URL where public contents are deployed.
+  private readonly publicBase = '';
+
   constructor(private http: HttpClient) {}
 
   /**
@@ -23,7 +26,7 @@ export class ReefGuideApiService {
    */
   cogUrlForCriteria(region: string, criteria: SelectionCriteria): string {
     if (this.config.mockCOGS()) {
-      return `http://localhost:4200/cached-slopes/slopes_${region}.tiff`;
+      return `${this.publicBase}/example-slopes/slopes_${region}.tiff`;
     }
 
     // http://127.0.0.1:8000/assess/Cairns-Cooktown/slopes?criteria_names=Depth,Slope&lb=-9.0,0.0&ub=-2.0,40.0
@@ -53,6 +56,10 @@ export class ReefGuideApiService {
     criteria: SelectionCriteria,
     suitabilityCriteria: SiteSuitabilityCriteria
   ): Observable<any> {
+    if (this.config.mockSiteSuitability()) {
+      return this.http.get(`${this.publicBase}/example-site-suitability/${region}.json`)
+    }
+
     const rtype = 'slopes';
     const url = new URL(
       `/suitability/site-suitability/${region}/${rtype}`,

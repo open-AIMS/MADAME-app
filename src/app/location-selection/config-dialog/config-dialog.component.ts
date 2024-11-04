@@ -21,6 +21,7 @@ import { combineLatest, map, Observable, startWith } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { MatTabsModule } from '@angular/material/tabs';
+import {AuthService} from "../../auth/auth.service";
 
 @Component({
   selector: 'app-config-dialog',
@@ -49,6 +50,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 export class ConfigDialogComponent {
   readonly config = inject(ReefGuideConfigService);
   readonly dialogRef = inject(MatDialogRef<ConfigDialogComponent>);
+  readonly authService = inject(AuthService);
 
   mapChoices = MAPS;
   regionChoices = ALL_REGIONS;
@@ -59,6 +61,7 @@ export class ConfigDialogComponent {
   parallelRegionRequests: FormControl;
   assessLayerTypes: FormControl;
   mockCOGS: FormControl;
+  mockSiteSuitability: FormControl;
 
   arcgisItemUrl: Observable<string | undefined>;
 
@@ -72,6 +75,17 @@ export class ConfigDialogComponent {
     );
     this.assessLayerTypes = new FormControl(this.config.assessLayerTypes());
     this.mockCOGS = new FormControl(this.config.mockCOGS());
+    this.mockSiteSuitability = new FormControl(this.config.mockSiteSuitability());
+    this.mockSiteSuitability.disable();
+
+    this.authService.isAdmin().subscribe(isAdmin => {
+      if (isAdmin) {
+        this.mockSiteSuitability.enable();
+      } else {
+        this.mockSiteSuitability.disable();
+      }
+    })
+
 
     // determine ArcGIS item URL for the current selection.
     this.arcgisItemUrl = combineLatest([
@@ -124,6 +138,10 @@ export class ConfigDialogComponent {
 
     if (this.mockCOGS.dirty) {
       config.mockCOGS.set(this.mockCOGS.value);
+    }
+
+    if (this.mockSiteSuitability.dirty) {
+      config.mockSiteSuitability.set(this.mockSiteSuitability.value);
     }
 
     this.dialogRef.close();

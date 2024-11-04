@@ -31,6 +31,7 @@ import {
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { MatSlideToggle } from '@angular/material/slide-toggle';
+import {ReefGuideConfigService} from "../reef-guide-config.service";
 
 interface SelectionCriteriaInputDef {
   // field/id used by API
@@ -69,6 +70,7 @@ interface SelectionCriteriaInputDef {
 export class SelectionCriteriaComponent {
   readonly mapService = inject(ReefGuideMapService);
   readonly formBuilder = inject(FormBuilder);
+  readonly config = inject(ReefGuideConfigService);
 
   /*
   Distance to Nearest Port (NM): 0.0:200.0

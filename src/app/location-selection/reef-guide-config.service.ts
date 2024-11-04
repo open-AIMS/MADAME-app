@@ -1,11 +1,14 @@
 import {
   computed,
   effect,
+  inject,
   Injectable,
   Signal,
   signal,
   WritableSignal,
 } from '@angular/core';
+import { AuthService } from '../auth/auth.service';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 type AssessLayerTypes = 'tile' | 'cog';
 
@@ -16,9 +19,11 @@ interface StoredConfig {
   parallelRegionRequests: boolean;
   assessLayerTypes: Array<AssessLayerTypes>;
   mockCOGS: boolean;
+  mockSiteSuitability: boolean;
 }
 
 const VALUE_SEPARATOR = '\x1F';
+
 function getArray(val: string): Array<string> {
   return val.split(VALUE_SEPARATOR);
 }
@@ -38,6 +43,7 @@ const configVarGetters: Partial<
   assessLayerTypes: getArray,
   parallelRegionRequests: getBoolean,
   mockCOGS: getBoolean,
+  mockSiteSuitability: getBoolean,
 };
 
 interface Map {
@@ -75,6 +81,8 @@ export const ALL_REGIONS = [
   providedIn: 'root',
 })
 export class ReefGuideConfigService {
+  readonly authService = inject(AuthService);
+
   /**
    * ID of predefined ArcGIS map.
    */
@@ -103,11 +111,18 @@ export class ReefGuideConfigService {
    */
   mockCOGS: WritableSignal<boolean>;
 
+  /**
+   * Use mock site suitability json.
+   */
+  mockSiteSuitability: WritableSignal<boolean>;
+
   // computed signals
   /**
    * ArcGIS item id for arcgisMap.
    */
   arcgisMapItemId: Signal<string>;
+
+  isAdmin = toSignal(this.authService.isAdmin());
 
   /**
    * Disables set from writing to local storage
@@ -117,6 +132,7 @@ export class ReefGuideConfigService {
   private readonly prefix = 'rg.';
 
   constructor() {
+
     this.arcgisMap = signal(this.get('arcgisMap', DEFAULT_MAP.id));
     this.customArcgisMapItemId = signal(this.get('customArcgisMapItemId'));
 
@@ -143,6 +159,18 @@ export class ReefGuideConfigService {
     this.assessLayerTypes = signal(this.get('assessLayerTypes', ['tile']));
     this.mockCOGS = signal(this.get('mockCOGS', false));
 
+    this.mockSiteSuitability = signal(this.get('mockSiteSuitability', true));
+
+    effect(
+      () => {
+        if (this.isAdmin() !== true) {
+          // must mock if not ADMIN role.
+          this.mockSiteSuitability.set(true);
+        }
+      },
+      { allowSignalWrites: true }
+    );
+
     effect(() => this.set('arcgisMap', this.arcgisMap()));
     effect(() =>
       this.set('customArcgisMapItemId', this.customArcgisMapItemId())
@@ -153,6 +181,7 @@ export class ReefGuideConfigService {
     );
     effect(() => this.set('assessLayerTypes', this.assessLayerTypes()));
     effect(() => this.set('mockCOGS', this.mockCOGS()));
+    effect(() => this.set('mockSiteSuitability', this.mockSiteSuitability()));
 
     // ignore the first effect, which would set the initial value.
     // effects are async, so run in microtask.

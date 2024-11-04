@@ -1,4 +1,5 @@
-<h2 mat-dialog-title>Configuration</h2>
+@let isAdmin = authService.isAdmin() | async;
+<h2 mat-dialog-title>Configuration {{ isAdmin }}</h2>
 <mat-dialog-content>
   <mat-tab-group dynamicHeight>
     <mat-tab label="Map">
@@ -60,7 +61,14 @@
         [formControl]="mockCOGS"
         matTooltip="Always use mock COGs regardless of criteria selection"
       >
-        Mock COG Requests
+        Example COG Requests
+      </mat-checkbox>
+
+      <mat-checkbox
+        [formControl]="mockSiteSuitability"
+        matTooltip="Always use mock site suitability regardless of criteria selection"
+        >
+        Example Site Suitability
       </mat-checkbox>
     </mat-tab>
   </mat-tab-group>
