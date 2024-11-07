@@ -29,7 +29,10 @@
       />
     </mat-form-field>
   </form>
-  <mat-progress-bar mode="indeterminate" [style.visibility]="isBusy?'visible':'hidden'"></mat-progress-bar>
+  <mat-progress-bar
+    mode="indeterminate"
+    [style.visibility]="isBusy ? 'visible' : 'hidden'"
+  ></mat-progress-bar>
   @if (errorMessage()) {
     <p class="error-message">{{ errorMessage() }}</p>
   }
