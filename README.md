@@ -26,9 +26,18 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
 
 ## Development server
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`.
+The application will automatically reload if you change any of the source files.
 
 The APIs are proxied to avoid CSRF issues; see [proxy.conf.json](src/proxy.conf.json)
+
+A working ReefGuide Web API instances is also needed.
+
+If a local instance is desired, clone and set up the Web API following the instructions
+[here](https://github.com/open-AIMS/reefguide-web-api).
+
+The `webApiUrl` entry in the configuration file needs to point to this, or an alternate,
+API instance. See the *Configuration* section.
 
 ## Code scaffolding
 
