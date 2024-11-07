@@ -10,8 +10,8 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 version 18.0.6.
 
 **One-time setup:**
-1. Install [Node v22](https://nodejs.org/en/download/package-manager)
-  In a Linux environment consider using [Node Version Manager](https://github.com/nvm-sh/nvm).
+1. Install [Node v22](https://nodejs.org/en/download/package-manager)\
+   In a Linux environment consider using [Node Version Manager](https://github.com/nvm-sh/nvm).
 2. `npm install -g @angular/cli`
 3. `npm install`
 
