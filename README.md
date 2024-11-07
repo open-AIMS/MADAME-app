@@ -6,10 +6,11 @@ platform and CoralBlox model. This project also contains the Reef Guide app.
 
 ## Angular Developer Setup
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.0.6.
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli)
+version 18.0.6.
 
 **One-time setup:**
-1. Install [Node v22](https://nodejs.org/en/download/package-manager)  
+1. Install [Node v22](https://nodejs.org/en/download/package-manager)
   In a Linux environment consider using [Node Version Manager](https://github.com/nvm-sh/nvm).
 2. `npm install -g @angular/cli`
 3. `npm install`
@@ -31,13 +32,16 @@ Run `ng generate component component-name` to generate a new component. You can 
 
 ## Configuration
 
-The environment pattern is used for configuration. During development, [environment.development.ts](src/environments/environment.development.ts) is used. The APIs are proxied by the local dev server to avoid CORS issues, see [proxy.conf.json](src/proxy.conf.json)
+The environment pattern is used for configuration. During development,
+[environment.development.ts](src/environments/environment.development.ts) is used. The APIs
+are proxied by the local dev server to avoid CORS issues, see [proxy.conf.json](src/proxy.conf.json).
 
 The production build uses [environment.ts](src/environments/environment.ts).
 
 ## Build
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+Run `ng build` to build the project. The build artifacts will be stored in the `dist/`
+directory.
 
 ## Deploy
 
@@ -53,7 +57,8 @@ Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.
 
 ## Running end-to-end tests
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this
+command, you need to first add a package that implements end-to-end testing capabilities.
 
 ## Further help
 
