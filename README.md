@@ -15,8 +15,12 @@ version 18.0.6.
 2. `npm install -g @angular/cli`
 3. `npm install`
 
-If you encounter a PowerShell script security error,
-[fix Powershell execution policy](https://angular.dev/tools/cli/setup-local#powershell-execution-policy).
+A script security error may be raised if using PowerShell.
+If this occurs, run the following to [fix Powershell execution policy](https://angular.dev/tools/cli/setup-local#powershell-execution-policy):
+
+```shell
+Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+```
 
 *--legacy-peer-deps* will be necessary until ArcGIS updates peer deps to Angular 18.
 
