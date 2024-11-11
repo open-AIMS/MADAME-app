@@ -31,7 +31,7 @@ import {
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { MatSlideToggle } from '@angular/material/slide-toggle';
-import {ReefGuideConfigService} from "../reef-guide-config.service";
+import { ReefGuideConfigService } from '../reef-guide-config.service';
 
 interface SelectionCriteriaInputDef {
   // field/id used by API
@@ -144,7 +144,7 @@ export class SelectionCriteriaComponent {
 
     // convert Depth to negative values required by API. [-10, -2]
     const depth = criteria.Depth;
-    criteria.Depth =[-depth[1], -depth[0]];
+    criteria.Depth = [-depth[1], -depth[0]];
 
     let siteSuitability: SiteSuitabilityCriteria | undefined = undefined;
     if (this.enableSiteSuitability() && this.siteForm.valid) {

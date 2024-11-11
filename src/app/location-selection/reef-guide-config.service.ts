@@ -132,7 +132,6 @@ export class ReefGuideConfigService {
   private readonly prefix = 'rg.';
 
   constructor() {
-
     this.arcgisMap = signal(this.get('arcgisMap', DEFAULT_MAP.id));
     this.customArcgisMapItemId = signal(this.get('customArcgisMapItemId'));
 

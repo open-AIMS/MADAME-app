@@ -21,7 +21,7 @@ import { combineLatest, map, Observable, startWith } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { MatTabsModule } from '@angular/material/tabs';
-import {AuthService} from "../../auth/auth.service";
+import { AuthService } from '../../auth/auth.service';
 
 @Component({
   selector: 'app-config-dialog',
@@ -75,7 +75,9 @@ export class ConfigDialogComponent {
     );
     this.assessLayerTypes = new FormControl(this.config.assessLayerTypes());
     this.mockCOGS = new FormControl(this.config.mockCOGS());
-    this.mockSiteSuitability = new FormControl(this.config.mockSiteSuitability());
+    this.mockSiteSuitability = new FormControl(
+      this.config.mockSiteSuitability()
+    );
     this.mockSiteSuitability.disable();
 
     this.authService.isAdmin().subscribe(isAdmin => {
@@ -84,8 +86,7 @@ export class ConfigDialogComponent {
       } else {
         this.mockSiteSuitability.disable();
       }
-    })
-
+    });
 
     // determine ArcGIS item URL for the current selection.
     this.arcgisItemUrl = combineLatest([

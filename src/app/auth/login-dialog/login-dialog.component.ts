@@ -13,7 +13,7 @@ import { merge, take } from 'rxjs';
 import { extractErrorMessage } from '../../../api/api-util';
 import { WebApiService } from '../../../api/web-api.service';
 import { AuthService } from '../auth.service';
-import {MatProgressBar} from "@angular/material/progress-bar";
+import { MatProgressBar } from '@angular/material/progress-bar';
 
 type Modes = 'register' | 'login';
 

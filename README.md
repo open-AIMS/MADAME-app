@@ -6,24 +6,38 @@ platform and CoralBlox model. This project also contains the Reef Guide app.
 
 ## Angular Developer Setup
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.0.6.
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli)
+version 18.0.6.
 
 **One-time setup:**
-1. Install [Node v22](https://nodejs.org/en/download/package-manager)  
-  In a Linux environment consider using [Node Version Manager](https://github.com/nvm-sh/nvm).
+1. Install [Node v22](https://nodejs.org/en/download/package-manager)\
+   In a Linux environment consider using [Node Version Manager](https://github.com/nvm-sh/nvm).
 2. `npm install -g @angular/cli`
 3. `npm install`
 
-If you encounter a PowerShell script security error,
-[fix Powershell execution policy](https://angular.dev/tools/cli/setup-local#powershell-execution-policy).
+A script security error may be raised if using PowerShell.
+If this occurs, run the following to [fix Powershell execution policy](https://angular.dev/tools/cli/setup-local#powershell-execution-policy):
+
+```shell
+Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+```
 
 *--legacy-peer-deps* will be necessary until ArcGIS updates peer deps to Angular 18.
 
 ## Development server
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`.
+The application will automatically reload if you change any of the source files.
 
 The APIs are proxied to avoid CSRF issues; see [proxy.conf.json](src/proxy.conf.json)
+
+A working ReefGuide Web API instances is also needed.
+
+If a local instance is desired, clone and set up the Web API following the instructions
+[here](https://github.com/open-AIMS/reefguide-web-api).
+
+The `webApiUrl` entry in the configuration file needs to point to this, or an alternate,
+API instance. See the *Configuration* section.
 
 ## Code scaffolding
 
@@ -31,13 +45,16 @@ Run `ng generate component component-name` to generate a new component. You can 
 
 ## Configuration
 
-The environment pattern is used for configuration. During development, [environment.development.ts](src/environments/environment.development.ts) is used. The APIs are proxied by the local dev server to avoid CORS issues, see [proxy.conf.json](src/proxy.conf.json)
+The environment pattern is used for configuration. During development,
+[environment.development.ts](src/environments/environment.development.ts) is used. The APIs
+are proxied by the local dev server to avoid CORS issues, see [proxy.conf.json](src/proxy.conf.json).
 
 The production build uses [environment.ts](src/environments/environment.ts).
 
 ## Build
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+Run `ng build` to build the project. The build artifacts will be stored in the `dist/`
+directory.
 
 ## Deploy
 
@@ -53,7 +70,8 @@ Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.
 
 ## Running end-to-end tests
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this
+command, you need to first add a package that implements end-to-end testing capabilities.
 
 ## Further help
 

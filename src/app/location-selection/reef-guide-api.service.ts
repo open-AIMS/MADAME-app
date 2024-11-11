@@ -77,7 +77,11 @@ export class ReefGuideApiService {
     criteria: SelectionCriteria,
     suitabilityCriteria: SiteSuitabilityCriteria
   ): Observable<any> {
-    const url = this.siteSuitabilityUrlForCriteria(region, criteria, suitabilityCriteria);
+    const url = this.siteSuitabilityUrlForCriteria(
+      region,
+      criteria,
+      suitabilityCriteria
+    );
     return this.http.get(url);
   }
 
