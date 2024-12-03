@@ -129,7 +129,9 @@ export class WebApiService {
     return this.http.delete(`${this.baseUsers}/${userId}`);
   }
 
-  userLogs() {
-    return this.http.get<UserLogs>(`${this.baseUsers}/utils/log`);
+  userLogs({ page, limit }: { page: number; limit: number }) {
+    return this.http.get<UserLogs>(
+      `${this.baseUsers}/utils/log?page=${page}&limit=${limit}`
+    );
   }
 }

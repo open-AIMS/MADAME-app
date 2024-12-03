@@ -71,6 +71,15 @@
       </mat-tab>
       <mat-tab label="Logs">
         <div class="logs-container">
+          <div class="logs-header">
+            <button
+              mat-icon-button
+              (click)="refreshLogs()"
+              aria-label="Refresh logs"
+            >
+              <mat-icon>refresh</mat-icon>
+            </button>
+          </div>
           @if (userLogsLoading) {
             <mat-spinner />
           } @else if (userLogsError) {
@@ -121,6 +130,13 @@
                   *matRowDef="let row; columns: userLogsDisplayedColumns"
                 ></tr>
               </table>
+              <mat-paginator
+                [length]="logs.pagination.total"
+                [pageSize]="logs.pagination.limit"
+                [pageIndex]="logs.pagination.page - 1"
+                [pageSizeOptions]="[10, 25, 50, 100]"
+                (page)="onPageChange($event)"
+              ></mat-paginator>
             </ng-container>
           }
         </div>

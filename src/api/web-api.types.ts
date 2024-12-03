@@ -39,4 +39,10 @@ export interface UserLogs {
     metadata: any;
     user: User;
   }[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+  };
 }
