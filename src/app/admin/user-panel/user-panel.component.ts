@@ -3,6 +3,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatTabsModule } from '@angular/material/tabs';
 import { AuthService } from '../../auth/auth.service';
 import { AdminCreateUserDialogComponent } from './user-create/create-user.component';
 import { UserEditRolesDialogComponent } from './user-edit-roles/edit-user-roles.component';
@@ -10,7 +11,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { AdminUpdateUserPasswordDialogComponent } from './user-update-password/update-password.component';
 import { WebApiService } from '../../../api/web-api.service';
-import { User } from '../../../api/web-api.types';
+import { User, UserLogs } from '../../../api/web-api.types';
+import { catchError, finalize, of, tap } from 'rxjs';
+import { ThisReceiver } from '@angular/compiler';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-admin-panel',
@@ -22,8 +26,8 @@ import { User } from '../../../api/web-api.types';
     MatButtonModule,
     MatTableModule,
     MatMenuModule,
-    AdminCreateUserDialogComponent,
-    UserEditRolesDialogComponent,
+    MatTabsModule,
+    MatProgressSpinner,
   ],
   templateUrl: './user-panel.component.html',
   styleUrl: './user-panel.component.scss',
@@ -34,9 +38,30 @@ export class AdminPanelComponent implements OnInit {
   private webApiService = inject(WebApiService);
   authService = inject(AuthService);
 
+  // User management table data
   tableUsersList = new MatTableDataSource<User>([]);
   displayedColumns = ['email', 'roles', 'actions'];
   selectedUser: User | undefined = undefined;
+
+  // Tab state
+  selectedTabIndex = 0;
+
+  // Loaded user logs
+  userLogsDisplayedColumns = ['userId', 'email', 'action', 'time'];
+  userLogsLoading = false;
+  userLogsError: string | null = null;
+  userLogs$ = this.webApiService.userLogs().pipe(
+    tap(() => {
+      this.userLogsLoading = true;
+    }),
+    catchError((err: any) => {
+      this.userLogsError = err as string;
+      return of(null);
+    }),
+    finalize(() => {
+      this.userLogsLoading = false;
+    })
+  );
 
   ngOnInit() {
     this.loadUsers();
@@ -52,7 +77,6 @@ export class AdminPanelComponent implements OnInit {
     const dialogRef = this.editDialog.open(AdminCreateUserDialogComponent, {
       width: '400px',
     });
-
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.loadUsers();
@@ -65,7 +89,6 @@ export class AdminPanelComponent implements OnInit {
       width: '400px',
       data: { user },
     });
-
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.loadUsers();
@@ -86,5 +109,10 @@ export class AdminPanelComponent implements OnInit {
         this.loadUsers();
       });
     }
+  }
+
+  // Handle tab changes
+  onTabChange(event: any) {
+    this.selectedTabIndex = event.index;
   }
 }

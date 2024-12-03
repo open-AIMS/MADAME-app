@@ -27,3 +27,16 @@ export interface User {
   email: string;
   roles: UserRole[];
 }
+
+export type UserAction = 'LOGIN' | 'LOGOUT' | 'CHANGE_PASSWORD' | 'UPDATED';
+
+export interface UserLogs {
+  logs: {
+    id: number;
+    userId: number;
+    time: Date;
+    action: UserAction;
+    metadata: any;
+    user: User;
+  }[];
+}
