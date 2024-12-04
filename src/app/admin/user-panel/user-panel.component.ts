@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import {Component, inject, OnInit, signal} from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -9,24 +9,17 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { MatProgressBar } from '@angular/material/progress-bar';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
-import {
-  BehaviorSubject,
-  catchError,
-  finalize,
-  of,
-  switchMap,
-  tap,
-} from 'rxjs';
+import { BehaviorSubject, catchError, finalize, of, switchMap } from 'rxjs';
 import { WebApiService } from '../../../api/web-api.service';
 import { User } from '../../../api/web-api.types';
 import { AuthService } from '../../auth/auth.service';
 import { AdminCreateUserDialogComponent } from './user-create/create-user.component';
 import { UserEditRolesDialogComponent } from './user-edit-roles/edit-user-roles.component';
 import { AdminUpdateUserPasswordDialogComponent } from './user-update-password/update-password.component';
-import {extractErrorMessage} from "../../../api/api-util";
+import { extractErrorMessage } from '../../../api/api-util';
 
 @Component({
   selector: 'app-admin-panel',
@@ -39,12 +32,12 @@ import {extractErrorMessage} from "../../../api/api-util";
     MatTableModule,
     MatMenuModule,
     MatTabsModule,
-    MatProgressSpinner,
     MatPaginatorModule,
     MatCheckboxModule,
     MatFormFieldModule,
     MatInputModule,
     FormsModule,
+    MatProgressBar,
   ],
   templateUrl: './user-panel.component.html',
   styleUrl: './user-panel.component.scss',
