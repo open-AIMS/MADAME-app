@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import {Component, inject, OnInit, signal} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -26,6 +26,7 @@ import { AuthService } from '../../auth/auth.service';
 import { AdminCreateUserDialogComponent } from './user-create/create-user.component';
 import { UserEditRolesDialogComponent } from './user-edit-roles/edit-user-roles.component';
 import { AdminUpdateUserPasswordDialogComponent } from './user-update-password/update-password.component';
+import {extractErrorMessage} from "../../../api/api-util";
 
 @Component({
   selector: 'app-admin-panel',
@@ -71,23 +72,22 @@ export class AdminPanelComponent implements OnInit {
     limit: 50,
   });
 
-  userLogsLoading = false;
-  userLogsError: string | null = null;
+  userLogsLoading = signal(false);
+  userLogsError = signal<string | undefined>(undefined);
   userLogs$ = this.pageSubject.pipe(
-    switchMap(({ page, limit }) =>
-      this.webApiService.userLogs({ page, limit }).pipe(
-        tap(() => {
-          this.userLogsLoading = true;
-        }),
+    switchMap(({ page, limit }) => {
+      this.userLogsLoading.set(true);
+      this.userLogsError.set(undefined);
+      return this.webApiService.userLogs({ page, limit }).pipe(
         catchError((err: any) => {
-          this.userLogsError = err as string;
+          this.userLogsError.set(extractErrorMessage(err));
           return of(null);
         }),
         finalize(() => {
-          this.userLogsLoading = false;
+          this.userLogsLoading.set(false);
         })
-      )
-    )
+      );
+    })
   );
 
   ngOnInit() {
