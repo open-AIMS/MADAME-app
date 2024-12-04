@@ -6,6 +6,7 @@ import {
   Note,
   Polygon,
   User,
+  UserLogs,
   UserProfile,
   UserRole,
 } from './web-api.types';
@@ -126,5 +127,11 @@ export class WebApiService {
 
   deleteUser(userId: number) {
     return this.http.delete(`${this.baseUsers}/${userId}`);
+  }
+
+  userLogs({ page, limit }: { page: number; limit: number }) {
+    return this.http.get<UserLogs>(
+      `${this.baseUsers}/utils/log?page=${page}&limit=${limit}`
+    );
   }
 }
