@@ -13,7 +13,9 @@ version 18.0.6.
 1. Install [Node v22](https://nodejs.org/en/download/package-manager)\
    In a Linux environment consider using [Node Version Manager](https://github.com/nvm-sh/nvm).
 2. `npm install -g @angular/cli`
-3. `npm install`
+3. `npm install --legacy-peer-deps`
+
+**Note:** *--legacy-peer-deps* will be necessary until ArcGIS updates peer deps to Angular 18.
 
 A script security error may be raised if using PowerShell.
 If this occurs, run the following to [fix Powershell execution policy](https://angular.dev/tools/cli/setup-local#powershell-execution-policy):
@@ -21,8 +23,6 @@ If this occurs, run the following to [fix Powershell execution policy](https://a
 ```shell
 Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
 ```
-
-*--legacy-peer-deps* will be necessary until ArcGIS updates peer deps to Angular 18.
 
 ## Development server
 
@@ -59,6 +59,7 @@ directory.
 ## Deploy
 
 After the **Build** step:
+
 1. `cd dist/adria-app/browser`
 2. `aws s3 sync . s3://BUCKET_NAME --delete`
 
