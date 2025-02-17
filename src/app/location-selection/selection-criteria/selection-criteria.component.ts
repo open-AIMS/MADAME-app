@@ -10,7 +10,6 @@ import {
   CalciteSlider,
 } from '@esri/calcite-components-angular';
 import { MatSliderModule } from '@angular/material/slider';
-import { MatDivider } from '@angular/material/divider';
 import {
   FormBuilder,
   FormGroup,
@@ -18,10 +17,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { MatButton, MatIconButton } from '@angular/material/button';
-import { MatToolbar } from '@angular/material/toolbar';
-import { MatProgressSpinner } from '@angular/material/progress-spinner';
-import { MatTooltip } from '@angular/material/tooltip';
+import { MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { ReefGuideMapService } from '../reef-guide-map.service';
 import {
@@ -43,6 +39,10 @@ interface SelectionCriteriaInputDef {
   max: number;
   maxValue?: number;
   step?: number;
+  // Value converter from displayed values to value in CriteriaAssessment
+  convertValue?: (value: number) => number;
+  // swap the final values
+  reverseValues?: boolean;
 }
 
 @Component({
@@ -51,12 +51,7 @@ interface SelectionCriteriaInputDef {
   imports: [
     MatSliderModule,
     CalciteComponentsModule,
-    MatDivider,
     FormsModule,
-    MatButton,
-    MatToolbar,
-    MatProgressSpinner,
-    MatTooltip,
     MatIconButton,
     MatIcon,
     MatFormFieldModule,
@@ -87,20 +82,26 @@ export class SelectionCriteriaComponent {
       max: 16,
       maxValue: 10,
       step: 0.5,
+      // convert Depth to negative values required by API. [-10, -2]
+      convertValue: v => -v,
+      reverseValues: true,
     },
     {
       id: 'Slope',
-      name: 'Slope',
+      name: 'Slope (degrees)',
       // Slope: 0.0:40.0
       min: 0,
       max: 45,
     },
     {
       id: 'Turbidity',
-      name: 'Turbidity',
+      name: 'Turbidity (FNU)',
       // Turbidity: 0.0:58.0
       min: 0,
-      max: 60,
+      max: 6.0,
+      step: 0.1,
+      // FNU to 10x integer value
+      convertValue: v => Math.round(v * 10),
     },
     {
       id: 'WavesHs',
@@ -139,12 +140,29 @@ export class SelectionCriteriaComponent {
   }
 
   getCriteria(): CriteriaAssessment {
-    const valueEntries = this.sliders.map(s => [s.name, s.value]);
-    const criteria = Object.fromEntries(valueEntries);
+    // build list of criteria ids with their final values.
+    const valueEntries = this.sliders.map(s => {
+      const crit = this.criteria.find(c => c.id === s.name);
+      if (crit === undefined) {
+        throw new Error(`Criteria with id ${s.name} not found`);
+      }
 
-    // convert Depth to negative values required by API. [-10, -2]
-    const depth = criteria.Depth;
-    criteria.Depth = [-depth[1], -depth[0]];
+      // all criteria are ranges
+      let values = s.value as Array<number>;
+
+      // convert values if function defined
+      const { convertValue, reverseValues } = crit;
+      if (convertValue !== undefined) {
+        values = values.map(convertValue);
+      }
+
+      if (reverseValues === true) {
+        values = [...values].reverse();
+      }
+
+      return [s.name, values];
+    });
+    const criteria = Object.fromEntries(valueEntries);
 
     let siteSuitability: SiteSuitabilityCriteria | undefined = undefined;
     if (this.enableSiteSuitability() && this.siteForm.valid) {
