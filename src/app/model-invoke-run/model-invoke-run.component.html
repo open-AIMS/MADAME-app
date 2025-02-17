@@ -1,0 +1,44 @@
+
+<form [formGroup]="myForm" (ngSubmit)="onSubmit()">
+<div>
+    <label for="runName">Name of Model Run:</label>
+    <input id="runName" formControlName="runName">
+    @if (myForm.get('runName')!.invalid && myForm.get('runName')!.touched) {
+    <div >
+      String field is required.
+    </div>
+    }
+  </div>
+
+  <div>
+    <label for="numScenarios">Number of scenarios:</label>
+    <input id="numScenarios" formControlName="numScenarios">
+    @if (myForm.get('numScenarios')!.invalid && myForm.get('numScenarios')!.touched) {
+    <div >
+      Must be a power of two.
+    </div>
+    }
+  </div>
+
+  <div>
+    <label for="ta_lower">Tabular Acropora Seeded Lower Bound:</label>
+    <input id="ta_lower" formControlName="ta_lower">
+    @if (myForm.get('ta_lower')!.invalid && myForm.get('ta_lower')!.touched) {
+    <div >
+      Must be a number.
+    </div>
+    }
+  </div>
+
+  <div>
+    <label for="ta_upper">Tabular Acropora Seeded Upper Bound:</label>
+    <input id="ta_upper" formControlName="ta_upper">
+    @if (myForm.get('ta_upper')!.invalid && myForm.get('ta_upper')!.touched) {
+    <div >
+      Must be a Number.
+    </div>
+    }
+  </div>
+
+  <button type="submit">Submit</button>
+</form>
