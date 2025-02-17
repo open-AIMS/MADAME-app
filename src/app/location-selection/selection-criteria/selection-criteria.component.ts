@@ -10,7 +10,6 @@ import {
   CalciteSlider,
 } from '@esri/calcite-components-angular';
 import { MatSliderModule } from '@angular/material/slider';
-import { MatDivider } from '@angular/material/divider';
 import {
   FormBuilder,
   FormGroup,
@@ -18,10 +17,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { MatButton, MatIconButton } from '@angular/material/button';
-import { MatToolbar } from '@angular/material/toolbar';
-import { MatProgressSpinner } from '@angular/material/progress-spinner';
-import { MatTooltip } from '@angular/material/tooltip';
+import { MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { ReefGuideMapService } from '../reef-guide-map.service';
 import {
@@ -55,12 +51,7 @@ interface SelectionCriteriaInputDef {
   imports: [
     MatSliderModule,
     CalciteComponentsModule,
-    MatDivider,
     FormsModule,
-    MatButton,
-    MatToolbar,
-    MatProgressSpinner,
-    MatTooltip,
     MatIconButton,
     MatIcon,
     MatFormFieldModule,
@@ -110,7 +101,7 @@ export class SelectionCriteriaComponent {
       max: 6.0,
       step: 0.1,
       // FNU to 10x integer value
-      convertValue: v => Math.round(v * 10)
+      convertValue: v => Math.round(v * 10),
     },
     {
       id: 'WavesHs',
