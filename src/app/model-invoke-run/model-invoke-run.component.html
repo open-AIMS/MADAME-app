@@ -39,6 +39,12 @@
     </div>
     }
   </div>
-
+  @if (!successful_execution) {
   <button type="submit">Submit</button>
+  }
+  @else {
+        <button mat-flat-button routerLink="/view-run/{{ model_run_name }}">
+          Open
+        </button>
+  }
 </form>
