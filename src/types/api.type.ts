@@ -35,7 +35,7 @@ export interface DataFrame {
 }
 
 export type ModelParamDesc = {
-  name: string,
+  param_name: string,
   third_param_flag: boolean;
   lower: number;
   upper: number;

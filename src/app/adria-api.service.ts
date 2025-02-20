@@ -2,15 +2,9 @@ import { environment } from '../environments/environment';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, of, tap } from 'rxjs';
-import { DataFrame, ResultSetInfo } from '../types/api.type';
+import { DataFrame, ModelScenariosDesc, ResultSetInfo } from '../types/api.type';
 import { PointOrRange, pointOrRangeToParam } from '../util/param-util';
 import { MODEL_RUNS } from '../mock-data/model-runs.mockdata';
-export class ModelRunParams {
-  runName: string = "";
-  numScenarios: string = "";
-  ta_lower: string = "";
-  ta_upper: string = "";
-}
 
 @Injectable({
   providedIn: 'root',
@@ -68,14 +62,14 @@ export class AdriaApiService {
   }
 
   postModelInvokeRun(
-    params: ModelRunParams
+    params: ModelScenariosDesc
   ): Observable<any> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json'
     });
 
     return this.http.post<any>(
-      `${this.base}/invoke-run/coralblox`, JSON.stringify({params}), { headers }
+      `${this.base}/invoke-run/coralblox`, JSON.stringify(params), { headers }
     );
   }
 }

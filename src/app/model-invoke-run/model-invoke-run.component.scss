@@ -54,3 +54,9 @@ button {
 button:hover {
   background-color: #0056b3;
 }
+
+.loading-spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

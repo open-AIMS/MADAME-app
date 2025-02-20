@@ -3,12 +3,13 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatRippleModule } from '@angular/material/core';
 import { MatSliderModule } from '@angular/material/slider';
-import { RouterLink } from '@angular/router';
-import { AdriaApiService, ModelRunParams } from '../adria-api.service';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { Router, RouterLink } from '@angular/router';
+import { AdriaApiService } from '../adria-api.service';
 import { AsyncPipe } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ModelScenariosDesc, ModelParamDesc} from '../../types/api.type';
+import { ModelScenariosDesc, ModelParamDesc } from '../../types/api.type';
 
 @Component({
   selector: 'app-model-invoke-run',
@@ -23,15 +24,17 @@ import { ModelScenariosDesc, ModelParamDesc} from '../../types/api.type';
     RouterLink,
     AsyncPipe,
     ReactiveFormsModule,
+    MatProgressSpinner
   ]
 })
 export class ModelInvokeRunComponent {
+  is_loading: boolean = false;
   successful_execution: boolean;
-  model_run_name: string = "";
+  model_run_id: string = "";
   myForm: FormGroup;
   model_params: ModelScenariosDesc;
 
-  constructor(private fb: FormBuilder, private api: AdriaApiService) {
+  constructor(private fb: FormBuilder, private api: AdriaApiService, private router: Router) {
     this.successful_execution = false;
     this.model_params = {
     } as ModelScenariosDesc;
@@ -61,10 +64,10 @@ export class ModelInvokeRunComponent {
       return;
     }
     this.model_params.run_name = this.myForm.get("runName")!.value
-    this.model_params.num_scenarios = this.myForm.get("numScenarios")!.value
+    this.model_params.num_scenarios = Number(this.myForm.get("numScenarios")!.value)
 
     const ta_params = {
-      name: "N_seeded_TA",
+      param_name: "N_seed_TA",
       third_param_flag: true,
       lower: this.myForm.get("ta_lower")!.value,
       upper: this.myForm.get("ta_upper")!.value,
@@ -76,11 +79,13 @@ export class ModelInvokeRunComponent {
     this.api.postModelInvokeRun(this.model_params).subscribe({
       next: (response) => {
         this.successful_execution = true;
-        this.model_run_name = response.run_name
-        console.log(this.model_run_name);
-        console.log('Response:', response);
+        this.model_run_id = response.run_name
+        this.is_loading = false;
+        this.router.navigate([`view-run/${ this.model_run_id }`])
       },
       error: (error) => {
+        this.is_loading = false;
+        this.successful_execution = false;
         if (error.message.includes('Bad Request')) {
           console.error('There was a 400 error!', error);
         } else {
@@ -88,5 +93,6 @@ export class ModelInvokeRunComponent {
         }
       }
     });
+    this.is_loading = true;
   }
 }

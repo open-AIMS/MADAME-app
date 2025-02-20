@@ -32,13 +32,18 @@
       }
     </div>
 
-    @if (!successful_execution) {
-    <button type="submit">Submit</button>
+    @if (!successful_execution && !is_loading) {
+      <button type="submit">Submit</button>
     }
-    @else {
-    <button mat-flat-button routerLink="/view-run/{{ model_run_name }}">
-      Open
-    </button>
+    @if (successful_execution) {
+      <button mat-flat-button routerLink="/view-run/{{ model_run_id }}">
+        Open
+      </button>
+    }
+    @if (is_loading) {
+    <div class="loading-spinner-container">
+      <mat-progress-spinner [color]="'accent'" [mode]="'indeterminate'" [diameter]="30"></mat-progress-spinner>
+    </div>
     }
   </form>
 </div>
