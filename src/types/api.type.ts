@@ -1,3 +1,5 @@
+import { withFetch } from "@angular/common/http";
+
 export interface ResultSetInfo {
   id: string;
   title: string;
@@ -32,7 +34,7 @@ export interface DataFrame {
   allnotemetadata: boolean;
 }
 
-export interface ModelParamDesc {
+export type ModelParamDesc = {
   name: string,
   third_param_flag: boolean;
   lower: number;
@@ -40,7 +42,7 @@ export interface ModelParamDesc {
   optional_third: number;
 }
 
-export interface ModelScenariosDesc {
+export type ModelScenariosDesc = {
   run_name: string;
   num_scenarios: number;
   model_params: Array<ModelParamDesc>;

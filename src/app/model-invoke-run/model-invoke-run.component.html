@@ -1,50 +1,44 @@
-
-<form [formGroup]="myForm" (ngSubmit)="onSubmit()">
-<div>
-    <label for="runName">Name of Model Run:</label>
-    <input id="runName" formControlName="runName">
-    @if (myForm.get('runName')!.invalid && myForm.get('runName')!.touched) {
-    <div >
-      String field is required.
+<div class="form-container">
+  <form [formGroup]="myForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="runName">Name of Model Run:</label>
+      <input id="runName" formControlName="runName" type="input">
+      @if (myForm.get('runName')!.invalid && myForm.get('runName')!.touched) {
+      <div class="error-message">
+        String field is required.
+      </div>
+      }
     </div>
-    }
-  </div>
 
-  <div>
-    <label for="numScenarios">Number of scenarios:</label>
-    <input id="numScenarios" formControlName="numScenarios">
-    @if (myForm.get('numScenarios')!.invalid && myForm.get('numScenarios')!.touched) {
-    <div >
-      Must be a power of two.
+    <div class="form-group">
+      <label for="numScenarios">Number of scenarios:</label>
+      <input id="numScenarios" formControlName="numScenarios" type="input">
+      @if (myForm.get('numScenarios')!.invalid && myForm.get('numScenarios')!.touched) {
+      <div class="error-message">
+        Must be a power of two.
+      </div>
+      }
     </div>
-    }
-  </div>
+    <div class="form-group">
+      <label>Tabular Acropora Seeded Bounds:</label>
+      <mat-slider [min]="0" [max]="1000000" [step]="1000" type="range" discrete [displayWith]="thousandDeployed">
+        <input matSliderStartThumb formControlName="ta_lower">
+        <input matSliderEndThumb formControlName="ta_upper">
+      </mat-slider>
+      @if (myForm.get('ta_lower')!.invalid && myForm.get('ta_lower')!.touched) {
+      <div class="error-message">
+        Must be a number.
+      </div>
+      }
+    </div>
 
-  <div>
-    <label for="ta_lower">Tabular Acropora Seeded Lower Bound:</label>
-    <input id="ta_lower" formControlName="ta_lower">
-    @if (myForm.get('ta_lower')!.invalid && myForm.get('ta_lower')!.touched) {
-    <div >
-      Must be a number.
-    </div>
+    @if (!successful_execution) {
+    <button type="submit">Submit</button>
     }
-  </div>
-
-  <div>
-    <label for="ta_upper">Tabular Acropora Seeded Upper Bound:</label>
-    <input id="ta_upper" formControlName="ta_upper">
-    @if (myForm.get('ta_upper')!.invalid && myForm.get('ta_upper')!.touched) {
-    <div >
-      Must be a Number.
-    </div>
+    @else {
+    <button mat-flat-button routerLink="/view-run/{{ model_run_name }}">
+      Open
+    </button>
     }
-  </div>
-  @if (!successful_execution) {
-  <button type="submit">Submit</button>
-  }
-  @else {
-        <button mat-flat-button routerLink="/view-run/{{ model_run_name }}">
-          Open
-        </button>
-  }
-</form>
+  </form>
+</div>
