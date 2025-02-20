@@ -31,3 +31,17 @@ export interface DataFrame {
   colmetadata: any; // null
   allnotemetadata: boolean;
 }
+
+export interface ModelParamDesc {
+  name: string,
+  third_param_flag: boolean;
+  lower: number;
+  upper: number;
+  optional_third: number;
+}
+
+export interface ModelScenariosDesc {
+  run_name: string;
+  num_scenarios: number;
+  model_params: Array<ModelParamDesc>;
+}
