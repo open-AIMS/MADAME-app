@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { ModelRunListComponent } from './model-run-list/model-run-list.component';
 import { ModelRunComponent } from './model-run/model-run.component';
+import { ModelInvokeRunComponent } from './model-invoke-run/model-invoke-run.component';
 import { TestMapComponent } from './test/test-map/test-map.component';
 import { LocationSelectionComponent } from './location-selection/location-selection.component';
 
@@ -33,5 +34,10 @@ export const routes: Routes = [
     path: 'test-map',
     component: TestMapComponent,
     title: 'Test Map',
+  },
+  {
+    path: 'invoke-run',
+    component: ModelInvokeRunComponent,
+    title: 'Invoke Run',
   },
 ];

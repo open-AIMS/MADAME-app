@@ -68,4 +68,22 @@
       <app-reef-map></app-reef-map>
     </ng-template>
   </mat-tab>
+  <mat-tab label="Results">
+    <ng-template matTabContent>
+      <div class="center-container">
+        <select (change)="onSelectMetric($event)">
+          @for (metric of metrics; track metric) {
+            <option [value]="metric">{{ metric }}</option>
+          }
+        </select>
+        <button (click)="getMetricFigure()"> Add Figure </button>
+      </div>
+
+      <div class="card-container">
+        @for (figs of metrics_figures; track figs[0]) {
+          <iframe class="plot-iframe" [srcdoc]="figs[1]"></iframe>
+        }
+      </div>
+    </ng-template>
+  </mat-tab>
 </mat-tab-group>
