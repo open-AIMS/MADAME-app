@@ -35,3 +35,27 @@ app-reef-map {
 mat-toolbar {
   gap: 16px;
 }
+
+.center-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  gap: 10px;
+}
+
+.card-container {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.plot-iframe {
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 5px;
+  width: 800px;
+  height: 325px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}

@@ -61,6 +61,13 @@ export class AdriaApiService {
     }
   }
 
+  getMetricFigure(
+    id: string,
+    metric: string
+  ): Observable<any> {
+    return this.http.get(`${this.base}/resultsets/${id}/plot/${metric}`, {responseType: "text"})
+  }
+
   postModelInvokeRun(
     params: ModelScenariosDesc
   ): Observable<any> {
