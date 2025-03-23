@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ModelInvokeRunComponent } from './model-invoke-run.component.';
+import { ModelInvokeRunComponent } from './model-invoke-run.component';
 
 describe('ModelInvokeRunComponent', () => {
   let component: ModelInvokeRunComponent;
@@ -19,3 +19,4 @@ describe('ModelInvokeRunComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+});
