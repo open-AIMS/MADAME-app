@@ -24,20 +24,23 @@ import { ModelScenariosDesc, ModelParamDesc } from '../../types/api.type';
     RouterLink,
     AsyncPipe,
     ReactiveFormsModule,
-    MatProgressSpinner
-  ]
+    MatProgressSpinner,
+  ],
 })
 export class ModelInvokeRunComponent {
   is_loading: boolean = false;
   successful_execution: boolean;
-  model_run_id: string = "";
+  model_run_id: string = '';
   myForm: FormGroup;
   model_params: ModelScenariosDesc;
 
-  constructor(private fb: FormBuilder, private api: AdriaApiService, private router: Router) {
+  constructor(
+    private fb: FormBuilder,
+    private api: AdriaApiService,
+    private router: Router
+  ) {
     this.successful_execution = false;
-    this.model_params = {
-    } as ModelScenariosDesc;
+    this.model_params = {} as ModelScenariosDesc;
 
     this.myForm = this.fb.group({
       runName: ['', Validators.required],
@@ -65,7 +68,7 @@ export class ModelInvokeRunComponent {
   }
 
   millionDeployed(value: number): string {
-    return `${value / 1000000}M`
+    return `${value / 1000000}M`;
   }
 
   powerOfTwoValidator(control: FormControl) {
@@ -80,43 +83,49 @@ export class ModelInvokeRunComponent {
       console.log('Form is invalid');
       return;
     }
-    this.model_params.run_name = this.myForm.get("runName")!.value
-    this.model_params.num_scenarios = Number(this.myForm.get("numScenarios")!.value)
+    this.model_params.run_name = this.myForm.get('runName')!.value;
+    this.model_params.num_scenarios = Number(
+      this.myForm.get('numScenarios')!.value
+    );
 
     const ta_params = {
-      param_name: "N_seed_TA",
+      param_name: 'N_seed_TA',
       third_param_flag: true,
-      lower: this.myForm.get("ta_lower")!.value,
-      upper: this.myForm.get("ta_upper")!.value,
-      optional_third: 100000  // Discrete uniform, third param is step size
+      lower: this.myForm.get('ta_lower')!.value,
+      upper: this.myForm.get('ta_upper')!.value,
+      optional_third: 100000, // Discrete uniform, third param is step size
     } as ModelParamDesc;
 
     const ca_params = {
-      param_name: "N_seed_CA",
+      param_name: 'N_seed_CA',
       third_param_flag: true,
-      lower: this.myForm.get("ca_lower")!.value,
-      upper: this.myForm.get("ca_upper")!.value,
-      optional_third: 100000  // Discrete uniform, third param is step size
+      lower: this.myForm.get('ca_lower')!.value,
+      upper: this.myForm.get('ca_upper')!.value,
+      optional_third: 100000, // Discrete uniform, third param is step size
     } as ModelParamDesc;
 
     const sm_params = {
-      param_name: "N_seed_SM",
+      param_name: 'N_seed_SM',
       third_param_flag: true,
-      lower: this.myForm.get("sm_lower")!.value,
-      upper: this.myForm.get("sm_upper")!.value,
-      optional_third: 100000  // Discrete uniform, third param is step size
+      lower: this.myForm.get('sm_lower')!.value,
+      upper: this.myForm.get('sm_upper')!.value,
+      optional_third: 100000, // Discrete uniform, third param is step size
     } as ModelParamDesc;
 
-    this.model_params.model_params = Array<ModelParamDesc>(ta_params, ca_params, sm_params);
+    this.model_params.model_params = Array<ModelParamDesc>(
+      ta_params,
+      ca_params,
+      sm_params
+    );
 
     this.api.postModelInvokeRun(this.model_params).subscribe({
-      next: (response) => {
+      next: response => {
         this.successful_execution = true;
-        this.model_run_id = response.run_name
+        this.model_run_id = response.run_name;
         this.is_loading = false;
-        this.router.navigate([`view-run/${ this.model_run_id }`])
+        this.router.navigate([`view-run/${this.model_run_id}`]);
       },
-      error: (error) => {
+      error: error => {
         this.is_loading = false;
         this.successful_execution = false;
         if (error.message.includes('Bad Request')) {
@@ -124,7 +133,7 @@ export class ModelInvokeRunComponent {
         } else {
           console.error('There was an error!', error);
         }
-      }
+      },
     });
     this.is_loading = true;
   }

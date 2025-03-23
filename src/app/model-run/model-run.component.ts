@@ -1,9 +1,15 @@
-import { Component, input, Signal, ViewChild, ChangeDetectorRef } from '@angular/core';
+import {
+  Component,
+  input,
+  Signal,
+  ViewChild,
+  ChangeDetectorRef,
+} from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { AsyncPipe, DatePipe, NgIf } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser'
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import {
   ArcgisMap,
   ComponentLibraryModule,
@@ -60,8 +66,13 @@ export class ModelRunComponent {
   selected_metric: string = 'relative_cover';
   metrics_figures: Array<[number, SafeHtml]> = [];
   metrics: string[] = [
-    'relative_cover', 'total_cover', 'rsv', 'asv',
-    'relative_juveniles', 'absolute_juveniles', 'coral_evenness'
+    'relative_cover',
+    'total_cover',
+    'rsv',
+    'asv',
+    'relative_juveniles',
+    'absolute_juveniles',
+    'coral_evenness',
   ];
 
   constructor(
@@ -96,18 +107,26 @@ export class ModelRunComponent {
 
   getMetricFigure(): void {
     if (this.selected_metric) {
-      this.api.getMetricFigure(this.resultSetContext.id, this.selected_metric).subscribe({
-        next: (response) => {
-          const sanitizedHtml = this.sanitizer.bypassSecurityTrustHtml(response);
-          this.metrics_figures.push([this.metrics_figures.length + 1, sanitizedHtml]);
-          this.cdf.detectChanges();
-          console.log(this.metrics_figures.length)
-        },
-        error: (error) => {
-          console.log(error.message)
-        },
-      })
-      const index = this.metrics.findIndex(item => item === this.selected_metric);
+      this.api
+        .getMetricFigure(this.resultSetContext.id, this.selected_metric)
+        .subscribe({
+          next: response => {
+            const sanitizedHtml =
+              this.sanitizer.bypassSecurityTrustHtml(response);
+            this.metrics_figures.push([
+              this.metrics_figures.length + 1,
+              sanitizedHtml,
+            ]);
+            this.cdf.detectChanges();
+            console.log(this.metrics_figures.length);
+          },
+          error: error => {
+            console.log(error.message);
+          },
+        });
+      const index = this.metrics.findIndex(
+        item => item === this.selected_metric
+      );
       if (index !== -1) {
         this.metrics.splice(index, 1);
       }
