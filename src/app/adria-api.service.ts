@@ -1,8 +1,12 @@
 import { environment } from '../environments/environment';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, of, tap } from 'rxjs';
-import { DataFrame, ResultSetInfo } from '../types/api.type';
+import {
+  DataFrame,
+  ModelScenariosDesc,
+  ResultSetInfo,
+} from '../types/api.type';
 import { PointOrRange, pointOrRangeToParam } from '../util/param-util';
 import { MODEL_RUNS } from '../mock-data/model-runs.mockdata';
 
@@ -59,6 +63,24 @@ export class AdriaApiService {
         this.http.get<DataFrame>(`${this.base}/resultset/${id}/relative_cover`)
       );
     }
+  }
+
+  getMetricFigure(id: string, metric: string): Observable<any> {
+    return this.http.get(`${this.base}/resultsets/${id}/plot/${metric}`, {
+      responseType: 'text',
+    });
+  }
+
+  postModelInvokeRun(params: ModelScenariosDesc): Observable<any> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+    });
+
+    return this.http.post<any>(
+      `${this.base}/invoke-run/coralblox`,
+      JSON.stringify(params),
+      { headers }
+    );
   }
 }
 

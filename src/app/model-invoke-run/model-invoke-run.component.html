@@ -1,0 +1,83 @@
+<div class="form-container">
+  <form [formGroup]="myForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="runName">Name of Model Run:</label>
+      <input id="runName" formControlName="runName" type="input" />
+      @if (myForm.get('runName')!.invalid && myForm.get('runName')!.touched) {
+        <div class="error-message">String field is required.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="numScenarios">Number of scenarios:</label>
+      <input id="numScenarios" formControlName="numScenarios" type="input" />
+      @if (
+        myForm.get('numScenarios')!.invalid &&
+        myForm.get('numScenarios')!.touched
+      ) {
+        <div class="error-message">Must be a power of two.</div>
+      }
+    </div>
+    <div class="form-group">
+      <label>Seeded Tabular Acropora (per deployment):</label>
+      <mat-slider
+        [min]="0"
+        [max]="15000000"
+        [step]="100000"
+        type="range"
+        discrete
+        [displayWith]="millionDeployed"
+      >
+        <input matSliderStartThumb formControlName="ta_lower" />
+        <input matSliderEndThumb formControlName="ta_upper" />
+      </mat-slider>
+      <label>Seeded Corymbose Acropora (per deployment):</label>
+      <mat-slider
+        [min]="0"
+        [max]="15000000"
+        [step]="100000"
+        type="range"
+        discrete
+        [displayWith]="millionDeployed"
+      >
+        <input matSliderStartThumb formControlName="ca_lower" />
+        <input matSliderEndThumb formControlName="ca_upper" />
+      </mat-slider>
+
+      <label>Seeded Small Massives (per deployment):</label>
+      <mat-slider
+        [min]="0"
+        [max]="15000000"
+        [step]="100000"
+        type="range"
+        discrete
+        [displayWith]="millionDeployed"
+      >
+        <input matSliderStartThumb formControlName="sm_lower" />
+        <input matSliderEndThumb formControlName="sm_upper" />
+      </mat-slider>
+
+      @if (myForm.get('ta_lower')!.invalid && myForm.get('ta_lower')!.touched) {
+        <div class="error-message">Must be a number.</div>
+      }
+    </div>
+
+    @if (!successful_execution && !is_loading) {
+      <button type="submit">Submit</button>
+    }
+    @if (successful_execution) {
+      <button mat-flat-button routerLink="/view-run/{{ model_run_id }}">
+        Open
+      </button>
+    }
+    @if (is_loading) {
+      <div class="loading-spinner-container">
+        <mat-progress-spinner
+          [color]="'accent'"
+          [mode]="'indeterminate'"
+          [diameter]="30"
+        ></mat-progress-spinner>
+      </div>
+    }
+  </form>
+</div>

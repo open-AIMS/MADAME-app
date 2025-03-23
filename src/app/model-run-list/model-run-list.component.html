@@ -1,5 +1,13 @@
 <h2>Model Runs</h2>
-
+<mat-card appearance="outlined" matRipple>
+  <mat-card-header>
+    <mat-card-title>Create new model run</mat-card-title>
+    <span class="actions">
+      <button mat-flat-button color="warn" routerLink="/invoke-run">+</button>
+    </span>
+  </mat-card-header>
+  <mat-card-content> </mat-card-content>
+</mat-card>
 @for (run of runs$ | async; track run.id) {
   <mat-card appearance="outlined" matRipple>
     <mat-card-header>
