@@ -45,10 +45,27 @@ export class ModelInvokeRunComponent {
       ta_lower: 0,
       ta_upper: 1000000,
     });
+
+    this.myForm = this.fb.group({
+      runName: ['', Validators.required],
+      numScenarios: [0, [Validators.required, this.powerOfTwoValidator]],
+
+      // tabular Acropora
+      ta_lower: 0,
+      ta_upper: 1000000,
+
+      // corymbose Acropora
+      ca_lower: 0,
+      ca_upper: 1000000,
+
+      // Small massives
+      sm_lower: 0,
+      sm_upper: 1000000,
+    });
   }
 
-  thousandDeployed(value: number): string {
-    return `${value / 1000}k`
+  millionDeployed(value: number): string {
+    return `${value / 1000000}M`
   }
 
   powerOfTwoValidator(control: FormControl) {
@@ -71,10 +88,26 @@ export class ModelInvokeRunComponent {
       third_param_flag: true,
       lower: this.myForm.get("ta_lower")!.value,
       upper: this.myForm.get("ta_upper")!.value,
-      optional_third: (this.myForm.get("ta_upper")!.value - this.myForm.get("ta_lower")!.value) / 10
+      optional_third: 100000  // Discrete uniform, third param is step size
     } as ModelParamDesc;
 
-    this.model_params.model_params = Array<ModelParamDesc>(ta_params);
+    const ca_params = {
+      param_name: "N_seed_CA",
+      third_param_flag: true,
+      lower: this.myForm.get("ca_lower")!.value,
+      upper: this.myForm.get("ca_upper")!.value,
+      optional_third: 100000  // Discrete uniform, third param is step size
+    } as ModelParamDesc;
+
+    const sm_params = {
+      param_name: "N_seed_SM",
+      third_param_flag: true,
+      lower: this.myForm.get("sm_lower")!.value,
+      upper: this.myForm.get("sm_upper")!.value,
+      optional_third: 100000  // Discrete uniform, third param is step size
+    } as ModelParamDesc;
+
+    this.model_params.model_params = Array<ModelParamDesc>(ta_params, ca_params, sm_params);
 
     this.api.postModelInvokeRun(this.model_params).subscribe({
       next: (response) => {
