@@ -29,6 +29,10 @@ source ~/.bashrc
 nvm install 22
 nvm use 22
 
+# Install global tools
+npm install -g @angular/cli
+npm install -g pnpm
+
 # Install dependencies
 npm install --legacy-peer-deps
 
@@ -60,7 +64,7 @@ version 18.0.6.
 
 3. Install project dependencies:
    ```bash
-   npm install --legacy-peer-deps
+   pnpm install --legacy-peer-deps
    ```
 
 **Note:** *--legacy-peer-deps* will be necessary until ArcGIS updates peer deps to Angular 18.
@@ -105,7 +109,7 @@ Run `ng generate component component-name` to generate a new component. You can 
 
 The environment pattern is used for configuration:
 
-- **Development**: [environment.development.ts](src/environments/environment.development.ts) 
+- **Development**: [environment.development.ts](src/environments/environment.development.ts)
 - **Production**: [environment.ts](src/environments/environment.ts)
 
 The APIs are proxied by the local dev server to avoid CORS issues, see [proxy.conf.json](src/proxy.conf.json).
