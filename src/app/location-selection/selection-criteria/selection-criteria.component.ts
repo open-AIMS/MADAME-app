@@ -80,6 +80,7 @@ export class SelectionCriteriaComponent {
       // UI is positive, but API takes negative numbers
       min: 0,
       max: 16,
+      minValue: 2,
       maxValue: 10,
       step: 0.5,
       // convert Depth to negative values required by API. [-10, -2]
