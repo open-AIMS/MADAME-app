@@ -134,8 +134,8 @@ export class SelectionCriteriaComponent {
   constructor() {
     this.siteForm = this.formBuilder.group({
       xdist: [450, [Validators.min(1), Validators.required]],
-      ydist: [50, [Validators.min(1), Validators.required]],
-      SuitabilityThreshold: [50, Validators.required],
+      ydist: [20, [Validators.min(1), Validators.required]],
+      SuitabilityThreshold: [95, Validators.required],
     });
   }
 
