@@ -18,7 +18,6 @@ interface ModelRun {
 
 @Component({
   selector: 'app-model-run-list',
-  standalone: true,
   templateUrl: './model-run-list.component.html',
   styleUrl: './model-run-list.component.scss',
   imports: [

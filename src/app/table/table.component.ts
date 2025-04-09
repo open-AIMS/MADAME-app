@@ -10,7 +10,6 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 
 @Component({
   selector: 'app-table',
-  standalone: true,
   imports: [MatTableModule, MatSortModule],
   templateUrl: './table.component.html',
   styleUrl: './table.component.scss',

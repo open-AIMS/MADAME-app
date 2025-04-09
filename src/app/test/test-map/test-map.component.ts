@@ -7,7 +7,6 @@ import { ResultSetService } from '../../contexts/result-set.service';
  */
 @Component({
   selector: 'app-test-map',
-  standalone: true,
   imports: [ReefMapComponent],
   templateUrl: './test-map.component.html',
   styleUrl: './test-map.component.scss',

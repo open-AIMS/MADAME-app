@@ -21,7 +21,6 @@ type Credentials = { email: string; password: string };
 
 @Component({
   selector: 'app-login-dialog',
-  standalone: true,
   imports: [
     MatDialogModule,
     MatButton,

@@ -29,7 +29,6 @@ import { MatToolbar } from '@angular/material/toolbar';
 
 @Component({
   selector: 'app-model-run',
-  standalone: true,
   templateUrl: './model-run.component.html',
   styleUrl: './model-run.component.scss',
   imports: [

@@ -47,7 +47,6 @@ interface SelectionCriteriaInputDef {
 
 @Component({
   selector: 'app-selection-criteria',
-  standalone: true,
   imports: [
     MatSliderModule,
     CalciteComponentsModule,

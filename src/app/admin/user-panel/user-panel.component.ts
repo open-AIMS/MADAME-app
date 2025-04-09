@@ -23,7 +23,6 @@ import { extractErrorMessage } from '../../../api/api-util';
 
 @Component({
   selector: 'app-admin-panel',
-  standalone: true,
   imports: [
     CommonModule,
     MatDialogModule,

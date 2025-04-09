@@ -14,7 +14,6 @@ type ModelspecTable = SimpleTable<ModelSpecField>;
 
 @Component({
   selector: 'app-modelspec-explorer',
-  standalone: true,
   imports: [MatTabsModule, MatTableModule, TableComponent],
   templateUrl: './modelspec-explorer.component.html',
   styleUrl: './modelspec-explorer.component.scss',

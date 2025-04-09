@@ -15,7 +15,6 @@ import { WebApiService } from '../../../../api/web-api.service';
 
 @Component({
   selector: 'app-user-edit-roles-dialog',
-  standalone: true,
   imports: [
     CommonModule,
     MatFormFieldModule,

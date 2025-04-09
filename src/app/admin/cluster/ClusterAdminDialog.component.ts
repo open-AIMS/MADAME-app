@@ -20,7 +20,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-cluster-admin-dialog',
-  standalone: true,
   imports: [
     CommonModule,
     ReactiveFormsModule,

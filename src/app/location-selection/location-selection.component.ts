@@ -43,7 +43,6 @@ type DrawerModes = 'criteria' | 'style';
  */
 @Component({
   selector: 'app-location-selection',
-  standalone: true,
   imports: [
     CommonModule,
     MatSidenavModule,

@@ -1,7 +1,6 @@
 import { Component, computed, input } from '@angular/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
-import BlendLayer from '@arcgis/core/layers/mixins/BlendLayer';
 import { MatSliderModule } from '@angular/material/slider';
 import Layer from '@arcgis/core/layers/Layer';
 import GroupLayer from '@arcgis/core/layers/GroupLayer';
@@ -11,6 +10,8 @@ import {
   getPolygonLayerColor,
 } from '../../../util/arcgis/arcgis-layer-util';
 
+// BlendLayer has no default export
+type BlendLayer = __esri.BlendLayer;
 type BlendModes = BlendLayer['blendMode'];
 
 export type StylableLayer = Pick<
@@ -54,7 +55,6 @@ const BLEND_MODES = [
 
 @Component({
   selector: 'app-layer-style-editor',
-  standalone: true,
   imports: [MatFormFieldModule, MatSelectModule, MatSliderModule],
   templateUrl: './layer-style-editor.component.html',
   styleUrl: './layer-style-editor.component.scss',

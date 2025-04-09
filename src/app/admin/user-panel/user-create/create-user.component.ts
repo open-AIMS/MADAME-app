@@ -28,7 +28,6 @@ interface CreateUserForm {
 
 @Component({
   selector: 'app-admin-create-user-dialog',
-  standalone: true,
   imports: [
     CommonModule,
     MatDialogModule,

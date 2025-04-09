@@ -34,7 +34,6 @@ import Home from '@arcgis/core/widgets/Home';
 
 @Component({
   selector: 'app-reef-map',
-  standalone: true,
   imports: [
     ComponentLibraryModule,
     MatSliderModule,

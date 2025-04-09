@@ -30,7 +30,6 @@ interface UpdatePasswordForm {
 
 @Component({
   selector: 'admin-update-password-dialog',
-  standalone: true,
   imports: [
     CommonModule,
     MatDialogModule,

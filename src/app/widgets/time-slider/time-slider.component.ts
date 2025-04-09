@@ -18,7 +18,6 @@ type EmittedValue = number | [number, number];
 
 @Component({
   selector: 'app-time-slider',
-  standalone: true,
   imports: [
     MatSliderModule,
     MatIconButton,

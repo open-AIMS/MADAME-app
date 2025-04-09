@@ -25,7 +25,6 @@ import { AuthService } from '../../auth/auth.service';
 
 @Component({
   selector: 'app-config-dialog',
-  standalone: true,
   imports: [
     MatDialogModule,
     MatFormFieldModule,
@@ -36,7 +35,6 @@ import { AuthService } from '../../auth/auth.service';
     MatListOption,
     ReactiveFormsModule,
     MatButton,
-    MatIconButton,
     MatIcon,
     MatTooltip,
     MatIconAnchor,
