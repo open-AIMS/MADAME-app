@@ -7,7 +7,7 @@ import { defineCustomElements as defineCalciteElements } from '@esri/calcite-com
 
 @Component({
     selector: 'app-root',
-    imports: [RouterOutlet, RouterLink, MatToolbarModule, MatButtonModule],
+    imports: [RouterOutlet, MatToolbarModule, MatButtonModule],
     templateUrl: './app.component.html',
     styleUrl: './app.component.scss'
 })

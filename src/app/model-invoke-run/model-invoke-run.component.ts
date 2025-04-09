@@ -12,19 +12,18 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ModelScenariosDesc, ModelParamDesc } from '../../types/api.type';
 
 @Component({
-    selector: 'app-model-invoke-run',
-    templateUrl: 'model-invoke-run.component.html',
-    styleUrl: 'model-invoke-run.component.scss',
-    imports: [
-        MatCardModule,
-        MatButtonModule,
-        MatRippleModule,
-        MatSliderModule,
-        RouterLink,
-        AsyncPipe,
-        ReactiveFormsModule,
-        MatProgressSpinner,
-    ]
+  selector: 'app-model-invoke-run',
+  templateUrl: 'model-invoke-run.component.html',
+  styleUrl: 'model-invoke-run.component.scss',
+  imports: [
+    MatCardModule,
+    MatButtonModule,
+    MatRippleModule,
+    MatSliderModule,
+    RouterLink,
+    ReactiveFormsModule,
+    MatProgressSpinner,
+  ],
 })
 export class ModelInvokeRunComponent {
   is_loading: boolean = false;

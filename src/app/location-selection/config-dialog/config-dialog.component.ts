@@ -24,27 +24,26 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { AuthService } from '../../auth/auth.service';
 
 @Component({
-    selector: 'app-config-dialog',
-    imports: [
-        MatDialogModule,
-        MatFormFieldModule,
-        MatInputModule,
-        MatSelect,
-        MatOption,
-        MatSelectionList,
-        MatListOption,
-        ReactiveFormsModule,
-        MatButton,
-        MatIconButton,
-        MatIcon,
-        MatTooltip,
-        MatIconAnchor,
-        AsyncPipe,
-        MatCheckbox,
-        MatTabsModule,
-    ],
-    templateUrl: './config-dialog.component.html',
-    styleUrl: './config-dialog.component.scss'
+  selector: 'app-config-dialog',
+  imports: [
+    MatDialogModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelect,
+    MatOption,
+    MatSelectionList,
+    MatListOption,
+    ReactiveFormsModule,
+    MatButton,
+    MatIcon,
+    MatTooltip,
+    MatIconAnchor,
+    AsyncPipe,
+    MatCheckbox,
+    MatTabsModule,
+  ],
+  templateUrl: './config-dialog.component.html',
+  styleUrl: './config-dialog.component.scss',
 })
 export class ConfigDialogComponent {
   readonly config = inject(ReefGuideConfigService);
