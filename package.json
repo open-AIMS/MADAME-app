@@ -45,8 +45,8 @@
   },
   "overrides": {
     "@arcgis/map-components-angular": {
-      "@angular/core": "^18.2.2",
-      "@angular/common": "^18.2.2"
+      "@angular/core": "^19.2.5",
+      "@angular/common": "^19.2.5"
     }
   }
 }
