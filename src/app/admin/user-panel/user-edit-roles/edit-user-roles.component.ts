@@ -14,18 +14,18 @@ import { User, UserRole } from '../../../../api/web-api.types';
 import { WebApiService } from '../../../../api/web-api.service';
 
 @Component({
-    selector: 'app-user-edit-roles-dialog',
-    imports: [
-        CommonModule,
-        MatFormFieldModule,
-        MatInputModule,
-        MatSelectModule,
-        MatButtonModule,
-        ReactiveFormsModule,
-        MatDialogModule,
-    ],
-    templateUrl: './edit-user-roles.component.html',
-    styleUrl: './edit-user-roles.component.scss'
+  selector: 'app-user-edit-roles-dialog',
+  imports: [
+    CommonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatButtonModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+  ],
+  templateUrl: './edit-user-roles.component.html',
+  styleUrl: './edit-user-roles.component.scss',
 })
 export class UserEditRolesDialogComponent {
   readonly webApiService = inject(WebApiService);

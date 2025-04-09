@@ -6,10 +6,10 @@ import { defineCustomElements as defineArcgisMapElements } from '@arcgis/map-com
 import { defineCustomElements as defineCalciteElements } from '@esri/calcite-components/dist/loader';
 
 @Component({
-    selector: 'app-root',
-    imports: [RouterOutlet, MatToolbarModule, MatButtonModule],
-    templateUrl: './app.component.html',
-    styleUrl: './app.component.scss'
+  selector: 'app-root',
+  imports: [RouterOutlet, MatToolbarModule, MatButtonModule],
+  templateUrl: './app.component.html',
+  styleUrl: './app.component.scss',
 })
 export class AppComponent implements OnInit {
   title = 'adria-app';

@@ -46,20 +46,20 @@ interface SelectionCriteriaInputDef {
 }
 
 @Component({
-    selector: 'app-selection-criteria',
-    imports: [
-        MatSliderModule,
-        CalciteComponentsModule,
-        FormsModule,
-        MatIconButton,
-        MatIcon,
-        MatFormFieldModule,
-        MatInput,
-        MatSlideToggle,
-        ReactiveFormsModule,
-    ],
-    templateUrl: './selection-criteria.component.html',
-    styleUrl: './selection-criteria.component.scss'
+  selector: 'app-selection-criteria',
+  imports: [
+    MatSliderModule,
+    CalciteComponentsModule,
+    FormsModule,
+    MatIconButton,
+    MatIcon,
+    MatFormFieldModule,
+    MatInput,
+    MatSlideToggle,
+    ReactiveFormsModule,
+  ],
+  templateUrl: './selection-criteria.component.html',
+  styleUrl: './selection-criteria.component.scss',
 })
 export class SelectionCriteriaComponent {
   readonly mapService = inject(ReefGuideMapService);

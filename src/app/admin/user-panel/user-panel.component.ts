@@ -22,24 +22,24 @@ import { AdminUpdateUserPasswordDialogComponent } from './user-update-password/u
 import { extractErrorMessage } from '../../../api/api-util';
 
 @Component({
-    selector: 'app-admin-panel',
-    imports: [
-        CommonModule,
-        MatDialogModule,
-        MatIconModule,
-        MatButtonModule,
-        MatTableModule,
-        MatMenuModule,
-        MatTabsModule,
-        MatPaginatorModule,
-        MatCheckboxModule,
-        MatFormFieldModule,
-        MatInputModule,
-        FormsModule,
-        MatProgressBar,
-    ],
-    templateUrl: './user-panel.component.html',
-    styleUrl: './user-panel.component.scss'
+  selector: 'app-admin-panel',
+  imports: [
+    CommonModule,
+    MatDialogModule,
+    MatIconModule,
+    MatButtonModule,
+    MatTableModule,
+    MatMenuModule,
+    MatTabsModule,
+    MatPaginatorModule,
+    MatCheckboxModule,
+    MatFormFieldModule,
+    MatInputModule,
+    FormsModule,
+    MatProgressBar,
+  ],
+  templateUrl: './user-panel.component.html',
+  styleUrl: './user-panel.component.scss',
 })
 export class AdminPanelComponent implements OnInit {
   private editDialog = inject(MatDialog);

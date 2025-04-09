@@ -28,25 +28,25 @@ import { ResultSetService } from '../contexts/result-set.service';
 import { MatToolbar } from '@angular/material/toolbar';
 
 @Component({
-    selector: 'app-model-run',
-    templateUrl: './model-run.component.html',
-    styleUrl: './model-run.component.scss',
-    imports: [
-        MatExpansionModule,
-        MatButtonModule,
-        DatePipe,
-        MatIconModule,
-        RouterLink,
-        ComponentLibraryModule,
-        AsyncPipe,
-        NgIf,
-        MatTabsModule,
-        TableComponent,
-        ModelspecExplorerComponent,
-        ReefMapComponent,
-        MatToolbar,
-    ],
-    providers: [ResultSetService]
+  selector: 'app-model-run',
+  templateUrl: './model-run.component.html',
+  styleUrl: './model-run.component.scss',
+  imports: [
+    MatExpansionModule,
+    MatButtonModule,
+    DatePipe,
+    MatIconModule,
+    RouterLink,
+    ComponentLibraryModule,
+    AsyncPipe,
+    NgIf,
+    MatTabsModule,
+    TableComponent,
+    ModelspecExplorerComponent,
+    ReefMapComponent,
+    MatToolbar,
+  ],
+  providers: [ResultSetService],
 })
 export class ModelRunComponent {
   id = input.required<string>();

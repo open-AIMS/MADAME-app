@@ -6,11 +6,11 @@ import { ResultSetService } from '../../contexts/result-set.service';
  * Development component for focusing on map development.
  */
 @Component({
-    selector: 'app-test-map',
-    imports: [ReefMapComponent],
-    templateUrl: './test-map.component.html',
-    styleUrl: './test-map.component.scss',
-    providers: [ResultSetService]
+  selector: 'app-test-map',
+  imports: [ReefMapComponent],
+  templateUrl: './test-map.component.html',
+  styleUrl: './test-map.component.scss',
+  providers: [ResultSetService],
 })
 export class TestMapComponent {
   constructor(private resultSetContext: ResultSetService) {

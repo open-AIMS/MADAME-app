@@ -17,17 +17,17 @@ import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
 type EmittedValue = number | [number, number];
 
 @Component({
-    selector: 'app-time-slider',
-    imports: [
-        MatSliderModule,
-        MatIconButton,
-        MatIcon,
-        MatMenuTrigger,
-        MatMenu,
-        MatMenuItem,
-    ],
-    templateUrl: './time-slider.component.html',
-    styleUrl: './time-slider.component.scss'
+  selector: 'app-time-slider',
+  imports: [
+    MatSliderModule,
+    MatIconButton,
+    MatIcon,
+    MatMenuTrigger,
+    MatMenu,
+    MatMenuItem,
+  ],
+  templateUrl: './time-slider.component.html',
+  styleUrl: './time-slider.component.scss',
 })
 export class TimeSliderComponent implements OnInit {
   min = input.required<number>();

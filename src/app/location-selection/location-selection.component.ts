@@ -42,28 +42,28 @@ type DrawerModes = 'criteria' | 'style';
  * Map be split-off as its own project in the future.
  */
 @Component({
-    selector: 'app-location-selection',
-    imports: [
-        CommonModule,
-        MatSidenavModule,
-        ComponentLibraryModule,
-        MatButtonModule,
-        MatIconModule,
-        MatToolbarModule,
-        SelectionCriteriaComponent,
-        MatTooltip,
-        AsyncPipe,
-        MatProgressSpinner,
-        LayerStyleEditorComponent,
-        MatAccordion,
-        MatExpansionModule,
-        CommonModule,
-        MatMenuModule,
-        MatProgressBar,
-    ],
-    providers: [ReefGuideMapService],
-    templateUrl: './location-selection.component.html',
-    styleUrl: './location-selection.component.scss'
+  selector: 'app-location-selection',
+  imports: [
+    CommonModule,
+    MatSidenavModule,
+    ComponentLibraryModule,
+    MatButtonModule,
+    MatIconModule,
+    MatToolbarModule,
+    SelectionCriteriaComponent,
+    MatTooltip,
+    AsyncPipe,
+    MatProgressSpinner,
+    LayerStyleEditorComponent,
+    MatAccordion,
+    MatExpansionModule,
+    CommonModule,
+    MatMenuModule,
+    MatProgressBar,
+  ],
+  providers: [ReefGuideMapService],
+  templateUrl: './location-selection.component.html',
+  styleUrl: './location-selection.component.scss',
 })
 export class LocationSelectionComponent implements AfterViewInit {
   readonly config = inject(ReefGuideConfigService);

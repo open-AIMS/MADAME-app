@@ -20,17 +20,17 @@ type Modes = 'register' | 'login';
 type Credentials = { email: string; password: string };
 
 @Component({
-    selector: 'app-login-dialog',
-    imports: [
-        MatDialogModule,
-        MatButton,
-        ReactiveFormsModule,
-        MatFormFieldModule,
-        MatInputModule,
-        MatProgressBar,
-    ],
-    templateUrl: './login-dialog.component.html',
-    styleUrl: './login-dialog.component.scss'
+  selector: 'app-login-dialog',
+  imports: [
+    MatDialogModule,
+    MatButton,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatProgressBar,
+  ],
+  templateUrl: './login-dialog.component.html',
+  styleUrl: './login-dialog.component.scss',
 })
 export class LoginDialogComponent {
   readonly dialogRef = inject(MatDialogRef<LoginDialogComponent>);
