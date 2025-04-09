@@ -19,22 +19,21 @@ import { interval, merge, startWith, Subject, switchMap, tap } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
-  selector: 'app-cluster-admin-dialog',
-  standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatProgressSpinnerModule,
-    MatIconModule,
-    MatTooltipModule,
-    MatDialogModule,
-    MatDividerModule,
-  ],
-  templateUrl: './ClusterAdminDialog.component.html',
-  styleUrl: './ClusterAdminDialog.component.scss',
+    selector: 'app-cluster-admin-dialog',
+    imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatButtonModule,
+        MatProgressSpinnerModule,
+        MatIconModule,
+        MatTooltipModule,
+        MatDialogModule,
+        MatDividerModule,
+    ],
+    templateUrl: './ClusterAdminDialog.component.html',
+    styleUrl: './ClusterAdminDialog.component.scss'
 })
 export class ClusterAdminDialogComponent implements OnInit {
   private readonly api = inject(WebApiService);

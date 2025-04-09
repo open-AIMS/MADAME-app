@@ -33,17 +33,16 @@ import { PointOrRange, pointOrRangeToParam } from '../../util/param-util';
 import Home from '@arcgis/core/widgets/Home';
 
 @Component({
-  selector: 'app-reef-map',
-  standalone: true,
-  imports: [
-    ComponentLibraryModule,
-    MatSliderModule,
-    MatProgressSpinnerModule,
-    CommonModule,
-    TimeSliderComponent,
-  ],
-  templateUrl: './reef-map.component.html',
-  styleUrl: './reef-map.component.scss',
+    selector: 'app-reef-map',
+    imports: [
+        ComponentLibraryModule,
+        MatSliderModule,
+        MatProgressSpinnerModule,
+        CommonModule,
+        TimeSliderComponent,
+    ],
+    templateUrl: './reef-map.component.html',
+    styleUrl: './reef-map.component.scss'
 })
 export class ReefMapComponent {
   // mapItemId = '94fe3f59dcc64b9eb94576a1f1f17ec9';

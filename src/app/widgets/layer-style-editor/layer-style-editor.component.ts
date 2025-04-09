@@ -53,11 +53,10 @@ const BLEND_MODES = [
 ];
 
 @Component({
-  selector: 'app-layer-style-editor',
-  standalone: true,
-  imports: [MatFormFieldModule, MatSelectModule, MatSliderModule],
-  templateUrl: './layer-style-editor.component.html',
-  styleUrl: './layer-style-editor.component.scss',
+    selector: 'app-layer-style-editor',
+    imports: [MatFormFieldModule, MatSelectModule, MatSliderModule],
+    templateUrl: './layer-style-editor.component.html',
+    styleUrl: './layer-style-editor.component.scss'
 })
 export class LayerStyleEditorComponent {
   layer = input.required<StylableLayer>();

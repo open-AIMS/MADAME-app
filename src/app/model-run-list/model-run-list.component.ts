@@ -17,18 +17,17 @@ interface ModelRun {
 }
 
 @Component({
-  selector: 'app-model-run-list',
-  standalone: true,
-  templateUrl: './model-run-list.component.html',
-  styleUrl: './model-run-list.component.scss',
-  imports: [
-    MatCardModule,
-    MatButtonModule,
-    MatRippleModule,
-    MatIconModule,
-    RouterLink,
-    AsyncPipe,
-  ],
+    selector: 'app-model-run-list',
+    templateUrl: './model-run-list.component.html',
+    styleUrl: './model-run-list.component.scss',
+    imports: [
+        MatCardModule,
+        MatButtonModule,
+        MatRippleModule,
+        MatIconModule,
+        RouterLink,
+        AsyncPipe,
+    ]
 })
 export class ModelRunListComponent {
   runs$: Observable<Array<ModelRun>>;

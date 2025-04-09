@@ -27,21 +27,20 @@ interface CreateUserForm {
 }
 
 @Component({
-  selector: 'app-admin-create-user-dialog',
-  standalone: true,
-  imports: [
-    CommonModule,
-    MatDialogModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    MatButtonModule,
-    MatProgressSpinnerModule,
-    ReactiveFormsModule,
-    MatIconModule,
-  ],
-  templateUrl: './create-user.component.html',
-  styleUrl: './create-user.component.scss',
+    selector: 'app-admin-create-user-dialog',
+    imports: [
+        CommonModule,
+        MatDialogModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatSelectModule,
+        MatButtonModule,
+        MatProgressSpinnerModule,
+        ReactiveFormsModule,
+        MatIconModule,
+    ],
+    templateUrl: './create-user.component.html',
+    styleUrl: './create-user.component.scss'
 })
 export class AdminCreateUserDialogComponent {
   private readonly adminService = inject(WebApiService);

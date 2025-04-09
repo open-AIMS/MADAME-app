@@ -13,11 +13,10 @@ import {
 type ModelspecTable = SimpleTable<ModelSpecField>;
 
 @Component({
-  selector: 'app-modelspec-explorer',
-  standalone: true,
-  imports: [MatTabsModule, MatTableModule, TableComponent],
-  templateUrl: './modelspec-explorer.component.html',
-  styleUrl: './modelspec-explorer.component.scss',
+    selector: 'app-modelspec-explorer',
+    imports: [MatTabsModule, MatTableModule, TableComponent],
+    templateUrl: './modelspec-explorer.component.html',
+    styleUrl: './modelspec-explorer.component.scss'
 })
 export class ModelspecExplorerComponent {
   data = input.required<DataFrame | null>();

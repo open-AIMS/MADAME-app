@@ -29,21 +29,20 @@ interface UpdatePasswordForm {
 }
 
 @Component({
-  selector: 'admin-update-password-dialog',
-  standalone: true,
-  imports: [
-    CommonModule,
-    MatDialogModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    MatButtonModule,
-    MatProgressSpinnerModule,
-    ReactiveFormsModule,
-    MatIconModule,
-  ],
-  templateUrl: './update-password.component.html',
-  styleUrl: './update-password.component.scss',
+    selector: 'admin-update-password-dialog',
+    imports: [
+        CommonModule,
+        MatDialogModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatSelectModule,
+        MatButtonModule,
+        MatProgressSpinnerModule,
+        ReactiveFormsModule,
+        MatIconModule,
+    ],
+    templateUrl: './update-password.component.html',
+    styleUrl: './update-password.component.scss'
 })
 export class AdminUpdateUserPasswordDialogComponent {
   private readonly webApiService = inject(WebApiService);
