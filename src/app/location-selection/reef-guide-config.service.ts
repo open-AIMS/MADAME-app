@@ -160,15 +160,12 @@ export class ReefGuideConfigService {
 
     this.mockSiteSuitability = signal(this.get('mockSiteSuitability', true));
 
-    effect(
-      () => {
-        if (this.isAdmin() !== true) {
-          // must mock if not ADMIN role.
-          this.mockSiteSuitability.set(true);
-        }
-      },
-      { allowSignalWrites: true }
-    );
+    effect(() => {
+      if (this.isAdmin() !== true) {
+        // must mock if not ADMIN role.
+        this.mockSiteSuitability.set(true);
+      }
+    });
 
     effect(() => this.set('arcgisMap', this.arcgisMap()));
     effect(() =>
