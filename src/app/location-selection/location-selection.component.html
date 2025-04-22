@@ -85,20 +85,7 @@
     }
   </mat-drawer>
   <mat-drawer-content>
-    <arcgis-map
-      [itemId]="config.arcgisMapItemId()"
-      (arcgisViewClick)="arcgisViewClick($event)"
-    >
-      <!-- TODO buttons not stacking when bottom-right, user could just browser-fullscreen -->
-      <!--      <arcgis-fullscreen position="bottom-right"></arcgis-fullscreen>-->
-      <arcgis-zoom position="bottom-right"></arcgis-zoom>
-      <arcgis-expand position="top-left">
-        <arcgis-layer-list></arcgis-layer-list>
-      </arcgis-expand>
-      <arcgis-expand position="bottom-left" expanded>
-        <arcgis-legend></arcgis-legend>
-      </arcgis-expand>
-    </arcgis-map>
+    <div id="ol-map" class="map-container"></div>
     @if (authService.authenticated()) {
       @let user = authService.user$ | async;
       <div class="map-buttons">

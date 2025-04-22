@@ -38,6 +38,12 @@ mat-drawer {
   }
 }
 
+.map-container {
+  height: 100%;
+  width: 100%;
+  background-color: lightcyan;
+}
+
 // ESRI buttons are offset in global styles.scss
 .map-buttons {
   display: flex;

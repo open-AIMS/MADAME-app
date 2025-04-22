@@ -11,7 +11,7 @@ import {
   Signal,
   WritableSignal,
 } from '@angular/core';
-import { ArcgisMap } from '@arcgis/map-components-angular';
+import Map from 'ol/Map';
 import GroupLayer from '@arcgis/core/layers/GroupLayer';
 import TileLayer from '@arcgis/core/layers/TileLayer';
 import { ReefGuideApiService } from './reef-guide-api.service';
@@ -61,7 +61,8 @@ export class ReefGuideMapService {
   private readonly snackbar = inject(MatSnackBar);
 
   // map is set shortly after construction
-  private map!: ArcgisMap;
+  // TODO any for now during migration
+  private map!: any; // Map
   private editor?: __esri.Editor;
 
   assessColor: ColorRGBA = [241, 192, 12, 1];
@@ -216,10 +217,11 @@ export class ReefGuideMapService {
     });
   }
 
-  setMap(map: ArcgisMap) {
+  setMap(map: Map) {
     this.map = map;
 
-    map.arcgisViewReadyChange.subscribe(() => this.onMapReady());
+    // TODO OpenLayers equivalent?
+    // map.arcgisViewReadyChange.subscribe(() => this.onMapReady());
   }
 
   goHome() {

@@ -55,3 +55,14 @@ mat-tab-group.fixed-height {
     top: 48px;
   }
 }
+
+// OpenLayers map
+.map-container {
+  // move zoom buttons to bottom-right
+  .ol-zoom {
+    top: unset;
+    left: unset;
+    bottom: 1.5em;
+    right: 1em;
+  }
+}

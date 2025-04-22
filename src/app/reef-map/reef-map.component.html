@@ -1,18 +1,4 @@
-<arcgis-map
-  [itemId]="mapItemId"
-  (arcgisViewReadyChange)="arcgisViewReadyChange($event)"
-  (arcgisViewLayerviewCreate)="arcgisViewLayerviewCreate($event)"
-  (arcgisViewClick)="arcgisViewClick($event)"
->
-  <arcgis-fullscreen position="top-right"></arcgis-fullscreen>
-  <arcgis-zoom position="top-right"></arcgis-zoom>
-  <arcgis-expand position="top-left">
-    <arcgis-layer-list></arcgis-layer-list>
-  </arcgis-expand>
-  <arcgis-expand position="bottom-left" expanded>
-    <arcgis-legend></arcgis-legend>
-  </arcgis-expand>
-</arcgis-map>
+
 <div class="timestep-container">
   @if (yearExtent$ | async; as extent) {
     <app-time-slider

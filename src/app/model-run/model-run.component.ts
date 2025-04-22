@@ -10,10 +10,6 @@ import { AsyncPipe, DatePipe, NgIf } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import {
-  ArcgisMap,
-  ComponentLibraryModule,
-} from '@arcgis/map-components-angular';
 import { AdriaApiService } from '../adria-api.service';
 import { map, Observable, switchMap } from 'rxjs';
 import { DataFrame, ResultSetInfo } from '../../types/api.type';
@@ -37,7 +33,6 @@ import { MatToolbar } from '@angular/material/toolbar';
     DatePipe,
     MatIconModule,
     RouterLink,
-    ComponentLibraryModule,
     AsyncPipe,
     NgIf,
     MatTabsModule,
@@ -59,8 +54,6 @@ export class ModelRunComponent {
 
   modelspecDataframe$: Observable<DataFrame>;
   scenariosTable$: Observable<SimpleTable>;
-
-  @ViewChild(ArcgisMap) map!: ArcgisMap;
 
   selected_metric: string = 'relative_cover';
   metrics_figures: Array<[number, SafeHtml]> = [];

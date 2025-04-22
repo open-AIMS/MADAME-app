@@ -17,11 +17,6 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltip } from '@angular/material/tooltip';
-import { ArcgisMapCustomEvent } from '@arcgis/map-components';
-import {
-  ArcgisMap,
-  ComponentLibraryModule,
-} from '@arcgis/map-components-angular';
 import { combineLatest, map, Observable, of, switchMap } from 'rxjs';
 import { AdminPanelComponent } from '../admin/user-panel/user-panel.component';
 import { AuthService } from '../auth/auth.service';
@@ -34,6 +29,10 @@ import { CriteriaAssessment } from './reef-guide-api.types';
 import { ReefGuideConfigService } from './reef-guide-config.service';
 import { ReefGuideMapService } from './reef-guide-map.service';
 import { SelectionCriteriaComponent } from './selection-criteria/selection-criteria.component';
+import Map from 'ol/Map';
+import View from 'ol/View';
+import TileLayer from 'ol/layer/Tile';
+import OSM from 'ol/source/OSM';
 
 type DrawerModes = 'criteria' | 'style';
 
@@ -46,7 +45,6 @@ type DrawerModes = 'criteria' | 'style';
   imports: [
     CommonModule,
     MatSidenavModule,
-    ComponentLibraryModule,
     MatButtonModule,
     MatIconModule,
     MatToolbarModule,
@@ -79,7 +77,8 @@ export class LocationSelectionComponent implements AfterViewInit {
    */
   isAssessing$: Observable<boolean>;
 
-  @ViewChild(ArcgisMap) map!: ArcgisMap;
+  // TODO OL API migration
+  map!: any;  // Map
   @ViewChild('drawer') drawer!: MatDrawer;
 
   constructor() {
@@ -100,19 +99,23 @@ export class LocationSelectionComponent implements AfterViewInit {
     );
   }
 
+  // TODO confirm on init or after view init
+  // ngOnInit() {
   ngAfterViewInit() {
-    this.mapService.setMap(this.map);
-  }
+    this.map = new Map({
+      target: 'ol-map',
+      view: new View({
+        center: [0, 0],
+        zoom: 1,
+      }),
+      layers: [
+        new TileLayer({
+          source: new OSM(),
+        }),
+      ],
+    });
 
-  async arcgisViewClick(event: ArcgisMapCustomEvent<__esri.ViewClickEvent>) {
-    console.log('arcgis map click', event);
-    // const view = this.map.view;
-    // const resp = await view.hitTest(event.detail);
-    const point = event.detail.mapPoint;
-    // point.spatialReference
-    console.log(
-      `Point ${point.x}, ${point.y} Lon/Lat ${point.longitude}, ${point.latitude}`
-    );
+    this.mapService.setMap(this.map);
   }
 
   openDrawer(mode: DrawerModes) {
