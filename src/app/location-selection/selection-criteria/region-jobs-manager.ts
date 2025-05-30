@@ -74,7 +74,7 @@ export class RegionJobsManager {
 
         return api.startJob(jobType, finalPayload).pipe(
           tap(job => {
-            console.log("Job update", job);
+            console.log(`Job id=${job.id} type=${job.type} update`, job);
           }),
           filter(x => x.status === 'SUCCEEDED'),
           switchMap(job => this.api.downloadJobResults(job.id)),

@@ -1,4 +1,7 @@
-import { JobTypePayload_RegionalAssessment } from "../../api/web-api.types";
+import {
+  JobTypePayload_RegionalAssessment,
+  JobTypePayload_SuitabilityAssessment,
+} from '../../api/web-api.types';
 
 /**
  * The original criteria names used by ReefGuideApi.jl REST API
@@ -8,7 +11,6 @@ import { JobTypePayload_RegionalAssessment } from "../../api/web-api.types";
  */
 export type SelectionCriteria = Record<string, [number, number]>;
 
-
 // temporary mapping, we should rename criteria ids in API to be consistent
 // TODO when we refactor (probably when switch to monorepo)
 export const criteriaIdToPayloadId: Record<string, string> = {
@@ -17,14 +19,18 @@ export const criteriaIdToPayloadId: Record<string, string> = {
   // removed from app code
   // Turbidity: 'turbidity',
   WavesHs: 'waves_height',
-  WavesTp: 'waves_period'
+  WavesTp: 'waves_period',
 };
 
+// TODO:monorepo remove these functions and types after refactor all code to job payloads.
 /**
  * Convert a SelectionCriteria object's properties to a new object with
  * job style criteria names using criteriaToPayloadId mapping.
+ * @returns partial payload (missing region)
  */
-export function criteriaToJobPayload(criteria: SelectionCriteria): JobTypePayload_RegionalAssessment {
+export function criteriaToJobPayload(
+  criteria: SelectionCriteria
+): JobTypePayload_RegionalAssessment {
   // Partial<JobTypePayload_RegionalAssessment>
   const payload: Record<string, any> = {
     reef_type: 'slopes',
@@ -32,18 +38,34 @@ export function criteriaToJobPayload(criteria: SelectionCriteria): JobTypePayloa
     // see https://github.com/open-AIMS/ReefGuideAPI.jl/issues/69
     rugosity_min: 0.0,
     rugosity_max: 6.0,
-    threshold: 95
+    threshold: 95,
   };
 
   for (let [criteriaId, range] of Object.entries(criteria)) {
     const payloadProp = criteriaIdToPayloadId[criteriaId];
     if (payloadProp === undefined) {
-      throw new Error(`"${criteriaId}" has no mapping to job payload property name`);
+      throw new Error(
+        `"${criteriaId}" has no mapping to job payload property name`
+      );
     }
     payload[`${payloadProp}_min`] = range[0];
     payload[`${payloadProp}_max`] = range[1];
   }
   return payload as JobTypePayload_RegionalAssessment;
+}
+
+export function criteriaToSiteSuitabilityJobPayload(
+  region: string,
+  criteria: SelectionCriteria,
+  siteCriteria: SiteSuitabilityCriteria
+): JobTypePayload_SuitabilityAssessment {
+  return {
+    ...criteriaToJobPayload(criteria),
+    region,
+    x_dist: siteCriteria.xdist,
+    y_dist: siteCriteria.ydist,
+    threshold: siteCriteria.SuitabilityThreshold,
+  };
 }
 
 export interface SiteSuitabilityCriteria {

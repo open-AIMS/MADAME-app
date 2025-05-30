@@ -18,6 +18,7 @@ import { ReefGuideApiService } from './reef-guide-api.service';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import {
   BehaviorSubject,
+  filter,
   forkJoin,
   map,
   mergeMap,
@@ -25,6 +26,8 @@ import {
   of,
   Subject,
   switchMap,
+  takeUntil,
+  tap,
   throttleTime,
 } from 'rxjs';
 import {
@@ -46,6 +49,9 @@ import { AuthService } from '../auth/auth.service';
 import Editor from '@arcgis/core/widgets/Editor';
 import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
 import {
+  criteriaIdToPayloadId,
+  criteriaToJobPayload,
+  criteriaToSiteSuitabilityJobPayload,
   SelectionCriteria,
   SiteSuitabilityCriteria,
 } from './reef-guide-api.types';
@@ -444,17 +450,30 @@ export class ReefGuideMapService {
     // rework multi-request progress tracking, review CriteriaRequest
     // this.siteSuitabilityLoading.set(true);
     for (const region of regions) {
-      const url = this.reefGuideApi.siteSuitabilityUrlForCriteria(
+      const payload = criteriaToSiteSuitabilityJobPayload(
         region,
         criteria,
         siteCriteria
       );
-      const layer = new GeoJSONLayer({
-        title: `Site Suitability (${region})`,
-        url,
-      });
+      this.api
+        .startJob('SUITABILITY_ASSESSMENT', payload)
+        .pipe(
+          tap(job => {
+            console.log(`Job id=${job.id} type=${job.type} update`, job);
+          }),
+          filter(x => x.status === 'SUCCEEDED'),
+          switchMap(job => this.api.downloadJobResults(job.id)),
+          takeUntil(this.cancelAssess$)
+        )
+        .subscribe(x => {
+          const url = Object.values(x.files)[0];
+          const layer = new GeoJSONLayer({
+            title: `Site Suitability (${region})`,
+            url,
+          });
 
-      groupLayer.add(layer);
+          groupLayer.add(layer);
+        });
     }
   }
 

@@ -107,3 +107,22 @@ export type JobTypePayload_RegionalAssessment = {
   // threshold not actually used by this job.
   threshold: number;
 };
+
+export type JobTypePayload_SuitabilityAssessment = {
+  region: string;
+  reef_type: 'slopes' | 'flats';
+  depth_min: number;
+  depth_max: number;
+  slope_min: number;
+  slope_max: number;
+  rugosity_min: number;
+  rugosity_max: number;
+  waves_period_min: number;
+  waves_period_max: number;
+  waves_height_min: number;
+  waves_height_max: number;
+  // threshold not actually used by this job.
+  threshold: number;
+  x_dist: number;
+  y_dist: number;
+};

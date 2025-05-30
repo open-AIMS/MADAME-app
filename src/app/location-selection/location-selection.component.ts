@@ -169,8 +169,7 @@ export class LocationSelectionComponent implements AfterViewInit {
     }
 
     if (siteSuitability) {
-      // this.mapService.addSiteSuitabilityLayer(criteria, siteSuitability);
-      // this.api.startJob('SUITABILITY_ASSESSMENT')
+      this.mapService.addSiteSuitabilityLayer(criteria, siteSuitability);
     }
   }
 
