@@ -100,7 +100,6 @@ export type JobTypePayload_RegionalAssessment = {
   slope_max: number;
   rugosity_min: number;
   rugosity_max: number;
-  // turbidity missing, it will be removed.
   waves_period_min: number;
   waves_period_max: number;
   waves_height_min: number;

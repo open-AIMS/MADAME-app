@@ -14,7 +14,8 @@ export type SelectionCriteria = Record<string, [number, number]>;
 export const criteriaIdToPayloadId: Record<string, string> = {
   Depth: 'depth',
   Slope: 'slope',
-  Turbidity: 'turbidity',
+  // removed from app code
+  // Turbidity: 'turbidity',
   WavesHs: 'waves_height',
   WavesTp: 'waves_period'
 };
@@ -27,7 +28,8 @@ export function criteriaToJobPayload(criteria: SelectionCriteria): JobTypePayloa
   // Partial<JobTypePayload_RegionalAssessment>
   const payload: Record<string, any> = {
     reef_type: 'slopes',
-    // TODO rugosity+threshold required by worker code, but no turbidity?
+    // TODO rugosity+threshold required by worker code JSON deserializer.
+    // see https://github.com/open-AIMS/ReefGuideAPI.jl/issues/69
     rugosity_min: 0.0,
     rugosity_max: 6.0,
     threshold: 95

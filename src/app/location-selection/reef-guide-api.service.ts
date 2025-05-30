@@ -103,8 +103,6 @@ export class ReefGuideApiService {
         'https://tiles.arcgis.com/tiles/wfyOCawpdks4prqC/arcgis/rest/services/GBR_bathymetry/MapServer',
       Slope:
         'https://tiles.arcgis.com/tiles/wfyOCawpdks4prqC/arcgis/rest/services/GBR_slope_data/MapServer',
-      // TODO Turbidity criteria layer
-      // Turbidity: "",
       WavesHs:
         'https://tiles.arcgis.com/tiles/wfyOCawpdks4prqC/arcgis/rest/services/GBR_wave_Hs_data/MapServer',
       WavesTp:
