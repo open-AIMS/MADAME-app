@@ -1,7 +1,7 @@
 import { environment } from '../../environments/environment';
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { map, Observable } from 'rxjs';
+import { from, map, Observable, switchMap } from 'rxjs';
 import { ReefGuideConfigService } from './reef-guide-config.service';
 import {
   SelectionCriteria,
@@ -119,8 +119,12 @@ export class ReefGuideApiService {
    * Caller is responsible for revokeObjectURL.
    * @param url
    */
-  toObjectURL(url: string): Observable<string> {
-    return this.http.get(url, { responseType: 'blob' }).pipe(
+  toObjectURL(url: string, plainHttp=false): Observable<string> {
+    const request$ = plainHttp
+      ? from(fetch(url)).pipe(switchMap(r => from(r.blob())))
+      : this.http.get(url, { responseType: 'blob' });
+
+    return request$.pipe(
       map(blob => {
         // warn if we're doing this for files > 100mb
         if (blob.size > 100_000_000) {

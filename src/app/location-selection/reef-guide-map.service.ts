@@ -16,7 +16,17 @@ import GroupLayer from '@arcgis/core/layers/GroupLayer';
 import TileLayer from '@arcgis/core/layers/TileLayer';
 import { ReefGuideApiService } from './reef-guide-api.service';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
-import { BehaviorSubject, mergeMap, of, Subject, throttleTime } from 'rxjs';
+import {
+  BehaviorSubject,
+  forkJoin,
+  map,
+  mergeMap,
+  Observable,
+  of,
+  Subject,
+  switchMap,
+  throttleTime,
+} from 'rxjs';
 import {
   CriteriaRequest,
   ReadyRegion,
@@ -41,6 +51,12 @@ import {
 } from './reef-guide-api.types';
 import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
 import { StylableLayer } from '../widgets/layer-style-editor/layer-style-editor.component';
+import { JobType } from '../../api/web-api.types';
+import { WebApiService } from '../../api/web-api.service';
+import {
+  RegionDownloadResponse,
+  RegionJobsManager,
+} from './selection-criteria/region-jobs-manager';
 
 interface CriteriaLayer {
   layer: TileLayer;
@@ -57,7 +73,8 @@ export class ReefGuideMapService {
   private readonly authService = inject(AuthService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly injector = inject(INJECTOR);
-  private readonly api = inject(ReefGuideApiService);
+  private readonly api = inject(WebApiService);
+  private readonly reefGuideApi = inject(ReefGuideApiService);
   private readonly snackbar = inject(MatSnackBar);
 
   // map is set shortly after construction
@@ -91,21 +108,27 @@ export class ReefGuideMapService {
   private readonly pendingRequests = new Set<string>();
   private pendingHighPoint: number = 0;
 
+  // criteria data layers
   private readonly criteriaGroupLayer = signal<GroupLayer | undefined>(
     undefined
   );
+
+  // region assessment raster layers. COG vs Tile depends on app config.
   private readonly cogAssessRegionsGroupLayer = signal<GroupLayer | undefined>(
     undefined
   );
   private readonly tilesAssessRegionsGroupLayer = signal<
     GroupLayer | undefined
   >(undefined);
+
+  // suitable sites polygons group layer
   private readonly siteSuitabilityLayer = signal<GroupLayer | undefined>(
     undefined
   );
 
   criteriaRequest = signal<CriteriaRequest | undefined>(undefined);
 
+  // whether to show the clear layers button
   showClear = computed(() => {
     return (
       this.cogAssessRegionsGroupLayer() !== undefined ||
@@ -229,6 +252,108 @@ export class ReefGuideMapService {
     });
   }
 
+  /**
+   * Start region jobs and add layers using the job results.
+   * @param jobType
+   * @param payload
+   */
+  addJobLayers(jobType: JobType, payload: any) {
+    console.log('addJobLayers', payload);
+
+    const regions$ = toObservable(this.config.enabledRegions, {
+      injector: this.injector,
+    }).pipe(mergeMap(regions => of(...regions)));
+
+    const jobManager = runInInjectionContext(
+      this.injector,
+      () => new RegionJobsManager(jobType, payload, regions$)
+    );
+    // FIXME refactor, thinking the job/data manager should be outside map service
+    // this.criteriaRequest.set(criteriaRequest);
+
+    const groupLayer = this.setupCOGAssessRegionsGroupLayer();
+
+    jobManager.regionError$.subscribe(region => this.handleRegionError(region));
+
+    jobManager.jobResultsDownload$
+      .pipe(
+        // unsubscribe when this component is destroyed
+        takeUntilDestroyed(this.destroyRef),
+        switchMap(results => this.jobResultsToReadyRegion(results))
+      )
+      .subscribe(readyRegion => {
+        this.addRegionLayer(readyRegion, groupLayer);
+      });
+  }
+
+  /**
+   * Download job results and create map layer to display it.
+   * @param jobId
+   */
+  loadLayerFromJobResults(jobId: number, region?: string) {
+    const groupLayer = this.setupCOGAssessRegionsGroupLayer();
+
+    // standardize getting region as an Observable
+    let region$: Observable<string>;
+    if (region !== undefined) {
+      region$ = of(region);
+    } else {
+      region$ = this.api
+        .getJob(jobId)
+        .pipe(map(x => x.job.input_payload.region));
+    }
+
+    forkJoin([region$, this.api.downloadJobResults(jobId)]).subscribe(
+      ([region, results]) => {
+        const regionResults = { ...results, region };
+        this.jobResultsToReadyRegion(regionResults).subscribe(readyRegion => {
+          this.addRegionLayer(readyRegion, groupLayer);
+        });
+      }
+    );
+  }
+
+  private jobResultsToReadyRegion(
+    results: RegionDownloadResponse
+  ): Observable<ReadyRegion> {
+    // hacky, but currently Jobs only create one file.
+    const url = Object.values(results.files)[0];
+
+    // assuming file is small and better to download whole thing to blob
+    // TODO only convert to local Blob if less than certain size
+    // REVIEW move to other API service?
+    // plain HTTP required for S3 url
+    return this.reefGuideApi.toObjectURL(url, true).pipe(
+      map(blobUrl => {
+        const readyRegion: ReadyRegion = {
+          region: results.region,
+          cogUrl: blobUrl,
+          originalUrl: url,
+        };
+        return readyRegion;
+      })
+    );
+  }
+
+  private setupCOGAssessRegionsGroupLayer() {
+    const currentGroupLayer = this.cogAssessRegionsGroupLayer();
+    if (currentGroupLayer) {
+      return currentGroupLayer;
+    }
+
+    let title = 'Assessed Regions';
+    if (this.config.assessLayerTypes().length > 1) {
+      title = `${title} (COGs)`;
+    }
+    const groupLayer = new GroupLayer({
+      title,
+      listMode: 'hide-children',
+    });
+    this.cogAssessRegionsGroupLayer.set(groupLayer);
+    this.map.addLayer(groupLayer);
+    return groupLayer;
+  }
+
   addCOGLayers(criteria: SelectionCriteria) {
     console.log('addCOGLayers', criteria);
 
@@ -242,16 +367,7 @@ export class ReefGuideMapService {
     );
     this.criteriaRequest.set(criteriaRequest);
 
-    let title = 'Assessed Regions';
-    if (this.config.assessLayerTypes().length > 1) {
-      title = `${title} (COGs)`;
-    }
-    const groupLayer = new GroupLayer({
-      title,
-      listMode: 'hide-children',
-    });
-    this.cogAssessRegionsGroupLayer.set(groupLayer);
-    this.map.addLayer(groupLayer);
+    const groupLayer = this.setupCOGAssessRegionsGroupLayer();
 
     criteriaRequest.regionError$.subscribe(region =>
       this.handleRegionError(region)
@@ -287,7 +403,7 @@ export class ReefGuideMapService {
   }
 
   addTileLayer(region: string, criteria: SelectionCriteria) {
-    const urlTemplate = this.api.tileUrlForCriteria(region, criteria);
+    const urlTemplate = this.reefGuideApi.tileUrlForCriteria(region, criteria);
     console.log('urlTemplate', urlTemplate);
 
     // Need a group for each layer and the graphic behind it to blend with.
@@ -328,7 +444,7 @@ export class ReefGuideMapService {
     // rework multi-request progress tracking, review CriteriaRequest
     // this.siteSuitabilityLoading.set(true);
     for (const region of regions) {
-      const url = this.api.siteSuitabilityUrlForCriteria(
+      const url = this.reefGuideApi.siteSuitabilityUrlForCriteria(
         region,
         criteria,
         siteCriteria
@@ -434,9 +550,10 @@ export class ReefGuideMapService {
     const layer = new ImageryTileLayer({
       title: region.region,
       url: region.cogUrl,
-      opacity: 0.5,
+      opacity: 0.9,
       // gold color
-      rasterFunction: createSingleColorRasterFunction(this.assessColor),
+      // this breaks new COG, TODO heatmap in OpenLayers
+      //rasterFunction: createSingleColorRasterFunction(this.assessColor),
     });
     groupLayer.add(layer);
   }
@@ -571,7 +688,7 @@ Queried
 
   private async addCriteriaLayers() {
     const { injector } = this;
-    const layers = this.api.getCriteriaLayers();
+    const layers = this.reefGuideApi.getCriteriaLayers();
 
     const groupLayer = new GroupLayer({
       title: 'Criteria',

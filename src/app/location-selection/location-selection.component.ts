@@ -30,10 +30,11 @@ import { ClusterAdminDialogComponent } from '../admin/cluster/ClusterAdminDialog
 import { LayerStyleEditorComponent } from '../widgets/layer-style-editor/layer-style-editor.component';
 import { ConfigDialogComponent } from './config-dialog/config-dialog.component';
 import { ReefGuideApiService } from './reef-guide-api.service';
-import { CriteriaAssessment } from './reef-guide-api.types';
+import { CriteriaAssessment, criteriaToJobPayload } from './reef-guide-api.types';
 import { ReefGuideConfigService } from './reef-guide-config.service';
 import { ReefGuideMapService } from './reef-guide-map.service';
 import { SelectionCriteriaComponent } from './selection-criteria/selection-criteria.component';
+import { WebApiService } from '../../api/web-api.service';
 
 type DrawerModes = 'criteria' | 'style';
 
@@ -68,7 +69,8 @@ type DrawerModes = 'criteria' | 'style';
 export class LocationSelectionComponent implements AfterViewInit {
   readonly config = inject(ReefGuideConfigService);
   readonly authService = inject(AuthService);
-  readonly api = inject(ReefGuideApiService);
+  readonly api = inject(WebApiService);
+  readonly reefGuideApi = inject(ReefGuideApiService);
   readonly dialog = inject(MatDialog);
   readonly mapService = inject(ReefGuideMapService);
 
@@ -145,6 +147,7 @@ export class LocationSelectionComponent implements AfterViewInit {
 
   /**
    * User submitted new criteria, clear current layers and request new layers.
+   * This starts jobs; their results will be used by map layers.
    * @param assessment
    */
   onAssess(assessment: CriteriaAssessment) {
@@ -154,14 +157,20 @@ export class LocationSelectionComponent implements AfterViewInit {
 
     const layerTypes = this.config.assessLayerTypes();
     if (layerTypes.includes('cog')) {
-      this.mapService.addCOGLayers(criteria);
+      // convert criteria to job payload and start job
+      const payload = criteriaToJobPayload(criteria);
+      this.mapService.addJobLayers('REGIONAL_ASSESSMENT', payload);
+      // could load previous job result like this:
+      // this.mapService.loadLayerFromJobResults(12);
     }
     if (layerTypes.includes('tile')) {
+      // Old direct XYZ tiles
       this.mapService.addTileLayers(criteria);
     }
 
     if (siteSuitability) {
-      this.mapService.addSiteSuitabilityLayer(criteria, siteSuitability);
+      // this.mapService.addSiteSuitabilityLayer(criteria, siteSuitability);
+      // this.api.startJob('SUITABILITY_ASSESSMENT')
     }
   }
 

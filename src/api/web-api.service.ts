@@ -2,6 +2,11 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../environments/environment';
 import {
+  CreateJobResponse,
+  DownloadResponse,
+  JobDetailsResponse,
+  JobType,
+  ListJobsResponse,
   LoginResponse,
   Note,
   Polygon,
@@ -10,9 +15,16 @@ import {
   UserProfile,
   UserRole,
 } from './web-api.types';
-import { map, Observable } from 'rxjs';
+import {
+  interval,
+  map,
+  Observable,
+  switchMap,
+  distinctUntilKeyChanged,
+  takeWhile
+} from 'rxjs';
 
-// TODO import types from API
+type JobId = CreateJobResponse['jobId'];
 
 /**
  * MADAME/ReefGuide Web API - see https://github.com/open-AIMS/reefguide-web-api
@@ -132,6 +144,74 @@ export class WebApiService {
   userLogs({ page, limit }: { page: number; limit: number }) {
     return this.http.get<UserLogs>(
       `${this.baseUsers}/utils/log?page=${page}&limit=${limit}`
+    );
+  }
+
+  // ## Jobs System ##
+
+  createJob(
+    type: string,
+    payload: Record<string, any>
+  ): Observable<CreateJobResponse> {
+    return this.http.post<CreateJobResponse>(`${this.base}/jobs`, {
+      type,
+      inputPayload: payload,
+    });
+  }
+
+  getJob(jobId: JobId): Observable<JobDetailsResponse> {
+    return this.http.get<JobDetailsResponse>(`${this.base}/jobs/${jobId}`);
+  }
+
+  downloadJobResults(
+    jobId: JobId,
+    expirySeconds?: number
+  ): Observable<DownloadResponse> {
+    return this.http.get<DownloadResponse>(
+      `${this.base}/jobs/${jobId}/download`,
+      {
+        params: expirySeconds !== undefined ? { expirySeconds } : undefined,
+      }
+    );
+  }
+
+  // TODO API supports status filter
+  listJobs(): Observable<ListJobsResponse> {
+    return this.http.get<ListJobsResponse>(`${this.base}/jobs`);
+  }
+
+  // ## Jobs System: high-level API ##
+
+  /**
+   * Create a job and return Observable that emits job details when status changes.
+   * Completes when status changes from pending/in-progress.
+   * @param jobType job type
+   * @param payload job type's payload
+   * @param period how often to request job status in milliseconds (default 2 seconds)
+   * @returns Observable of job details job sub property
+   */
+  startJob(
+    jobType: JobType,
+    payload: Record<string, any>,
+    period = 2_000
+  ): Observable<JobDetailsResponse['job']> {
+    return this.createJob(jobType, payload).pipe(
+      switchMap(createJobResp => {
+        const jobId = createJobResp.jobId;
+        return interval(period).pipe(
+          // Future: if client is tracking many jobs, it would be more efficient to
+          // share the query/request for all of them (i.e. switchMap to shared observable),
+          // but this is simplest for now.
+          switchMap(() => this.getJob(jobId)),
+          map(v => v.job),
+          distinctUntilKeyChanged('status'),
+          // takeWhile but emit the last value as well
+          takeWhile(
+            x => x.status === 'PENDING' || x.status === 'IN_PROGRESS',
+            true // inclusive: emit the first value that fails the predicate
+          )
+        );
+      })
     );
   }
 }
