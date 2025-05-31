@@ -84,7 +84,9 @@ export class RegionJobsManager {
           })
         );
 
-        // TODO refactor/review state handling, error handling
+        // TODO:region refactor/review state handling, error handling
+        // this code will change with user region selection UI
+        //
         // const url = api.cogUrlForCriteria(region, criteria);
         // return api.toObjectURL(url).pipe(
         //   map(blobUrl => {

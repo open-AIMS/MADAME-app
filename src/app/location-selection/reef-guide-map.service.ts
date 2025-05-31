@@ -287,8 +287,17 @@ export class ReefGuideMapService {
         takeUntilDestroyed(this.destroyRef),
         switchMap(results => this.jobResultsToReadyRegion(results))
       )
-      .subscribe(readyRegion => {
-        this.addRegionLayer(readyRegion, groupLayer);
+      .subscribe({
+        next: (readyRegion) => {
+          this.addRegionLayer(readyRegion, groupLayer);
+        },
+        error: (err) => {
+          if (err instanceof Error) {
+            this.snackbar.open(`Regional Assessment ${err.message}`, 'OK');
+          } else {
+            this.snackbar.open('Region Assessment job error', 'OK');
+          }
+        }
       });
   }
 

@@ -21,7 +21,8 @@ import {
   Observable,
   switchMap,
   distinctUntilKeyChanged,
-  takeWhile
+  takeWhile,
+  tap
 } from 'rxjs';
 
 type JobId = CreateJobResponse['jobId'];
@@ -203,13 +204,23 @@ export class WebApiService {
           // share the query/request for all of them (i.e. switchMap to shared observable),
           // but this is simplest for now.
           switchMap(() => this.getJob(jobId)),
+          // discard extra wrapping object, which has no information.
           map(v => v.job),
+          // only emit when job status changes.
           distinctUntilKeyChanged('status'),
-          // takeWhile but emit the last value as well
+          // complete observable when not pending/in-progress; emit the last value
           takeWhile(
             x => x.status === 'PENDING' || x.status === 'IN_PROGRESS',
             true // inclusive: emit the first value that fails the predicate
-          )
+          ),
+          // convert job error statuses to thrown errors.
+          tap(job => {
+            const s = job.status;
+            if (s === 'FAILED' || s === 'CANCELLED' || s === 'TIMED_OUT') {
+              throw new Error(`Job id=${job.id} ${s}`);
+            }
+            return job;
+          })
         );
       })
     );
