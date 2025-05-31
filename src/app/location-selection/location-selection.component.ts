@@ -85,19 +85,13 @@ export class LocationSelectionComponent implements AfterViewInit {
   @ViewChild('drawer') drawer!: MatDrawer;
 
   constructor() {
+    // track the signals that indicate a current request/job in progress
+    // related to the Assess panel.
     this.isAssessing$ = combineLatest([
       toObservable(this.mapService.siteSuitabilityLoading),
-      toObservable(this.mapService.criteriaRequest).pipe(
-        switchMap(cr => {
-          if (cr) {
-            return cr.busyRegions$.pipe(map(r => r.size > 0));
-          } else {
-            return of(false);
-          }
-        })
-      ),
+      toObservable(this.mapService.regionAssessmentLoading)
     ]).pipe(
-      // any busy
+      // any loading=true indicates busy
       map(vals => vals.includes(true))
     );
   }

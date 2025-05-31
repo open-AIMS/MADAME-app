@@ -19,6 +19,7 @@ import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import {
   BehaviorSubject,
   filter,
+  finalize,
   forkJoin,
   map,
   mergeMap,
@@ -110,6 +111,7 @@ export class ReefGuideMapService {
    * This is too hardcoded, in the future will abstract this, but wait til OpenLayers.
    */
   siteSuitabilityLoading = signal(false);
+  regionAssessmentLoading = signal(false);
 
   private readonly pendingRequests = new Set<string>();
   private pendingHighPoint: number = 0;
@@ -132,6 +134,7 @@ export class ReefGuideMapService {
     undefined
   );
 
+  // current region assessment in progress
   criteriaRequest = signal<CriteriaRequest | undefined>(undefined);
 
   // whether to show the clear layers button
@@ -281,23 +284,29 @@ export class ReefGuideMapService {
 
     jobManager.regionError$.subscribe(region => this.handleRegionError(region));
 
+    this.regionAssessmentLoading.set(true);
     jobManager.jobResultsDownload$
       .pipe(
         // unsubscribe when this component is destroyed
         takeUntilDestroyed(this.destroyRef),
+        takeUntil(this.cancelAssess$),
         switchMap(results => this.jobResultsToReadyRegion(results))
       )
       .subscribe({
-        next: (readyRegion) => {
+        next: readyRegion => {
           this.addRegionLayer(readyRegion, groupLayer);
         },
-        error: (err) => {
+        complete: () => {
+          this.regionAssessmentLoading.set(false);
+        },
+        error: err => {
+          this.regionAssessmentLoading.set(false);
           if (err instanceof Error) {
             this.snackbar.open(`Regional Assessment ${err.message}`, 'OK');
           } else {
             this.snackbar.open('Region Assessment job error', 'OK');
           }
-        }
+        },
       });
   }
 
@@ -456,14 +465,26 @@ export class ReefGuideMapService {
     this.siteSuitabilityLayer.set(groupLayer);
 
     // TODO[OpenLayers] site suitability loading indicator
-    // rework multi-request progress tracking, review CriteriaRequest
-    // this.siteSuitabilityLoading.set(true);
+    // TODO:region rework multi-request progress tracking, review RegionJobsManager
+    // this works, but is bespoke for this kind of request, will refactor job requests
+    // to share same region job-dispatch code in user-selected region PR.
+    this.siteSuitabilityLoading.set(true);
+    // regions that are in-progress
+    const activeRegions = new Set<string>();
+    const removeActiveRegion = (region: string) => {
+      activeRegions.delete(region);
+      if (activeRegions.size === 0) {
+        this.siteSuitabilityLoading.set(false);
+      }
+    }
+
     for (const region of regions) {
       const payload = criteriaToSiteSuitabilityJobPayload(
         region,
         criteria,
         siteCriteria
       );
+      activeRegions.add(region);
       this.api
         .startJob('SUITABILITY_ASSESSMENT', payload)
         .pipe(
@@ -472,9 +493,11 @@ export class ReefGuideMapService {
           }),
           filter(x => x.status === 'SUCCEEDED'),
           switchMap(job => this.api.downloadJobResults(job.id)),
-          takeUntil(this.cancelAssess$)
+          takeUntil(this.cancelAssess$),
+          finalize(() => removeActiveRegion(region))
         )
         .subscribe(x => {
+          removeActiveRegion(region);
           const url = Object.values(x.files)[0];
           const layer = new GeoJSONLayer({
             title: `Site Suitability (${region})`,
