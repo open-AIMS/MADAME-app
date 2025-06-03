@@ -52,7 +52,7 @@ export class RegionJobsManager {
    *
    * @param type
    * @param payload partial payload, "region" will be set by this
-   * @param regions$
+   * @param regions$ observable that emits each region, then completes
    */
   constructor(jobType: JobType, payload: any, regions$: Observable<string>) {
     const api = this.api;
@@ -70,8 +70,9 @@ export class RegionJobsManager {
         const finalPayload = {
           ...payload,
           region
-        }
+        };
 
+        console.log(`startJob region=${region}`, finalPayload);
         return api.startJob(jobType, finalPayload).pipe(
           tap(job => {
             console.log(`Job id=${job.id} type=${job.type} update`, job);

@@ -264,9 +264,14 @@ export class ReefGuideMapService {
   addJobLayers(jobType: JobType, payload: any) {
     console.log('addJobLayers', payload);
 
-    const regions$ = toObservable(this.config.enabledRegions, {
-      injector: this.injector,
-    }).pipe(mergeMap(regions => of(...regions)));
+    // TODO:region use region selector in panel instead of config system
+    const selectedRegions = this.config.enabledRegions()
+      // TODO:region current UI/config-sys can create blank values
+      .filter(v => v !== '');
+    if (selectedRegions.length === 0) {
+      console.warn('No regions selected!');
+    }
+    const regions$ = of(...selectedRegions);
 
     const jobManager = runInInjectionContext(
       this.injector,
