@@ -31,15 +31,9 @@ export const criteriaIdToPayloadId: Record<string, string> = {
 export function criteriaToJobPayload(
   criteria: SelectionCriteria
 ): JobTypePayload_RegionalAssessment {
-  // Partial<JobTypePayload_RegionalAssessment>
   const payload: Record<string, any> = {
-    reef_type: 'slopes',
-    // TODO rugosity+threshold required by worker code JSON deserializer.
-    // see https://github.com/open-AIMS/ReefGuideAPI.jl/issues/69
-    rugosity_min: 0.0,
-    rugosity_max: 6.0,
-    threshold: 95,
-  };
+    reef_type: 'slopes'
+  } satisfies Partial<JobTypePayload_RegionalAssessment>;
 
   for (let [criteriaId, range] of Object.entries(criteria)) {
     const payloadProp = criteriaIdToPayloadId[criteriaId];

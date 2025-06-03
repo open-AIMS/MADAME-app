@@ -104,8 +104,6 @@ export type JobTypePayload_RegionalAssessment = {
   waves_period_max: number;
   waves_height_min: number;
   waves_height_max: number;
-  // threshold not actually used by this job.
-  threshold: number;
 };
 
 export type JobTypePayload_SuitabilityAssessment = {
