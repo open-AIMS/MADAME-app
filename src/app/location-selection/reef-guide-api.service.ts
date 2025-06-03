@@ -35,22 +35,6 @@ export class ReefGuideApiService {
     return url.toString();
   }
 
-  /**
-   * Get XYZ Tile template URL for the criteria
-   * @param region
-   * @param criteria
-   */
-  tileUrlForCriteria(region: string, criteria: SelectionCriteria): string {
-    // `${this.base}/tile/{z}/{x}/{y}?region=Cairns-Cooktown&rtype=slopes&criteria_names=Depth,Slope,Rugosity&lb=-9.0,0.0,0.0&ub=-2.0,40.0,0.0`,
-    const url = `${this.base}/tile/{z}/{x}/{y}`;
-    const searchParams = new URLSearchParams();
-    searchParams.set('region', region);
-    // TODO parameterize rtype
-    searchParams.set('rtype', 'slopes');
-    this.addCriteriaToParams(searchParams, criteria);
-    return `${url}?${searchParams}`;
-  }
-
   siteSuitabilityUrlForCriteria(
     region: string,
     criteria: SelectionCriteria,

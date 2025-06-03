@@ -10,14 +10,11 @@ import {
 import { AuthService } from '../auth/auth.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 
-type AssessLayerTypes = 'tile' | 'cog';
-
 interface StoredConfig {
   arcgisMap: string;
   customArcgisMapItemId: string;
   enabledRegions: Array<string>;
   parallelRegionRequests: boolean;
-  assessLayerTypes: Array<AssessLayerTypes>;
   mockCOGS: boolean;
   mockSiteSuitability: boolean;
 }
@@ -40,7 +37,6 @@ const configVarGetters: Partial<
   Record<keyof StoredConfig, (val: string) => any>
 > = {
   enabledRegions: getArray,
-  assessLayerTypes: getArray,
   parallelRegionRequests: getBoolean,
   mockCOGS: getBoolean,
   mockSiteSuitability: getBoolean,
@@ -102,11 +98,6 @@ export class ReefGuideConfigService {
   parallelRegionRequests: WritableSignal<boolean>;
 
   /**
-   * Layer types to add on Assess criteria.
-   */
-  assessLayerTypes: WritableSignal<Array<AssessLayerTypes>>;
-
-  /**
    * Use COGs in public/cached-slopes instead of requesting from API.
    */
   mockCOGS: WritableSignal<boolean>;
@@ -155,17 +146,9 @@ export class ReefGuideConfigService {
     this.parallelRegionRequests = signal(
       this.get('parallelRegionRequests', true)
     );
-    this.assessLayerTypes = signal(this.get('assessLayerTypes', ['tile']));
     this.mockCOGS = signal(this.get('mockCOGS', false));
 
     this.mockSiteSuitability = signal(this.get('mockSiteSuitability', true));
-
-    effect(() => {
-      if (this.isAdmin() !== true) {
-        // must mock if not ADMIN role.
-        this.mockSiteSuitability.set(true);
-      }
-    });
 
     effect(() => this.set('arcgisMap', this.arcgisMap()));
     effect(() =>
@@ -175,7 +158,6 @@ export class ReefGuideConfigService {
     effect(() =>
       this.set('parallelRegionRequests', this.parallelRegionRequests())
     );
-    effect(() => this.set('assessLayerTypes', this.assessLayerTypes()));
     effect(() => this.set('mockCOGS', this.mockCOGS()));
     effect(() => this.set('mockSiteSuitability', this.mockSiteSuitability()));
 

@@ -125,9 +125,6 @@ export class ReefGuideMapService {
   private readonly cogAssessRegionsGroupLayer = signal<GroupLayer | undefined>(
     undefined
   );
-  private readonly tilesAssessRegionsGroupLayer = signal<
-    GroupLayer | undefined
-  >(undefined);
 
   // suitable sites polygons group layer
   private readonly siteSuitabilityLayer = signal<GroupLayer | undefined>(
@@ -140,8 +137,7 @@ export class ReefGuideMapService {
   // whether to show the clear layers button
   showClear = computed(() => {
     return (
-      this.cogAssessRegionsGroupLayer() !== undefined ||
-      this.tilesAssessRegionsGroupLayer() !== undefined
+      this.cogAssessRegionsGroupLayer() !== undefined
     );
   });
 
@@ -151,7 +147,6 @@ export class ReefGuideMapService {
   styledLayers: Signal<Array<StylableLayer>> = computed(() => {
     return [
       this.cogAssessRegionsGroupLayer(),
-      this.tilesAssessRegionsGroupLayer(),
       this.criteriaGroupLayer(),
       this.siteSuitabilityLayer(),
     ].filter(isDefined);
@@ -365,12 +360,8 @@ export class ReefGuideMapService {
       return currentGroupLayer;
     }
 
-    let title = 'Assessed Regions';
-    if (this.config.assessLayerTypes().length > 1) {
-      title = `${title} (COGs)`;
-    }
     const groupLayer = new GroupLayer({
-      title,
+      title: 'Assessed Regions',
       listMode: 'hide-children',
     });
     this.cogAssessRegionsGroupLayer.set(groupLayer);
@@ -401,54 +392,6 @@ export class ReefGuideMapService {
       // unsubscribe when this component is destroyed
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(region => this.addRegionLayer(region, groupLayer));
-  }
-
-  addTileLayers(criteria: SelectionCriteria) {
-    console.log('addTileLayers');
-
-    let title = 'Assessed Regions';
-    if (this.config.assessLayerTypes().length > 1) {
-      title = `${title} (Tiles)`;
-    }
-
-    const tilesGroup = new GroupLayer({
-      title,
-      // blendMode: 'destination-out',
-      visibilityMode: 'inherited',
-    });
-
-    this.tilesAssessRegionsGroupLayer.set(tilesGroup);
-    this.map.addLayer(tilesGroup);
-
-    const regions = this.config.enabledRegions();
-    for (const region of regions) {
-      this.addTileLayer(region, criteria);
-    }
-  }
-
-  addTileLayer(region: string, criteria: SelectionCriteria) {
-    const urlTemplate = this.reefGuideApi.tileUrlForCriteria(region, criteria);
-    console.log('urlTemplate', urlTemplate);
-
-    // Need a group for each layer and the graphic behind it to blend with.
-    const groupLayer = new GroupLayer({
-      title: region,
-      listMode: 'hide-children',
-    });
-    groupLayer.add(createGlobalPolygonLayer(this.assessColor));
-
-    const layer = new WebTileLayer({
-      title: region,
-      urlTemplate,
-      maxScale: 100,
-      // TODO minScale, different units than zoom
-      // https://developers.arcgis.com/javascript/latest/api-reference/esri-layers-WebTileLayer.html#minScale
-      blendMode: 'destination-in',
-      // effect also available.
-    });
-    groupLayer.add(layer);
-
-    this.tilesAssessRegionsGroupLayer()!.add(groupLayer);
   }
 
   addSiteSuitabilityLayer(
@@ -548,9 +491,6 @@ export class ReefGuideMapService {
 
     groupLayer?.destroy();
     this.cogAssessRegionsGroupLayer.set(undefined);
-
-    this.tilesAssessRegionsGroupLayer()?.destroy();
-    this.tilesAssessRegionsGroupLayer.set(undefined);
 
     this.siteSuitabilityLayer()?.destroy();
     this.siteSuitabilityLayer.set(undefined);

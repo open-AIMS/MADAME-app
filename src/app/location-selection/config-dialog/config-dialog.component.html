@@ -42,14 +42,6 @@
       </mat-selection-list>
     </mat-tab>
     <mat-tab label="Developer">
-      <mat-form-field style="width: 100%; margin-top: 16px">
-        <mat-label>Layer Type for Assess</mat-label>
-        <mat-select multiple [formControl]="assessLayerTypes">
-          <mat-option value="tile">Tiles</mat-option>
-          <mat-option value="cog">COGs</mat-option>
-        </mat-select>
-      </mat-form-field>
-
       <mat-checkbox
         [formControl]="parallelRegionRequests"
         matTooltip="Request region layers simultaneously"

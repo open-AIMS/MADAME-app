@@ -149,18 +149,11 @@ export class LocationSelectionComponent implements AfterViewInit {
 
     this.mapService.clearAssessedLayers();
 
-    const layerTypes = this.config.assessLayerTypes();
-    if (layerTypes.includes('cog')) {
-      // convert criteria to job payload and start job
-      const payload = criteriaToJobPayload(criteria);
-      this.mapService.addJobLayers('REGIONAL_ASSESSMENT', payload);
-      // could load previous job result like this:
-      // this.mapService.loadLayerFromJobResults(12);
-    }
-    if (layerTypes.includes('tile')) {
-      // Old direct XYZ tiles
-      this.mapService.addTileLayers(criteria);
-    }
+    // convert criteria to job payload and start job
+    const payload = criteriaToJobPayload(criteria);
+    this.mapService.addJobLayers('REGIONAL_ASSESSMENT', payload);
+    // could load previous job result like this:
+    // this.mapService.loadLayerFromJobResults(31);
 
     if (siteSuitability) {
       this.mapService.addSiteSuitabilityLayer(criteria, siteSuitability);
