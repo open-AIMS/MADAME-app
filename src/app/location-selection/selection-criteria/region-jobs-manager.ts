@@ -14,6 +14,7 @@ import { ReefGuideConfigService } from '../reef-guide-config.service';
 import { inject } from '@angular/core';
 import { DownloadResponse, JobType } from '../../../api/web-api.types';
 import { WebApiService } from '../../../api/web-api.service';
+import { retryHTTPErrors } from '../../../util/http-util';
 
 
 export type RegionDownloadResponse = DownloadResponse & { region: string };
@@ -78,8 +79,10 @@ export class RegionJobsManager {
             console.log(`Job id=${job.id} type=${job.type} update`, job);
           }),
           filter(x => x.status === 'SUCCEEDED'),
-          switchMap(job => this.api.downloadJobResults(job.id)),
-          map(jobResults => ({...jobResults, region})),
+          switchMap(job =>
+            this.api.downloadJobResults(job.id).pipe(retryHTTPErrors(3))
+          ),
+          map(jobResults => ({ ...jobResults, region })),
           finalize(() => {
             this.stopRegion(region);
           })

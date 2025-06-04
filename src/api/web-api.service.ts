@@ -24,6 +24,7 @@ import {
   takeWhile,
   tap
 } from 'rxjs';
+import { retryHTTPErrors } from '../util/http-util';
 
 type JobId = CreateJobResponse['jobId'];
 
@@ -197,13 +198,14 @@ export class WebApiService {
     period = 2_000
   ): Observable<JobDetailsResponse['job']> {
     return this.createJob(jobType, payload).pipe(
+      retryHTTPErrors(3),
       switchMap(createJobResp => {
         const jobId = createJobResp.jobId;
         return interval(period).pipe(
           // Future: if client is tracking many jobs, it would be more efficient to
           // share the query/request for all of them (i.e. switchMap to shared observable),
           // but this is simplest for now.
-          switchMap(() => this.getJob(jobId)),
+          switchMap(() => this.getJob(jobId).pipe(retryHTTPErrors(3))),
           // discard extra wrapping object, which has no information.
           map(v => v.job),
           // only emit when job status changes.
