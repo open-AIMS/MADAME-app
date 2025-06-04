@@ -25,10 +25,6 @@ export class ReefGuideApiService {
    * Get URL of COGeoTiff layer matching selection criteria.
    */
   cogUrlForCriteria(region: string, criteria: SelectionCriteria): string {
-    if (this.config.mockCOGS()) {
-      return `${this.publicBase}/example-slopes/slopes_${region}.tiff`;
-    }
-
     // http://127.0.0.1:8000/assess/Cairns-Cooktown/slopes?criteria_names=Depth,Slope&lb=-9.0,0.0&ub=-2.0,40.0
     const url = new URL(`/assess/${region}/slopes`, this.base);
     this.addCriteriaToParams(url, criteria);
@@ -40,10 +36,6 @@ export class ReefGuideApiService {
     criteria: SelectionCriteria,
     suitabilityCriteria: SiteSuitabilityCriteria
   ): string {
-    if (this.config.mockSiteSuitability()) {
-      return `${this.publicBase}/example-site-suitability/${region}.json`;
-    }
-
     const rtype = 'slopes';
     const url = new URL(
       `/suitability/site-suitability/${region}/${rtype}`,

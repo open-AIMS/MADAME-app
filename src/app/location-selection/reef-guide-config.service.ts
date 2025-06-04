@@ -15,8 +15,6 @@ interface StoredConfig {
   customArcgisMapItemId: string;
   enabledRegions: Array<string>;
   parallelRegionRequests: boolean;
-  mockCOGS: boolean;
-  mockSiteSuitability: boolean;
 }
 
 const VALUE_SEPARATOR = '\x1F';
@@ -38,8 +36,6 @@ const configVarGetters: Partial<
 > = {
   enabledRegions: getArray,
   parallelRegionRequests: getBoolean,
-  mockCOGS: getBoolean,
-  mockSiteSuitability: getBoolean,
 };
 
 interface Map {
@@ -97,16 +93,6 @@ export class ReefGuideConfigService {
    */
   parallelRegionRequests: WritableSignal<boolean>;
 
-  /**
-   * Use COGs in public/cached-slopes instead of requesting from API.
-   */
-  mockCOGS: WritableSignal<boolean>;
-
-  /**
-   * Use mock site suitability json.
-   */
-  mockSiteSuitability: WritableSignal<boolean>;
-
   // computed signals
   /**
    * ArcGIS item id for arcgisMap.
@@ -146,9 +132,6 @@ export class ReefGuideConfigService {
     this.parallelRegionRequests = signal(
       this.get('parallelRegionRequests', true)
     );
-    this.mockCOGS = signal(this.get('mockCOGS', false));
-
-    this.mockSiteSuitability = signal(this.get('mockSiteSuitability', true));
 
     effect(() => this.set('arcgisMap', this.arcgisMap()));
     effect(() =>
@@ -158,8 +141,6 @@ export class ReefGuideConfigService {
     effect(() =>
       this.set('parallelRegionRequests', this.parallelRegionRequests())
     );
-    effect(() => this.set('mockCOGS', this.mockCOGS()));
-    effect(() => this.set('mockSiteSuitability', this.mockSiteSuitability()));
 
     // ignore the first effect, which would set the initial value.
     // effects are async, so run in microtask.

@@ -57,8 +57,6 @@ export class ConfigDialogComponent {
   mapItemId: FormControl;
   regions: FormControl;
   parallelRegionRequests: FormControl;
-  mockCOGS: FormControl;
-  mockSiteSuitability: FormControl;
 
   arcgisItemUrl: Observable<string | undefined>;
 
@@ -69,10 +67,6 @@ export class ConfigDialogComponent {
     this.regions = new FormControl(this.config.enabledRegions());
     this.parallelRegionRequests = new FormControl(
       this.config.parallelRegionRequests()
-    );
-    this.mockCOGS = new FormControl(this.config.mockCOGS());
-    this.mockSiteSuitability = new FormControl(
-      this.config.mockSiteSuitability()
     );
 
     // determine ArcGIS item URL for the current selection.
@@ -118,14 +112,6 @@ export class ConfigDialogComponent {
 
     if (this.parallelRegionRequests.dirty) {
       config.parallelRegionRequests.set(this.parallelRegionRequests.value);
-    }
-
-    if (this.mockCOGS.dirty) {
-      config.mockCOGS.set(this.mockCOGS.value);
-    }
-
-    if (this.mockSiteSuitability.dirty) {
-      config.mockSiteSuitability.set(this.mockSiteSuitability.value);
     }
 
     this.dialogRef.close();
