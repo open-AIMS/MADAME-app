@@ -57,9 +57,6 @@ export class ConfigDialogComponent {
   mapItemId: FormControl;
   regions: FormControl;
   parallelRegionRequests: FormControl;
-  assessLayerTypes: FormControl;
-  mockCOGS: FormControl;
-  mockSiteSuitability: FormControl;
 
   arcgisItemUrl: Observable<string | undefined>;
 
@@ -71,20 +68,6 @@ export class ConfigDialogComponent {
     this.parallelRegionRequests = new FormControl(
       this.config.parallelRegionRequests()
     );
-    this.assessLayerTypes = new FormControl(this.config.assessLayerTypes());
-    this.mockCOGS = new FormControl(this.config.mockCOGS());
-    this.mockSiteSuitability = new FormControl(
-      this.config.mockSiteSuitability()
-    );
-    this.mockSiteSuitability.disable();
-
-    this.authService.isAdmin().subscribe(isAdmin => {
-      if (isAdmin) {
-        this.mockSiteSuitability.enable();
-      } else {
-        this.mockSiteSuitability.disable();
-      }
-    });
 
     // determine ArcGIS item URL for the current selection.
     this.arcgisItemUrl = combineLatest([
@@ -129,18 +112,6 @@ export class ConfigDialogComponent {
 
     if (this.parallelRegionRequests.dirty) {
       config.parallelRegionRequests.set(this.parallelRegionRequests.value);
-    }
-
-    if (this.assessLayerTypes.dirty) {
-      config.assessLayerTypes.set(this.assessLayerTypes.value);
-    }
-
-    if (this.mockCOGS.dirty) {
-      config.mockCOGS.set(this.mockCOGS.value);
-    }
-
-    if (this.mockSiteSuitability.dirty) {
-      config.mockSiteSuitability.set(this.mockSiteSuitability.value);
     }
 
     this.dialogRef.close();

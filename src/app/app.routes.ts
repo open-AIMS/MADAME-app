@@ -4,6 +4,7 @@ import { ModelRunComponent } from './model-run/model-run.component';
 import { ModelInvokeRunComponent } from './model-invoke-run/model-invoke-run.component';
 import { TestMapComponent } from './test/test-map/test-map.component';
 import { LocationSelectionComponent } from './location-selection/location-selection.component';
+import { JobsComponent } from './jobs/jobs.component';
 
 export const routes: Routes = [
   {
@@ -40,4 +41,10 @@ export const routes: Routes = [
     component: ModelInvokeRunComponent,
     title: 'Invoke Run',
   },
+  // initial work on jobs list page. should have auth guard.
+  {
+    path: 'jobs',
+    component: JobsComponent,
+    title: 'My Jobs'
+  }
 ];

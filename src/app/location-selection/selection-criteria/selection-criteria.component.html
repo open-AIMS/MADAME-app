@@ -44,11 +44,11 @@
           <div class="row">
             <mat-form-field>
               <mat-label>X (meters)</mat-label>
-              <input matInput formControlName="xdist" />
+              <input type="number" matInput formControlName="xdist" />
             </mat-form-field>
             <mat-form-field>
               <mat-label>Y (meters)</mat-label>
-              <input matInput formControlName="ydist" />
+              <input type="number" matInput formControlName="ydist" />
             </mat-form-field>
           </div>
           <header class="label">Threshold</header>
@@ -56,9 +56,6 @@
             <input matSliderThumb formControlName="SuitabilityThreshold" />
           </mat-slider>
         </form>
-        @if (config.mockSiteSuitability()) {
-          <p class="error-message">Example site suitability polygons</p>
-        }
       }
     </div>
   </form>

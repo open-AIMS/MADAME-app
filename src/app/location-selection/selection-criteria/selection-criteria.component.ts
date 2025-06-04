@@ -94,16 +94,6 @@ export class SelectionCriteriaComponent {
       max: 45,
     },
     {
-      id: 'Turbidity',
-      name: 'Turbidity (FNU)',
-      // Turbidity: 0.0:58.0
-      min: 0,
-      max: 6.0,
-      step: 0.1,
-      // FNU to 10x integer value
-      convertValue: v => Math.round(v * 10),
-    },
-    {
       id: 'WavesHs',
       name: ' Significant Wave Height (Hs)',
       min: 0,

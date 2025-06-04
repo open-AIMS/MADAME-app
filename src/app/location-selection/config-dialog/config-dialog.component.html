@@ -42,33 +42,11 @@
       </mat-selection-list>
     </mat-tab>
     <mat-tab label="Developer">
-      <mat-form-field style="width: 100%; margin-top: 16px">
-        <mat-label>Layer Type for Assess</mat-label>
-        <mat-select multiple [formControl]="assessLayerTypes">
-          <mat-option value="tile">Tiles</mat-option>
-          <mat-option value="cog">COGs</mat-option>
-        </mat-select>
-      </mat-form-field>
-
       <mat-checkbox
         [formControl]="parallelRegionRequests"
         matTooltip="Request region layers simultaneously"
       >
         Parallel COG requests
-      </mat-checkbox>
-
-      <mat-checkbox
-        [formControl]="mockCOGS"
-        matTooltip="Always use mock COGs regardless of criteria selection"
-      >
-        Example COG Requests
-      </mat-checkbox>
-
-      <mat-checkbox
-        [formControl]="mockSiteSuitability"
-        matTooltip="Always use mock site suitability regardless of criteria selection"
-      >
-        Example Site Suitability
       </mat-checkbox>
     </mat-tab>
   </mat-tab-group>

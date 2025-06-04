@@ -1,7 +1,7 @@
 import { environment } from '../../environments/environment';
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { map, Observable } from 'rxjs';
+import { from, map, Observable, switchMap } from 'rxjs';
 import { ReefGuideConfigService } from './reef-guide-config.service';
 import {
   SelectionCriteria,
@@ -25,30 +25,10 @@ export class ReefGuideApiService {
    * Get URL of COGeoTiff layer matching selection criteria.
    */
   cogUrlForCriteria(region: string, criteria: SelectionCriteria): string {
-    if (this.config.mockCOGS()) {
-      return `${this.publicBase}/example-slopes/slopes_${region}.tiff`;
-    }
-
     // http://127.0.0.1:8000/assess/Cairns-Cooktown/slopes?criteria_names=Depth,Slope&lb=-9.0,0.0&ub=-2.0,40.0
     const url = new URL(`/assess/${region}/slopes`, this.base);
     this.addCriteriaToParams(url, criteria);
     return url.toString();
-  }
-
-  /**
-   * Get XYZ Tile template URL for the criteria
-   * @param region
-   * @param criteria
-   */
-  tileUrlForCriteria(region: string, criteria: SelectionCriteria): string {
-    // `${this.base}/tile/{z}/{x}/{y}?region=Cairns-Cooktown&rtype=slopes&criteria_names=Depth,Slope,Rugosity&lb=-9.0,0.0,0.0&ub=-2.0,40.0,0.0`,
-    const url = `${this.base}/tile/{z}/{x}/{y}`;
-    const searchParams = new URLSearchParams();
-    searchParams.set('region', region);
-    // TODO parameterize rtype
-    searchParams.set('rtype', 'slopes');
-    this.addCriteriaToParams(searchParams, criteria);
-    return `${url}?${searchParams}`;
   }
 
   siteSuitabilityUrlForCriteria(
@@ -56,10 +36,6 @@ export class ReefGuideApiService {
     criteria: SelectionCriteria,
     suitabilityCriteria: SiteSuitabilityCriteria
   ): string {
-    if (this.config.mockSiteSuitability()) {
-      return `${this.publicBase}/example-site-suitability/${region}.json`;
-    }
-
     const rtype = 'slopes';
     const url = new URL(
       `/suitability/site-suitability/${region}/${rtype}`,
@@ -103,8 +79,6 @@ export class ReefGuideApiService {
         'https://tiles.arcgis.com/tiles/wfyOCawpdks4prqC/arcgis/rest/services/GBR_bathymetry/MapServer',
       Slope:
         'https://tiles.arcgis.com/tiles/wfyOCawpdks4prqC/arcgis/rest/services/GBR_slope_data/MapServer',
-      // TODO Turbidity criteria layer
-      // Turbidity: "",
       WavesHs:
         'https://tiles.arcgis.com/tiles/wfyOCawpdks4prqC/arcgis/rest/services/GBR_wave_Hs_data/MapServer',
       WavesTp:
@@ -119,8 +93,12 @@ export class ReefGuideApiService {
    * Caller is responsible for revokeObjectURL.
    * @param url
    */
-  toObjectURL(url: string): Observable<string> {
-    return this.http.get(url, { responseType: 'blob' }).pipe(
+  toObjectURL(url: string, plainHttp=false): Observable<string> {
+    const request$ = plainHttp
+      ? from(fetch(url)).pipe(switchMap(r => from(r.blob())))
+      : this.http.get(url, { responseType: 'blob' });
+
+    return request$.pipe(
       map(blob => {
         // warn if we're doing this for files > 100mb
         if (blob.size > 100_000_000) {

@@ -16,7 +16,21 @@ import GroupLayer from '@arcgis/core/layers/GroupLayer';
 import TileLayer from '@arcgis/core/layers/TileLayer';
 import { ReefGuideApiService } from './reef-guide-api.service';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
-import { BehaviorSubject, mergeMap, of, Subject, throttleTime } from 'rxjs';
+import {
+  BehaviorSubject,
+  filter,
+  finalize,
+  forkJoin,
+  map,
+  mergeMap,
+  Observable,
+  of,
+  Subject,
+  switchMap,
+  takeUntil,
+  tap,
+  throttleTime,
+} from 'rxjs';
 import {
   CriteriaRequest,
   ReadyRegion,
@@ -36,11 +50,20 @@ import { AuthService } from '../auth/auth.service';
 import Editor from '@arcgis/core/widgets/Editor';
 import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
 import {
+  criteriaIdToPayloadId,
+  criteriaToJobPayload,
+  criteriaToSiteSuitabilityJobPayload,
   SelectionCriteria,
   SiteSuitabilityCriteria,
 } from './reef-guide-api.types';
 import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
 import { StylableLayer } from '../widgets/layer-style-editor/layer-style-editor.component';
+import { JobType } from '../../api/web-api.types';
+import { WebApiService } from '../../api/web-api.service';
+import {
+  RegionDownloadResponse,
+  RegionJobsManager,
+} from './selection-criteria/region-jobs-manager';
 
 interface CriteriaLayer {
   layer: TileLayer;
@@ -57,7 +80,8 @@ export class ReefGuideMapService {
   private readonly authService = inject(AuthService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly injector = inject(INJECTOR);
-  private readonly api = inject(ReefGuideApiService);
+  private readonly api = inject(WebApiService);
+  private readonly reefGuideApi = inject(ReefGuideApiService);
   private readonly snackbar = inject(MatSnackBar);
 
   // map is set shortly after construction
@@ -87,29 +111,33 @@ export class ReefGuideMapService {
    * This is too hardcoded, in the future will abstract this, but wait til OpenLayers.
    */
   siteSuitabilityLoading = signal(false);
+  regionAssessmentLoading = signal(false);
 
   private readonly pendingRequests = new Set<string>();
   private pendingHighPoint: number = 0;
 
+  // criteria data layers
   private readonly criteriaGroupLayer = signal<GroupLayer | undefined>(
     undefined
   );
+
+  // region assessment raster layers. COG vs Tile depends on app config.
   private readonly cogAssessRegionsGroupLayer = signal<GroupLayer | undefined>(
     undefined
   );
-  private readonly tilesAssessRegionsGroupLayer = signal<
-    GroupLayer | undefined
-  >(undefined);
+
+  // suitable sites polygons group layer
   private readonly siteSuitabilityLayer = signal<GroupLayer | undefined>(
     undefined
   );
 
+  // current region assessment in progress
   criteriaRequest = signal<CriteriaRequest | undefined>(undefined);
 
+  // whether to show the clear layers button
   showClear = computed(() => {
     return (
-      this.cogAssessRegionsGroupLayer() !== undefined ||
-      this.tilesAssessRegionsGroupLayer() !== undefined
+      this.cogAssessRegionsGroupLayer() !== undefined
     );
   });
 
@@ -119,7 +147,6 @@ export class ReefGuideMapService {
   styledLayers: Signal<Array<StylableLayer>> = computed(() => {
     return [
       this.cogAssessRegionsGroupLayer(),
-      this.tilesAssessRegionsGroupLayer(),
       this.criteriaGroupLayer(),
       this.siteSuitabilityLayer(),
     ].filter(isDefined);
@@ -229,6 +256,124 @@ export class ReefGuideMapService {
     });
   }
 
+  /**
+   * Start region jobs and add layers using the job results.
+   * @param jobType
+   * @param payload
+   */
+  addJobLayers(jobType: JobType, payload: any) {
+    console.log('addJobLayers', payload);
+
+    // TODO:region use region selector in panel instead of config system
+    const selectedRegions = this.config.enabledRegions()
+      // TODO:region current UI/config-sys can create blank values
+      .filter(v => v !== '');
+    if (selectedRegions.length === 0) {
+      console.warn('No regions selected!');
+    }
+    const regions$ = of(...selectedRegions);
+
+    const jobManager = runInInjectionContext(
+      this.injector,
+      () => new RegionJobsManager(jobType, payload, regions$)
+    );
+    // FIXME refactor, thinking the job/data manager should be outside map service
+    // this.criteriaRequest.set(criteriaRequest);
+
+    const groupLayer = this.setupCOGAssessRegionsGroupLayer();
+
+    jobManager.regionError$.subscribe(region => this.handleRegionError(region));
+
+    this.regionAssessmentLoading.set(true);
+    jobManager.jobResultsDownload$
+      .pipe(
+        // unsubscribe when this component is destroyed
+        takeUntilDestroyed(this.destroyRef),
+        takeUntil(this.cancelAssess$),
+        switchMap(results => this.jobResultsToReadyRegion(results))
+      )
+      .subscribe({
+        next: readyRegion => {
+          this.addRegionLayer(readyRegion, groupLayer);
+        },
+        complete: () => {
+          this.regionAssessmentLoading.set(false);
+        },
+        error: err => {
+          this.regionAssessmentLoading.set(false);
+          if (err instanceof Error) {
+            this.snackbar.open(`Regional Assessment ${err.message}`, 'OK');
+          } else {
+            this.snackbar.open('Region Assessment job error', 'OK');
+          }
+        },
+      });
+  }
+
+  /**
+   * Download job results and create map layer to display it.
+   * @param jobId
+   */
+  loadLayerFromJobResults(jobId: number, region?: string) {
+    const groupLayer = this.setupCOGAssessRegionsGroupLayer();
+
+    // standardize getting region as an Observable
+    let region$: Observable<string>;
+    if (region !== undefined) {
+      region$ = of(region);
+    } else {
+      region$ = this.api
+        .getJob(jobId)
+        .pipe(map(x => x.job.input_payload.region));
+    }
+
+    forkJoin([region$, this.api.downloadJobResults(jobId)]).subscribe(
+      ([region, results]) => {
+        const regionResults = { ...results, region };
+        this.jobResultsToReadyRegion(regionResults).subscribe(readyRegion => {
+          this.addRegionLayer(readyRegion, groupLayer);
+        });
+      }
+    );
+  }
+
+  private jobResultsToReadyRegion(
+    results: RegionDownloadResponse
+  ): Observable<ReadyRegion> {
+    // hacky, but currently Jobs only create one file.
+    const url = Object.values(results.files)[0];
+
+    // assuming file is small and better to download whole thing to blob
+    // TODO only convert to local Blob if less than certain size
+    // REVIEW move to other API service?
+    // plain HTTP required for S3 url
+    return this.reefGuideApi.toObjectURL(url, true).pipe(
+      map(blobUrl => {
+        const readyRegion: ReadyRegion = {
+          region: results.region,
+          cogUrl: blobUrl,
+          originalUrl: url,
+        };
+        return readyRegion;
+      })
+    );
+  }
+
+  private setupCOGAssessRegionsGroupLayer() {
+    const currentGroupLayer = this.cogAssessRegionsGroupLayer();
+    if (currentGroupLayer) {
+      return currentGroupLayer;
+    }
+
+    const groupLayer = new GroupLayer({
+      title: 'Assessed Regions',
+      listMode: 'hide-children',
+    });
+    this.cogAssessRegionsGroupLayer.set(groupLayer);
+    this.map.addLayer(groupLayer);
+    return groupLayer;
+  }
+
   addCOGLayers(criteria: SelectionCriteria) {
     console.log('addCOGLayers', criteria);
 
@@ -242,16 +387,7 @@ export class ReefGuideMapService {
     );
     this.criteriaRequest.set(criteriaRequest);
 
-    let title = 'Assessed Regions';
-    if (this.config.assessLayerTypes().length > 1) {
-      title = `${title} (COGs)`;
-    }
-    const groupLayer = new GroupLayer({
-      title,
-      listMode: 'hide-children',
-    });
-    this.cogAssessRegionsGroupLayer.set(groupLayer);
-    this.map.addLayer(groupLayer);
+    const groupLayer = this.setupCOGAssessRegionsGroupLayer();
 
     criteriaRequest.regionError$.subscribe(region =>
       this.handleRegionError(region)
@@ -261,54 +397,6 @@ export class ReefGuideMapService {
       // unsubscribe when this component is destroyed
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(region => this.addRegionLayer(region, groupLayer));
-  }
-
-  addTileLayers(criteria: SelectionCriteria) {
-    console.log('addTileLayers');
-
-    let title = 'Assessed Regions';
-    if (this.config.assessLayerTypes().length > 1) {
-      title = `${title} (Tiles)`;
-    }
-
-    const tilesGroup = new GroupLayer({
-      title,
-      // blendMode: 'destination-out',
-      visibilityMode: 'inherited',
-    });
-
-    this.tilesAssessRegionsGroupLayer.set(tilesGroup);
-    this.map.addLayer(tilesGroup);
-
-    const regions = this.config.enabledRegions();
-    for (const region of regions) {
-      this.addTileLayer(region, criteria);
-    }
-  }
-
-  addTileLayer(region: string, criteria: SelectionCriteria) {
-    const urlTemplate = this.api.tileUrlForCriteria(region, criteria);
-    console.log('urlTemplate', urlTemplate);
-
-    // Need a group for each layer and the graphic behind it to blend with.
-    const groupLayer = new GroupLayer({
-      title: region,
-      listMode: 'hide-children',
-    });
-    groupLayer.add(createGlobalPolygonLayer(this.assessColor));
-
-    const layer = new WebTileLayer({
-      title: region,
-      urlTemplate,
-      maxScale: 100,
-      // TODO minScale, different units than zoom
-      // https://developers.arcgis.com/javascript/latest/api-reference/esri-layers-WebTileLayer.html#minScale
-      blendMode: 'destination-in',
-      // effect also available.
-    });
-    groupLayer.add(layer);
-
-    this.tilesAssessRegionsGroupLayer()!.add(groupLayer);
   }
 
   addSiteSuitabilityLayer(
@@ -325,20 +413,47 @@ export class ReefGuideMapService {
     this.siteSuitabilityLayer.set(groupLayer);
 
     // TODO[OpenLayers] site suitability loading indicator
-    // rework multi-request progress tracking, review CriteriaRequest
-    // this.siteSuitabilityLoading.set(true);
+    // TODO:region rework multi-request progress tracking, review RegionJobsManager
+    // this works, but is bespoke for this kind of request, will refactor job requests
+    // to share same region job-dispatch code in user-selected region PR.
+    this.siteSuitabilityLoading.set(true);
+    // regions that are in-progress
+    const activeRegions = new Set<string>();
+    const removeActiveRegion = (region: string) => {
+      activeRegions.delete(region);
+      if (activeRegions.size === 0) {
+        this.siteSuitabilityLoading.set(false);
+      }
+    }
+
     for (const region of regions) {
-      const url = this.api.siteSuitabilityUrlForCriteria(
+      const payload = criteriaToSiteSuitabilityJobPayload(
         region,
         criteria,
         siteCriteria
       );
-      const layer = new GeoJSONLayer({
-        title: `Site Suitability (${region})`,
-        url,
-      });
+      activeRegions.add(region);
+      this.api
+        .startJob('SUITABILITY_ASSESSMENT', payload)
+        .pipe(
+          tap(job => {
+            console.log(`Job id=${job.id} type=${job.type} update`, job);
+          }),
+          filter(x => x.status === 'SUCCEEDED'),
+          switchMap(job => this.api.downloadJobResults(job.id)),
+          takeUntil(this.cancelAssess$),
+          finalize(() => removeActiveRegion(region))
+        )
+        .subscribe(x => {
+          removeActiveRegion(region);
+          const url = Object.values(x.files)[0];
+          const layer = new GeoJSONLayer({
+            title: `Site Suitability (${region})`,
+            url,
+          });
 
-      groupLayer.add(layer);
+          groupLayer.add(layer);
+        });
     }
   }
 
@@ -381,9 +496,6 @@ export class ReefGuideMapService {
 
     groupLayer?.destroy();
     this.cogAssessRegionsGroupLayer.set(undefined);
-
-    this.tilesAssessRegionsGroupLayer()?.destroy();
-    this.tilesAssessRegionsGroupLayer.set(undefined);
 
     this.siteSuitabilityLayer()?.destroy();
     this.siteSuitabilityLayer.set(undefined);
@@ -434,9 +546,10 @@ export class ReefGuideMapService {
     const layer = new ImageryTileLayer({
       title: region.region,
       url: region.cogUrl,
-      opacity: 0.5,
+      opacity: 0.9,
       // gold color
-      rasterFunction: createSingleColorRasterFunction(this.assessColor),
+      // this breaks new COG, TODO heatmap in OpenLayers
+      //rasterFunction: createSingleColorRasterFunction(this.assessColor),
     });
     groupLayer.add(layer);
   }
@@ -571,7 +684,7 @@ Queried
 
   private async addCriteriaLayers() {
     const { injector } = this;
-    const layers = this.api.getCriteriaLayers();
+    const layers = this.reefGuideApi.getCriteriaLayers();
 
     const groupLayer = new GroupLayer({
       title: 'Criteria',
