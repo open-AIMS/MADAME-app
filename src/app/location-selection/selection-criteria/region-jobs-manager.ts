@@ -1,21 +1,22 @@
 import {
-  BehaviorSubject, concatMap,
+  BehaviorSubject,
+  concatMap,
   distinct,
   filter,
   map,
   mergeMap,
-  Observable, Subject,
+  Observable,
+  Subject,
   switchMap,
   takeUntil,
   tap,
-  finalize
+  finalize,
 } from 'rxjs';
 import { ReefGuideConfigService } from '../reef-guide-config.service';
 import { inject } from '@angular/core';
 import { DownloadResponse, JobType } from '../../../api/web-api.types';
 import { WebApiService } from '../../../api/web-api.service';
 import { retryHTTPErrors } from '../../../util/http-util';
-
 
 export type RegionDownloadResponse = DownloadResponse & { region: string };
 
@@ -70,7 +71,7 @@ export class RegionJobsManager {
         this.startRegion(region);
         const finalPayload = {
           ...payload,
-          region
+          region,
         };
 
         console.log(`startJob region=${region}`, finalPayload);
@@ -78,6 +79,8 @@ export class RegionJobsManager {
           tap(job => {
             console.log(`Job id=${job.id} type=${job.type} update`, job);
           }),
+          // retry with a 1 second delay
+          retryHTTPErrors(3, 1000),
           filter(x => x.status === 'SUCCEEDED'),
           switchMap(job =>
             this.api.downloadJobResults(job.id).pipe(retryHTTPErrors(3))
