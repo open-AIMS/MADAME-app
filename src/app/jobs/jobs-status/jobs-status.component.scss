@@ -1,0 +1,301 @@
+.jobs-status-container {
+  margin: 16px 0;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fafafa;
+}
+
+.progress-overview {
+  padding: 12px 16px;
+  background: white;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.progress-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .status-icon {
+    color: #1976d2;
+    font-size: 20px;
+  }
+
+  .progress-text {
+    font-weight: 500;
+    color: #333;
+  }
+}
+
+.progress-percentage {
+  font-weight: 600;
+  color: #1976d2;
+  font-size: 14px;
+}
+
+.progress-bar {
+  margin-bottom: 12px;
+  height: 6px;
+  border-radius: 3px;
+
+  ::ng-deep .mat-progress-bar-fill::after {
+    background-color: #1976d2;
+  }
+}
+
+.status-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.status-chip {
+  font-size: 12px;
+  height: 24px;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    margin-right: 4px;
+  }
+
+  &.in-progress {
+    background-color: #e3f2fd;
+    color: #1976d2;
+
+    mat-icon {
+      animation: spin 2s linear infinite;
+    }
+  }
+
+  &.pending {
+    background-color: #fff3e0;
+    color: #f57c00;
+  }
+
+  &.failed {
+    background-color: #ffebee;
+    color: #d32f2f;
+  }
+
+  &.cancelled {
+    background-color: #f5f5f5;
+    color: #757575;
+  }
+}
+
+.eta {
+  font-size: 12px;
+  color: #666;
+  font-style: italic;
+}
+
+.jobs-detail-panel {
+  margin-top: 0;
+  box-shadow: none;
+  border-top: 1px solid #e0e0e0;
+
+  ::ng-deep .mat-expansion-panel-header {
+    padding: 12px 16px;
+    height: auto;
+
+    .mat-expansion-panel-header-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 500;
+    }
+  }
+
+  ::ng-deep .mat-expansion-panel-content .mat-expansion-panel-body {
+    padding: 0;
+  }
+}
+
+.jobs-list {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.job-item {
+  padding: 12px 16px;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: #f8f9fa;
+  }
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &.status-succeeded {
+    border-left: 3px solid #4caf50;
+  }
+
+  &.status-failed {
+    border-left: 3px solid #f44336;
+  }
+
+  &.status-in-progress {
+    border-left: 3px solid #2196f3;
+  }
+
+  &.status-pending {
+    border-left: 3px solid #ff9800;
+  }
+
+  &.status-cancelled {
+    border-left: 3px solid #9e9e9e;
+  }
+
+  &.status-timed-out {
+    border-left: 3px solid #ff5722;
+  }
+}
+
+.job-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.job-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.job-status-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+
+  &.mat-primary {
+    color: #1976d2;
+  }
+
+  &.mat-accent {
+    color: #ff4081;
+  }
+
+  &.mat-warn {
+    color: #f44336;
+  }
+
+  // Override for success state
+  .status-succeeded & {
+    color: #4caf50 !important;
+  }
+}
+
+.job-details {
+  display: flex;
+  flex-direction: column;
+
+  .region-name {
+    font-weight: 500;
+    color: #333;
+    font-size: 14px;
+  }
+
+  .job-meta {
+    font-size: 12px;
+    color: #666;
+    margin-top: 2px;
+  }
+}
+
+.job-actions {
+  display: flex;
+  gap: 4px;
+
+  button {
+    width: 32px;
+    height: 32px;
+
+    mat-icon {
+      font-size: 18px;
+    }
+  }
+}
+
+.job-error {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background-color: #ffebee;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .error-icon {
+    color: #f44336;
+    font-size: 16px;
+  }
+
+  .error-message {
+    font-size: 12px;
+    color: #d32f2f;
+  }
+}
+
+.no-jobs,
+.no-manager {
+  padding: 24px;
+  text-align: center;
+  color: #666;
+
+  mat-icon {
+    margin-bottom: 8px;
+    font-size: 24px;
+    color: #999;
+  }
+
+  span {
+    display: block;
+    font-size: 14px;
+  }
+}
+
+// Animations
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 600px) {
+  .progress-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .status-chips {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .job-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}

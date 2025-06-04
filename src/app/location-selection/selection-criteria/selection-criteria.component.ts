@@ -1,15 +1,12 @@
 import {
   Component,
+  EventEmitter,
   inject,
+  Output,
   QueryList,
   signal,
   ViewChildren,
 } from '@angular/core';
-import {
-  CalciteComponentsModule,
-  CalciteSlider,
-} from '@esri/calcite-components-angular';
-import { MatSliderModule } from '@angular/material/slider';
 import {
   FormBuilder,
   FormGroup,
@@ -17,17 +14,24 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { MatIconButton } from '@angular/material/button';
+import { MatButtonModule, MatIconButton } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
-import { ReefGuideMapService } from '../reef-guide-map.service';
+import { MatInput } from '@angular/material/input';
+import { MatSlideToggle } from '@angular/material/slide-toggle';
+import { MatSliderModule } from '@angular/material/slider';
+import {
+  CalciteComponentsModule,
+  CalciteSlider,
+} from '@esri/calcite-components-angular';
+import { JobsStatusComponent } from '../../jobs/jobs-status/jobs-status.component';
 import {
   CriteriaAssessment,
   SiteSuitabilityCriteria,
 } from '../reef-guide-api.types';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInput } from '@angular/material/input';
-import { MatSlideToggle } from '@angular/material/slide-toggle';
 import { ReefGuideConfigService } from '../reef-guide-config.service';
+import { ReefGuideMapService } from '../reef-guide-map.service';
+import { RegionJobsManager } from './region-jobs-manager';
 
 interface SelectionCriteriaInputDef {
   // field/id used by API
@@ -57,6 +61,8 @@ interface SelectionCriteriaInputDef {
     MatInput,
     MatSlideToggle,
     ReactiveFormsModule,
+    JobsStatusComponent, // Add this import
+    MatButtonModule, // Add this for the assess button
   ],
   templateUrl: './selection-criteria.component.html',
   styleUrl: './selection-criteria.component.scss',
@@ -66,10 +72,11 @@ export class SelectionCriteriaComponent {
   readonly formBuilder = inject(FormBuilder);
   readonly config = inject(ReefGuideConfigService);
 
-  /*
-  Distance to Nearest Port (NM): 0.0:200.0
-  Good if you add just a little bit beyond these bounds, like +1, except where the lower bound is zero.
-   */
+  // Add event emitter for assessment
+  @Output() assess = new EventEmitter<CriteriaAssessment>();
+
+  // Add property to track active jobs manager
+  currentJobsManager?: RegionJobsManager;
 
   criteria: Array<SelectionCriteriaInputDef> = [
     {
@@ -179,5 +186,21 @@ export class SelectionCriteriaComponent {
       s.minValue = c.minValue ?? c.min;
       s.maxValue = c.maxValue ?? c.max;
     });
+  }
+
+  /**
+   * Method to set the active jobs manager (to be called by parent component)
+   */
+  setJobsManager(manager: RegionJobsManager | undefined) {
+    console.log("Setting jobs manager to ", manager)
+    this.currentJobsManager = manager;
+  }
+
+  /**
+   * Trigger assessment with current criteria
+   */
+  onAssess() {
+    const criteria = this.getCriteria();
+    this.assess.emit(criteria);
   }
 }

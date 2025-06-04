@@ -30,11 +30,15 @@ import { ClusterAdminDialogComponent } from '../admin/cluster/ClusterAdminDialog
 import { LayerStyleEditorComponent } from '../widgets/layer-style-editor/layer-style-editor.component';
 import { ConfigDialogComponent } from './config-dialog/config-dialog.component';
 import { ReefGuideApiService } from './reef-guide-api.service';
-import { CriteriaAssessment, criteriaToJobPayload } from './reef-guide-api.types';
+import {
+  CriteriaAssessment,
+  criteriaToJobPayload,
+} from './reef-guide-api.types';
 import { ReefGuideConfigService } from './reef-guide-config.service';
 import { ReefGuideMapService } from './reef-guide-map.service';
 import { SelectionCriteriaComponent } from './selection-criteria/selection-criteria.component';
 import { WebApiService } from '../../api/web-api.service';
+import { RegionJobsManager } from './selection-criteria/region-jobs-manager';
 
 type DrawerModes = 'criteria' | 'style';
 
@@ -74,6 +78,8 @@ export class LocationSelectionComponent implements AfterViewInit {
   readonly dialog = inject(MatDialog);
   readonly mapService = inject(ReefGuideMapService);
 
+  currentJobsManager?: RegionJobsManager;
+
   drawerMode = signal<DrawerModes>('criteria');
 
   /**
@@ -83,13 +89,15 @@ export class LocationSelectionComponent implements AfterViewInit {
 
   @ViewChild(ArcgisMap) map!: ArcgisMap;
   @ViewChild('drawer') drawer!: MatDrawer;
+  @ViewChild(SelectionCriteriaComponent)
+  criteria!: SelectionCriteriaComponent;
 
   constructor() {
     // track the signals that indicate a current request/job in progress
     // related to the Assess panel.
     this.isAssessing$ = combineLatest([
       toObservable(this.mapService.siteSuitabilityLoading),
-      toObservable(this.mapService.regionAssessmentLoading)
+      toObservable(this.mapService.regionAssessmentLoading),
     ]).pipe(
       // any loading=true indicates busy
       map(vals => vals.includes(true))
@@ -147,11 +155,26 @@ export class LocationSelectionComponent implements AfterViewInit {
   onAssess(assessment: CriteriaAssessment) {
     const { criteria, siteSuitability } = assessment;
 
+    // Clean up previous jobs manager
+    if (this.currentJobsManager) {
+      this.currentJobsManager.cancel();
+      this.currentJobsManager = undefined;
+    }
+
     this.mapService.clearAssessedLayers();
 
     // convert criteria to job payload and start job
     const payload = criteriaToJobPayload(criteria);
-    this.mapService.addJobLayers('REGIONAL_ASSESSMENT', payload);
+
+    // Capture the returned jobs manager
+    this.currentJobsManager = this.mapService.addJobLayers(
+      'REGIONAL_ASSESSMENT',
+      payload
+    );
+
+    // Pass it to the selection criteria component
+    this.criteria.setJobsManager(this.currentJobsManager);
+
     // could load previous job result like this:
     // this.mapService.loadLayerFromJobResults(31);
 
@@ -166,5 +189,12 @@ export class LocationSelectionComponent implements AfterViewInit {
     }
     const vals = Array.from(busyRegions).join(', ');
     return `Loading: ${vals}`;
+  }
+
+  ngOnDestroy() {
+    // Clean up jobs manager when component is destroyed
+    if (this.currentJobsManager) {
+      this.currentJobsManager.cancel();
+    }
   }
 }

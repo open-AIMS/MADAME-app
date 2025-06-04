@@ -31,6 +31,23 @@
       </div>
     }
 
+    <!-- Jobs Status Component - Add this section -->
+    <app-jobs-status [jobsManager]="currentJobsManager" [collapsed]="false">
+    </app-jobs-status>
+
+    <!-- Add Assess Button -->
+    <div class="assess-container">
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="onAssess()"
+        class="assess-button"
+      >
+        <mat-icon>assessment</mat-icon>
+        Run Assessment
+      </button>
+    </div>
+
     <div class="ss-container">
       <mat-slide-toggle
         labelPosition="before"

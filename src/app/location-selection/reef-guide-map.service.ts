@@ -308,6 +308,8 @@ export class ReefGuideMapService {
           }
         },
       });
+
+      return jobManager
   }
 
   /**

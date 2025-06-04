@@ -1,0 +1,110 @@
+<div class="jobs-status-container" *ngIf="overview$ | async as overview">
+  <!-- Compact Progress Overview -->
+  <div class="progress-overview">
+    <div class="progress-header">
+      <div class="progress-info">
+        <mat-icon class="status-icon">assessment</mat-icon>
+        <span class="progress-text">
+          Regional Assessment: {{ overview.completed }}/{{ overview.totalJobs }} regions
+        </span>
+      </div>
+      <div class="progress-percentage">
+        {{ getProgressPercentage(overview) }}%
+      </div>
+    </div>
+    
+    <mat-progress-bar 
+      mode="determinate" 
+      [value]="getProgressPercentage(overview)"
+      class="progress-bar">
+    </mat-progress-bar>
+    
+    <!-- Status Summary Chips -->
+    <div class="status-chips" *ngIf="overview.totalJobs > 0">
+      <mat-chip *ngIf="overview.inProgress > 0" class="status-chip in-progress">
+        <mat-icon>sync</mat-icon>
+        {{ overview.inProgress }} running
+      </mat-chip>
+      <mat-chip *ngIf="overview.pending > 0" class="status-chip pending">
+        <mat-icon>schedule</mat-icon>
+        {{ overview.pending }} pending
+      </mat-chip>
+      <mat-chip *ngIf="overview.failed > 0" class="status-chip failed">
+        <mat-icon>error</mat-icon>
+        {{ overview.failed }} failed
+      </mat-chip>
+      <mat-chip *ngIf="overview.cancelled > 0" class="status-chip cancelled">
+        <mat-icon>cancel</mat-icon>
+        {{ overview.cancelled }} cancelled
+      </mat-chip>
+      <span *ngIf="overview.estimatedTimeRemaining" class="eta">
+        ~{{ formatDuration(overview.estimatedTimeRemaining) }} remaining
+      </span>
+    </div>
+  </div>
+
+  <!-- Expandable Job Details -->
+  <mat-expansion-panel class="jobs-detail-panel" *ngIf="!collapsed">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        <mat-icon>list</mat-icon>
+        Region Details
+      </mat-panel-title>
+      <mat-panel-description>
+        View individual job status
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+
+    <div class="jobs-list" *ngIf="jobStates$ | async as jobs">
+      <div 
+        class="job-item" 
+        *ngFor="let job of jobs; trackBy: trackByRegion"
+        [class]="'status-' + job.status.toLowerCase().replace('_', '-')">
+        
+        <div class="job-header">
+          <div class="job-info">
+            <mat-icon 
+              [color]="getStatusColor(job.status)"
+              class="job-status-icon">
+              {{ getStatusIcon(job.status) }}
+            </mat-icon>
+            <div class="job-details">
+              <span class="region-name">{{ job.region }}</span>
+              <span class="job-meta">
+                ID: {{ job.jobId || 'N/A' }} • 
+                {{ formatJobDuration(job) }}
+                <span *ngIf="job.retryCount > 0"> • {{ job.retryCount }} retries</span>
+              </span>
+            </div>
+          </div>
+          
+          <div class="job-actions">
+            <button 
+              mat-icon-button
+              *ngIf="job.status === 'IN_PROGRESS' || job.status === 'PENDING'"
+              (click)="onCancelJob(job.region)"
+              matTooltip="Cancel job">
+              <mat-icon>cancel</mat-icon>
+            </button>
+          </div>
+        </div>
+        
+        <div class="job-error" *ngIf="job.error">
+          <mat-icon class="error-icon">warning</mat-icon>
+          <span class="error-message">{{ job.error }}</span>
+        </div>
+      </div>
+      
+      <div *ngIf="jobs.length === 0" class="no-jobs">
+        <mat-icon>info</mat-icon>
+        <span>No active jobs</span>
+      </div>
+    </div>
+  </mat-expansion-panel>
+</div>
+
+<!-- Show when no jobs manager is provided -->
+<div class="no-manager" *ngIf="!jobsManager">
+  <mat-icon>info</mat-icon>
+  <span>No job manager available</span>
+</div>

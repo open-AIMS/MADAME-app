@@ -18,7 +18,11 @@
               <mat-icon>close</mat-icon>
             </button>
           </mat-toolbar>
-          <app-selection-criteria #criteria></app-selection-criteria>
+          <app-selection-criteria
+            #selectionCriteria
+            (assess)="onAssess($event)"
+          >
+          </app-selection-criteria>
           <mat-toolbar>
             @if (isBusy) {
               <button mat-stroked-button (click)="mapService.cancelAssess()">
