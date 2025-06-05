@@ -92,8 +92,14 @@ export class ReefGuideApiService {
    * Request blob from the URL and createObjectURL for it.
    * Caller is responsible for revokeObjectURL.
    * @param url
+   * @param plainHttp - use fetch instead of Angular HTTP client
+   * @param fileFormat - optional file extension (e.g., 'tif', 'tiff') to help with format detection
    */
-  toObjectURL(url: string, plainHttp=false): Observable<string> {
+  toObjectURL(
+    url: string,
+    plainHttp = false,
+    fileFormat?: string
+  ): Observable<string> {
     const request$ = plainHttp
       ? from(fetch(url)).pipe(switchMap(r => from(r.blob())))
       : this.http.get(url, { responseType: 'blob' });
@@ -108,8 +114,43 @@ export class ReefGuideApiService {
           );
         }
 
+        // If fileFormat is provided, create a File object with proper name and MIME type
+        if (fileFormat) {
+          const extension = fileFormat.startsWith('.')
+            ? fileFormat
+            : `.${fileFormat}`;
+          const mimeType = this.getMimeTypeForExtension(extension);
+          const filename = `file${extension}`;
+
+          const file = new File([blob], filename, {
+            type: mimeType,
+            lastModified: Date.now(),
+          });
+          return URL.createObjectURL(file);
+        }
+
         return URL.createObjectURL(blob);
       })
     );
+  }
+
+  /**
+   * Helper method to get MIME type based on file extension
+   */
+  private getMimeTypeForExtension(extension: string): string {
+    const mimeTypes: { [key: string]: string } = {
+      '.tif': 'image/tiff',
+      '.tiff': 'image/tiff',
+      '.png': 'image/png',
+      '.jpg': 'image/jpeg',
+      '.jpeg': 'image/jpeg',
+      '.gif': 'image/gif',
+      '.webp': 'image/webp',
+      '.pdf': 'application/pdf',
+      '.json': 'application/json',
+      '.geojson': 'application/geo+json',
+    };
+
+    return mimeTypes[extension.toLowerCase()] || 'application/octet-stream';
   }
 }

@@ -44,6 +44,7 @@ import {
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ReefGuideConfigService } from './reef-guide-config.service';
 import WebTileLayer from '@arcgis/core/layers/WebTileLayer';
+
 import { isDefined } from '../../util/js-util';
 import esriConfig from '@arcgis/core/config.js';
 import { AuthService } from '../auth/auth.service';
@@ -64,6 +65,158 @@ import {
   RegionDownloadResponse,
   RegionJobsManager,
 } from './selection-criteria/region-jobs-manager';
+
+// TODO remove
+async function inspectBlobUrl(blobUrl: string): Promise<void> {
+  try {
+    console.log('🔍 Inspecting Blob URL:', blobUrl);
+
+    // Fetch the blob from the URL
+    const response = await fetch(blobUrl);
+    const blob = await response.blob();
+
+    // Basic blob info
+    console.log('\n📊 Basic Info:');
+    console.log('- Size:', blob.size, 'bytes');
+    console.log('- Type:', blob.type || 'unknown');
+    console.log('- Last Modified:', new Date().toISOString());
+
+    // File signature detection (magic numbers)
+    const arrayBuffer = await blob.arrayBuffer();
+    const uint8Array = new Uint8Array(arrayBuffer);
+    const header = Array.from(uint8Array.slice(0, 16))
+      .map(byte => byte.toString(16).padStart(2, '0'))
+      .join(' ');
+
+    console.log('\n🔮 File Signature:');
+    console.log('- First 16 bytes (hex):', header.toUpperCase());
+
+    // Detect file type from magic numbers
+    const detectedType = detectFileType(uint8Array);
+    console.log('- Detected format:', detectedType);
+
+    // Content preview based on type
+    console.log('\n📄 Content Preview:');
+
+    if (blob.type.startsWith('text/') || detectedType.includes('text')) {
+      const text = await blob.text();
+      console.log('- Text content (first 200 chars):', text.substring(0, 200));
+      console.log('- Line count (approx):', text.split('\n').length);
+    } else if (
+      blob.type.startsWith('application/json') ||
+      detectedType.includes('JSON')
+    ) {
+      try {
+        const jsonText = await blob.text();
+        const parsed = JSON.parse(jsonText);
+        console.log('- Valid JSON structure:', typeof parsed);
+        console.log(
+          '- Keys (if object):',
+          Array.isArray(parsed)
+            ? `Array[${parsed.length}]`
+            : Object.keys(parsed)
+        );
+      } catch {
+        console.log('- Invalid JSON format');
+      }
+    } else if (
+      blob.type.startsWith('image/') ||
+      detectedType.includes('image')
+    ) {
+      console.log('- Image format detected');
+      // Try to get image dimensions
+      const imageUrl = URL.createObjectURL(blob);
+      const img = new Image();
+      img.onload = () => {
+        console.log('- Dimensions:', img.width, 'x', img.height);
+        URL.revokeObjectURL(imageUrl);
+      };
+      img.src = imageUrl;
+    } else {
+      // Binary data analysis
+      console.log('- Binary data detected');
+      console.log(
+        '- Entropy (randomness):',
+        calculateEntropy(uint8Array).toFixed(3)
+      );
+      console.log('- Null bytes:', countNullBytes(uint8Array));
+    }
+
+    // Additional metadata
+    console.log('\n📈 Statistics:');
+    console.log('- Blob URL length:', blobUrl.length);
+    console.log('- Human readable size:', formatBytes(blob.size));
+    console.log('- Inspection timestamp:', new Date().toLocaleString());
+  } catch (error) {
+    console.error('❌ Error inspecting blob:', error);
+  }
+}
+
+function detectFileType(uint8Array: Uint8Array): string {
+  const signatures: Record<string, number[]> = {
+    'PNG image': [0x89, 0x50, 0x4e, 0x47],
+    'JPEG image': [0xff, 0xd8, 0xff],
+    'GIF image': [0x47, 0x49, 0x46, 0x38],
+    'PDF document': [0x25, 0x50, 0x44, 0x46],
+    'ZIP archive': [0x50, 0x4b, 0x03, 0x04],
+    'MP3 audio': [0x49, 0x44, 0x33],
+    'MP4 video': [0x00, 0x00, 0x00, 0x18, 0x66, 0x74, 0x79, 0x70],
+    'WebM video': [0x1a, 0x45, 0xdf, 0xa3],
+    'DOCX document': [0x50, 0x4b, 0x03, 0x04, 0x14, 0x00, 0x06, 0x00],
+    'XLSX spreadsheet': [0x50, 0x4b, 0x03, 0x04, 0x14, 0x00, 0x06, 0x00],
+  };
+
+  for (const [type, signature] of Object.entries(signatures)) {
+    if (signature.every((byte, index) => uint8Array[index] === byte)) {
+      return type;
+    }
+  }
+
+  // Check for text content
+  const textBytes = uint8Array.slice(0, 100);
+  const textRatio =
+    textBytes.filter(
+      byte =>
+        (byte >= 32 && byte <= 126) || byte === 9 || byte === 10 || byte === 13
+    ).length / textBytes.length;
+
+  if (textRatio > 0.8) {
+    return 'Text file (detected)';
+  }
+
+  return 'Unknown binary format';
+}
+
+function calculateEntropy(data: Uint8Array): number {
+  const frequencies = new Array(256).fill(0);
+  for (const byte of data) {
+    frequencies[byte]++;
+  }
+
+  let entropy = 0;
+  const length = data.length;
+
+  for (const freq of frequencies) {
+    if (freq > 0) {
+      const probability = freq / length;
+      entropy -= probability * Math.log2(probability);
+    }
+  }
+
+  return entropy;
+}
+
+function countNullBytes(data: Uint8Array): number {
+  return data.filter(byte => byte === 0).length;
+}
+
+function formatBytes(bytes: number): string {
+  if (bytes === 0) return '0 Bytes';
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
 
 interface CriteriaLayer {
   layer: TileLayer;
@@ -136,9 +289,7 @@ export class ReefGuideMapService {
 
   // whether to show the clear layers button
   showClear = computed(() => {
-    return (
-      this.cogAssessRegionsGroupLayer() !== undefined
-    );
+    return this.cogAssessRegionsGroupLayer() !== undefined;
   });
 
   /**
@@ -265,7 +416,8 @@ export class ReefGuideMapService {
     console.log('addJobLayers', payload);
 
     // TODO:region use region selector in panel instead of config system
-    const selectedRegions = this.config.enabledRegions()
+    const selectedRegions = this.config
+      .enabledRegions()
       // TODO:region current UI/config-sys can create blank values
       .filter(v => v !== '');
     if (selectedRegions.length === 0) {
@@ -347,14 +499,26 @@ export class ReefGuideMapService {
     // TODO only convert to local Blob if less than certain size
     // REVIEW move to other API service?
     // plain HTTP required for S3 url
-    return this.reefGuideApi.toObjectURL(url, true).pipe(
+    console.log(`Building cog with url ${url}`);
+    return this.reefGuideApi.toObjectURL(url, true, '.tif').pipe(
+      tap(blobUrl => {
+        console.log(`Blob URL was ${blobUrl}`);
+      }),
       map(blobUrl => {
         const readyRegion: ReadyRegion = {
+          // Use the blob URL
           region: results.region,
-          cogUrl: blobUrl,
+          cogUrl: url,
           originalUrl: url,
         };
         return readyRegion;
+      }),
+      tap(async readyRegion => {
+        console.log(
+          `Ready region was ${readyRegion}. Data: ${readyRegion.cogUrl}`
+        );
+
+        await inspectBlobUrl(readyRegion.cogUrl);
       })
     );
   }
@@ -424,7 +588,7 @@ export class ReefGuideMapService {
       if (activeRegions.size === 0) {
         this.siteSuitabilityLoading.set(false);
       }
-    }
+    };
 
     for (const region of regions) {
       const payload = criteriaToSiteSuitabilityJobPayload(
@@ -543,10 +707,23 @@ export class ReefGuideMapService {
 
   private async addRegionLayer(region: ReadyRegion, groupLayer: GroupLayer) {
     console.log('addRegionLayer', region.region, region.originalUrl);
+    // Extract query parameters from the cogUrl
+    const urlObj = new URL(region.cogUrl);
+    const customParameters: { [key: string]: string } = {};
+
+    // Convert URLSearchParams to plain object
+    urlObj.searchParams.forEach((value, key) => {
+      customParameters[key] = value;
+    });
+
+    // Clean the URL by removing query parameters
+    const cleanUrl = `${urlObj.origin}${urlObj.pathname}${urlObj.hash}`;
+
     const layer = new ImageryTileLayer({
       title: region.region,
-      url: region.cogUrl,
+      url: cleanUrl,
       opacity: 0.9,
+      customParameters: customParameters,
       // gold color
       // this breaks new COG, TODO heatmap in OpenLayers
       //rasterFunction: createSingleColorRasterFunction(this.assessColor),
