@@ -144,7 +144,10 @@ export class ReefGuideConfigService {
     this.parallelRegionRequests = signal(
       this.get('parallelRegionRequests', true)
     );
-    this.enableCOGBlob = signal(this.get('enableCOGBlob', true));
+
+    // default to false since ObjectURLs not working in deployed app
+    // Also, should add file size condition
+    this.enableCOGBlob = signal(this.get('enableCOGBlob', false));
 
     effect(() => this.set('arcgisMap', this.arcgisMap()));
     effect(() =>
