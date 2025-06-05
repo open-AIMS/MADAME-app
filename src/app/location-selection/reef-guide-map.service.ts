@@ -65,7 +65,7 @@ import {
   RegionDownloadResponse,
   RegionJobsManager,
 } from './selection-criteria/region-jobs-manager';
-import { urlToBlobObjectURL } from '../../util/http-util';
+import { seperateHttpParams, urlToBlobObjectURL } from '../../util/http-util';
 
 interface CriteriaLayer {
   layer: TileLayer;
@@ -347,7 +347,7 @@ export class ReefGuideMapService {
     if (this.config.enableCOGBlob()) {
       // assuming file is small and better to download whole thing to blob
       // TODO only convert to local Blob if less than certain size
-      return from(urlToBlobObjectURL(url)).pipe(
+      return from(urlToBlobObjectURL(url, '.tif')).pipe(
         map(blobUrl => {
           return {
             region: results.region,
@@ -550,9 +550,14 @@ export class ReefGuideMapService {
 
   private async addRegionLayer(region: ReadyRegion, groupLayer: GroupLayer) {
     console.log('addRegionLayer', region.region, region.originalUrl);
+
+    // ArcGIS will not maintain URL integrity unless we use its customParameters system.
+    const { cleanUrl, params } = seperateHttpParams(region.cogUrl);
+
     const layer = new ImageryTileLayer({
       title: region.region,
-      url: region.cogUrl,
+      url: cleanUrl,
+      customParameters: params,
       opacity: 0.9,
       // gold color
       // this breaks new COG, TODO heatmap in OpenLayers
