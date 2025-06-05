@@ -48,6 +48,12 @@
       >
         Parallel COG requests
       </mat-checkbox>
+      <mat-checkbox
+        [formControl]="enableCOGBlob"
+        matTooltip="Improve COG layer performance by copying entire file in memory"
+      >
+        Enable local COG copy
+      </mat-checkbox>
     </mat-tab>
   </mat-tab-group>
 </mat-dialog-content>

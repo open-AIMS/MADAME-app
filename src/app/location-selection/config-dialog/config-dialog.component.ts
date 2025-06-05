@@ -57,6 +57,7 @@ export class ConfigDialogComponent {
   mapItemId: FormControl;
   regions: FormControl;
   parallelRegionRequests: FormControl;
+  enableCOGBlob: FormControl;
 
   arcgisItemUrl: Observable<string | undefined>;
 
@@ -67,6 +68,9 @@ export class ConfigDialogComponent {
     this.regions = new FormControl(this.config.enabledRegions());
     this.parallelRegionRequests = new FormControl(
       this.config.parallelRegionRequests()
+    );
+    this.enableCOGBlob = new FormControl(
+      this.config.enableCOGBlob()
     );
 
     // determine ArcGIS item URL for the current selection.
@@ -112,6 +116,10 @@ export class ConfigDialogComponent {
 
     if (this.parallelRegionRequests.dirty) {
       config.parallelRegionRequests.set(this.parallelRegionRequests.value);
+    }
+
+    if (this.enableCOGBlob.dirty) {
+      config.enableCOGBlob.set(this.enableCOGBlob.value);
     }
 
     this.dialogRef.close();

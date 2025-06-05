@@ -15,6 +15,7 @@ interface StoredConfig {
   customArcgisMapItemId: string;
   enabledRegions: Array<string>;
   parallelRegionRequests: boolean;
+  enableCOGBlob: boolean;
 }
 
 const VALUE_SEPARATOR = '\x1F';
@@ -30,12 +31,15 @@ function getBoolean(val: string): boolean {
 /**
  * Functions for converting localstorage string value for
  * variables that aren't a string type.
+ *
+ * TODO fix types so this errors if add property to StoredConfig
  */
 const configVarGetters: Partial<
   Record<keyof StoredConfig, (val: string) => any>
 > = {
   enabledRegions: getArray,
   parallelRegionRequests: getBoolean,
+  enableCOGBlob: getBoolean
 };
 
 interface Map {
@@ -93,6 +97,14 @@ export class ReefGuideConfigService {
    */
   parallelRegionRequests: WritableSignal<boolean>;
 
+  /**
+   * Enable copying of COG files to in-memory Blob, which improves performance.
+   *
+   * Currently this is always done if enabled; in the future only COGs under a
+   * certain file size will be copied to Blob.
+   */
+  enableCOGBlob: WritableSignal<boolean>;
+
   // computed signals
   /**
    * ArcGIS item id for arcgisMap.
@@ -132,6 +144,7 @@ export class ReefGuideConfigService {
     this.parallelRegionRequests = signal(
       this.get('parallelRegionRequests', true)
     );
+    this.enableCOGBlob = signal(this.get('enableCOGBlob', true));
 
     effect(() => this.set('arcgisMap', this.arcgisMap()));
     effect(() =>
@@ -141,6 +154,7 @@ export class ReefGuideConfigService {
     effect(() =>
       this.set('parallelRegionRequests', this.parallelRegionRequests())
     );
+    effect(() => this.set('enableCOGBlob', this.enableCOGBlob()));
 
     // ignore the first effect, which would set the initial value.
     // effects are async, so run in microtask.

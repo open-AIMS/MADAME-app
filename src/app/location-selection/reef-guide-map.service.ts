@@ -136,9 +136,7 @@ export class ReefGuideMapService {
 
   // whether to show the clear layers button
   showClear = computed(() => {
-    return (
-      this.cogAssessRegionsGroupLayer() !== undefined
-    );
+    return this.cogAssessRegionsGroupLayer() !== undefined;
   });
 
   /**
@@ -265,7 +263,8 @@ export class ReefGuideMapService {
     console.log('addJobLayers', payload);
 
     // TODO:region use region selector in panel instead of config system
-    const selectedRegions = this.config.enabledRegions()
+    const selectedRegions = this.config
+      .enabledRegions()
       // TODO:region current UI/config-sys can create blank values
       .filter(v => v !== '');
     if (selectedRegions.length === 0) {
@@ -343,20 +342,29 @@ export class ReefGuideMapService {
     // hacky, but currently Jobs only create one file.
     const url = Object.values(results.files)[0];
 
-    // assuming file is small and better to download whole thing to blob
-    // TODO only convert to local Blob if less than certain size
-    // REVIEW move to other API service?
-    // plain HTTP required for S3 url
-    return this.reefGuideApi.toObjectURL(url, true).pipe(
-      map(blobUrl => {
-        const readyRegion: ReadyRegion = {
-          region: results.region,
-          cogUrl: blobUrl,
-          originalUrl: url,
-        };
-        return readyRegion;
-      })
-    );
+    if (this.config.enableCOGBlob()) {
+      // assuming file is small and better to download whole thing to blob
+      // TODO only convert to local Blob if less than certain size
+      // REVIEW move to other API service?
+      // plain HTTP required for S3 url
+      return this.reefGuideApi.toObjectURL(url, true).pipe(
+        map(blobUrl => {
+          console.log(`Copied COG file to local blob. region=${results.region} blobUrl=${blobUrl}`, url);
+          return {
+            region: results.region,
+            cogUrl: blobUrl,
+            originalUrl: url
+          } satisfies ReadyRegion;
+        })
+      );
+    } else {
+      // no local Blob
+      return of({
+        region: results.region,
+        cogUrl: url,
+        originalUrl: url
+      });
+    }
   }
 
   private setupCOGAssessRegionsGroupLayer() {
@@ -424,7 +432,7 @@ export class ReefGuideMapService {
       if (activeRegions.size === 0) {
         this.siteSuitabilityLoading.set(false);
       }
-    }
+    };
 
     for (const region of regions) {
       const payload = criteriaToSiteSuitabilityJobPayload(
