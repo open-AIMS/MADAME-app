@@ -21,6 +21,7 @@ import {
   filter,
   finalize,
   forkJoin,
+  from,
   map,
   mergeMap,
   Observable,
@@ -64,6 +65,7 @@ import {
   RegionDownloadResponse,
   RegionJobsManager,
 } from './selection-criteria/region-jobs-manager';
+import { urlToBlobObjectURL } from '../../util/http-util';
 
 interface CriteriaLayer {
   layer: TileLayer;
@@ -345,11 +347,8 @@ export class ReefGuideMapService {
     if (this.config.enableCOGBlob()) {
       // assuming file is small and better to download whole thing to blob
       // TODO only convert to local Blob if less than certain size
-      // REVIEW move to other API service?
-      // plain HTTP required for S3 url
-      return this.reefGuideApi.toObjectURL(url, true).pipe(
+      return from(urlToBlobObjectURL(url)).pipe(
         map(blobUrl => {
-          console.log(`Copied COG file to local blob. region=${results.region} blobUrl=${blobUrl}`, url);
           return {
             region: results.region,
             cogUrl: blobUrl,

@@ -87,29 +87,4 @@ export class ReefGuideApiService {
       // https://tiles.arcgis.com/tiles/wfyOCawpdks4prqC/arcgis/rest/services/GBR_waves_Tp/MapServer/WMTS/1.0.0/WMTSCapabilities.xml
     };
   }
-
-  /**
-   * Request blob from the URL and createObjectURL for it.
-   * Caller is responsible for revokeObjectURL.
-   * @param url
-   */
-  toObjectURL(url: string, plainHttp=false): Observable<string> {
-    const request$ = plainHttp
-      ? from(fetch(url)).pipe(switchMap(r => from(r.blob())))
-      : this.http.get(url, { responseType: 'blob' });
-
-    return request$.pipe(
-      map(blob => {
-        // warn if we're doing this for files > 100mb
-        if (blob.size > 100_000_000) {
-          console.warn(
-            `Blob size=${blob.size} for ${url}, createObjectURL`,
-            blob.size
-          );
-        }
-
-        return URL.createObjectURL(blob);
-      })
-    );
-  }
 }

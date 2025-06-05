@@ -3,6 +3,7 @@ import {
   catchError,
   concatMap,
   distinct,
+  from,
   map,
   mergeMap,
   Observable,
@@ -14,6 +15,7 @@ import { ReefGuideApiService } from '../reef-guide-api.service';
 import { SelectionCriteria } from '../reef-guide-api.types';
 import { ReefGuideConfigService } from '../reef-guide-config.service';
 import { inject } from '@angular/core';
+import { urlToBlobObjectURL } from '../../../util/http-util';
 
 /**
  * Region layer data that is ready to be loaded.
@@ -63,7 +65,7 @@ export class CriteriaRequest {
       mapFn(region => {
         this.startRegion(region);
         const url = api.cogUrlForCriteria(region, criteria);
-        return api.toObjectURL(url).pipe(
+        return from(urlToBlobObjectURL(url)).pipe(
           map(blobUrl => {
             this.stopRegion(region);
             return {
