@@ -1,7 +1,5 @@
 <div class="edit-dialog">
-  <h2 mat-dialog-title>
-    Edit User Roles ({{ data.user?.email ?? 'Unknown' }})
-  </h2>
+  <h2 mat-dialog-title>Edit User Roles ({{ data.user?.email ?? 'Unknown' }})</h2>
 
   <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
     <mat-dialog-content>
@@ -17,12 +15,7 @@
 
     <mat-dialog-actions align="end" class="dialog-actions">
       <button mat-button mat-dialog-close>Cancel</button>
-      <button
-        mat-flat-button
-        color="primary"
-        type="submit"
-        [disabled]="!userForm.valid"
-      >
+      <button mat-flat-button color="primary" type="submit" [disabled]="!userForm.valid">
         Submit
       </button>
     </mat-dialog-actions>

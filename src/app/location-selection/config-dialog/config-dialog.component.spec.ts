@@ -8,7 +8,7 @@ describe('ConfigDialogComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ConfigDialogComponent],
+      imports: [ConfigDialogComponent]
     }).compileComponents();
 
     fixture = TestBed.createComponent(ConfigDialogComponent);

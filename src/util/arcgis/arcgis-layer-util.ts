@@ -50,7 +50,7 @@ export async function cloneFeatureLayerAsLocal(
     objectIdField: layer.objectIdField,
     renderer: layer.renderer,
     spatialReference: layer.spatialReference,
-    ...mixin,
+    ...mixin
   };
 
   return new FeatureLayer(props);
@@ -58,10 +58,7 @@ export async function cloneFeatureLayerAsLocal(
 
 export async function updateLayerFeatureAttributes(
   layer: FeatureLayer,
-  updateFeature: (
-    currentAttributes: FeatureAttributes,
-    objectIdField: string
-  ) => FeatureAttributes
+  updateFeature: (currentAttributes: FeatureAttributes, objectIdField: string) => FeatureAttributes
 ) {
   if (layer.url != null || layer.serviceItemId != null) {
     // paranoid check, not planning to update server-side layers for now.
@@ -75,7 +72,7 @@ export async function updateLayerFeatureAttributes(
   const objectIdField = layer.objectIdField;
   const features = featureSet.features.map(f => {
     return {
-      attributes: updateFeature(f.attributes, objectIdField),
+      attributes: updateFeature(f.attributes, objectIdField)
     };
   });
 
@@ -83,7 +80,7 @@ export async function updateLayerFeatureAttributes(
     // types expect a full Graphic, but a partial JSON object is supported
     // and much faster than working with all properties and attributes.
     // @ts-expect-error
-    updateFeatures: features,
+    updateFeatures: features
   });
 }
 
@@ -99,9 +96,7 @@ export function cloneRendererChangedField(
 ): ClassBreaksRenderer {
   const rendererJSON = renderer.toJSON();
   rendererJSON.field = field;
-  const colorVizVar = rendererJSON.visualVariables.find(
-    (x: any) => x.type === 'colorInfo'
-  );
+  const colorVizVar = rendererJSON.visualVariables.find((x: any) => x.type === 'colorInfo');
   colorVizVar.field = field;
   // TODO should use arcgis jsonUtils
   return ClassBreaksRenderer.fromJSON(rendererJSON);
@@ -117,8 +112,8 @@ export function createSingleColorRasterFunction(color: ColorRGBA) {
   return new RasterFunction({
     functionName: 'Colormap',
     functionArguments: {
-      Colormap: [colorARGB],
-    },
+      Colormap: [colorARGB]
+    }
   });
 }
 
@@ -130,7 +125,7 @@ export function createSingleColorRasterFunction(color: ColorRGBA) {
 export function createGlobalPolygonLayer(color: ColorRGBA) {
   const graphicsLayer = new GraphicsLayer({
     id: 'global_polygon_layer',
-    title: '',
+    title: ''
   });
 
   const polygon = new Polygon({
@@ -140,17 +135,17 @@ export function createGlobalPolygonLayer(color: ColorRGBA) {
       [180, -90],
       [180, 90],
       [-180, 90],
-      [-180, -90],
-    ] as any,
+      [-180, -90]
+    ] as any
   });
 
   const fillSymbol = new SimpleFillSymbol({
-    color,
+    color
   });
 
   const polygonGraphic = new Graphic({
     geometry: polygon,
-    symbol: fillSymbol,
+    symbol: fillSymbol
   });
 
   graphicsLayer.add(polygonGraphic);
@@ -161,7 +156,7 @@ export function createGlobalPolygonLayer(color: ColorRGBA) {
 export function changePolygonLayerColor(layer: GraphicsLayer, color: string) {
   const polygon = layer.graphics.at(0);
   polygon.symbol = new SimpleFillSymbol({
-    color,
+    color
   });
 }
 

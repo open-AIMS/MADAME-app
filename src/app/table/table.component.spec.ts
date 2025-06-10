@@ -8,7 +8,7 @@ describe('DataframeTableComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TableComponent],
+      imports: [TableComponent]
     }).compileComponents();
 
     fixture = TestBed.createComponent(TableComponent);

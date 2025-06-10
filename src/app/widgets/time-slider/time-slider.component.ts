@@ -1,12 +1,4 @@
-import {
-  Component,
-  input,
-  model,
-  ModelSignal,
-  OnInit,
-  output,
-  OutputRef,
-} from '@angular/core';
+import { Component, input, model, ModelSignal, OnInit, output, OutputRef } from '@angular/core';
 import { MatSliderModule } from '@angular/material/slider';
 import { combineLatest, delay, skip, switchMap } from 'rxjs';
 import { outputFromObservable, toObservable } from '@angular/core/rxjs-interop';
@@ -18,16 +10,9 @@ type EmittedValue = number | [number, number];
 
 @Component({
   selector: 'app-time-slider',
-  imports: [
-    MatSliderModule,
-    MatIconButton,
-    MatIcon,
-    MatMenuTrigger,
-    MatMenu,
-    MatMenuItem,
-  ],
+  imports: [MatSliderModule, MatIconButton, MatIcon, MatMenuTrigger, MatMenu, MatMenuItem],
   templateUrl: './time-slider.component.html',
-  styleUrl: './time-slider.component.scss',
+  styleUrl: './time-slider.component.scss'
 })
 export class TimeSliderComponent implements OnInit {
   min = input.required<number>();

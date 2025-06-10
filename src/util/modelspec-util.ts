@@ -44,9 +44,7 @@ interface SplitCoralFieldname {
 
 const coralFieldnameRE = /^([^\d]+)_(\d_\d)_([\w]+)/;
 
-export function splitCoralFieldName(
-  val: string
-): SplitCoralFieldname | undefined {
+export function splitCoralFieldName(val: string): SplitCoralFieldname | undefined {
   const foo = coralFieldnameRE.exec(val);
   if (foo == null) {
     return undefined;
@@ -56,7 +54,7 @@ export function splitCoralFieldName(
     prefix: `${foo[1]}_${foo[2]}`,
     kind: foo[1],
     num: foo[2],
-    metric: foo[3],
+    metric: foo[3]
   };
 }
 
@@ -83,7 +81,7 @@ export function pivotCoralRows(rows: Array<ModelSpecField>): Array<CoralData> {
   const data: Array<CoralData> = [];
   groups.forEach((group, key) => {
     const row: any = {
-      name: key,
+      name: key
     };
     for (let field of group) {
       row[field._split_fieldname!.metric] = field;

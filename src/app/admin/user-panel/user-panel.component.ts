@@ -36,10 +36,10 @@ import { extractErrorMessage } from '../../../api/api-util';
     MatFormFieldModule,
     MatInputModule,
     FormsModule,
-    MatProgressBar,
+    MatProgressBar
   ],
   templateUrl: './user-panel.component.html',
-  styleUrl: './user-panel.component.scss',
+  styleUrl: './user-panel.component.scss'
 })
 export class AdminPanelComponent implements OnInit {
   private editDialog = inject(MatDialog);
@@ -61,7 +61,7 @@ export class AdminPanelComponent implements OnInit {
   // Pagination state
   private pageSubject = new BehaviorSubject({
     page: 1,
-    limit: 50,
+    limit: 50
   });
 
   userLogsLoading = signal(false);
@@ -94,7 +94,7 @@ export class AdminPanelComponent implements OnInit {
 
   addNewUser() {
     const dialogRef = this.editDialog.open(AdminCreateUserDialogComponent, {
-      width: '400px',
+      width: '400px'
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
@@ -106,7 +106,7 @@ export class AdminPanelComponent implements OnInit {
   editUserRoles(user: User) {
     const dialogRef = this.rolesDialog.open(UserEditRolesDialogComponent, {
       width: '400px',
-      data: { user },
+      data: { user }
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
@@ -118,7 +118,7 @@ export class AdminPanelComponent implements OnInit {
   changePassword(user: User) {
     this.rolesDialog.open(AdminUpdateUserPasswordDialogComponent, {
       width: '400px',
-      data: { user },
+      data: { user }
     });
   }
 
@@ -133,7 +133,7 @@ export class AdminPanelComponent implements OnInit {
   onPageChange(event: PageEvent) {
     this.pageSubject.next({
       page: event.pageIndex + 1,
-      limit: event.pageSize,
+      limit: event.pageSize
     });
   }
 

@@ -44,11 +44,7 @@
     <button mat-button (click)="mode.set('login')">I have an account</button>
   }
 
-  <button
-    mat-flat-button
-    [disabled]="!form.valid || isBusy"
-    (click)="onSubmit()"
-  >
+  <button mat-flat-button [disabled]="!form.valid || isBusy" (click)="onSubmit()">
     {{ actionLabel }}
   </button>
 </mat-dialog-actions>

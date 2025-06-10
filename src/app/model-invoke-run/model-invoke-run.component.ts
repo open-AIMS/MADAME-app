@@ -22,8 +22,8 @@ import { ModelScenariosDesc, ModelParamDesc } from '../../types/api.type';
     MatSliderModule,
     RouterLink,
     ReactiveFormsModule,
-    MatProgressSpinner,
-  ],
+    MatProgressSpinner
+  ]
 })
 export class ModelInvokeRunComponent {
   is_loading: boolean = false;
@@ -44,7 +44,7 @@ export class ModelInvokeRunComponent {
       runName: ['', Validators.required],
       numScenarios: [0, [Validators.required, this.powerOfTwoValidator]],
       ta_lower: 0,
-      ta_upper: 1000000,
+      ta_upper: 1000000
     });
 
     this.myForm = this.fb.group({
@@ -61,7 +61,7 @@ export class ModelInvokeRunComponent {
 
       // Small massives
       sm_lower: 0,
-      sm_upper: 1000000,
+      sm_upper: 1000000
     });
   }
 
@@ -82,16 +82,14 @@ export class ModelInvokeRunComponent {
       return;
     }
     this.model_params.run_name = this.myForm.get('runName')!.value;
-    this.model_params.num_scenarios = Number(
-      this.myForm.get('numScenarios')!.value
-    );
+    this.model_params.num_scenarios = Number(this.myForm.get('numScenarios')!.value);
 
     const ta_params = {
       param_name: 'N_seed_TA',
       third_param_flag: true,
       lower: this.myForm.get('ta_lower')!.value,
       upper: this.myForm.get('ta_upper')!.value,
-      optional_third: 100000, // Discrete uniform, third param is step size
+      optional_third: 100000 // Discrete uniform, third param is step size
     } as ModelParamDesc;
 
     const ca_params = {
@@ -99,7 +97,7 @@ export class ModelInvokeRunComponent {
       third_param_flag: true,
       lower: this.myForm.get('ca_lower')!.value,
       upper: this.myForm.get('ca_upper')!.value,
-      optional_third: 100000, // Discrete uniform, third param is step size
+      optional_third: 100000 // Discrete uniform, third param is step size
     } as ModelParamDesc;
 
     const sm_params = {
@@ -107,14 +105,10 @@ export class ModelInvokeRunComponent {
       third_param_flag: true,
       lower: this.myForm.get('sm_lower')!.value,
       upper: this.myForm.get('sm_upper')!.value,
-      optional_third: 100000, // Discrete uniform, third param is step size
+      optional_third: 100000 // Discrete uniform, third param is step size
     } as ModelParamDesc;
 
-    this.model_params.model_params = Array<ModelParamDesc>(
-      ta_params,
-      ca_params,
-      sm_params
-    );
+    this.model_params.model_params = Array<ModelParamDesc>(ta_params, ca_params, sm_params);
 
     this.api.postModelInvokeRun(this.model_params).subscribe({
       next: response => {
@@ -131,7 +125,7 @@ export class ModelInvokeRunComponent {
         } else {
           console.error('There was an error!', error);
         }
-      },
+      }
     });
     this.is_loading = true;
   }

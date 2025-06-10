@@ -1,16 +1,9 @@
-import {
-  HttpErrorResponse,
-  HttpHandlerFn,
-  HttpRequest,
-} from '@angular/common/http';
+import { HttpErrorResponse, HttpHandlerFn, HttpRequest } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { AuthService } from './auth.service';
 import { tap } from 'rxjs';
 
-export function authInterceptor(
-  req: HttpRequest<unknown>,
-  next: HttpHandlerFn
-) {
+export function authInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn) {
   const authService = inject(AuthService);
   const authToken = authService.getAuthToken();
   if (authToken === undefined) {
@@ -19,7 +12,7 @@ export function authInterceptor(
 
   // Clone the request to add the authentication header.
   const newReq = req.clone({
-    headers: req.headers.append('Authorization', `Bearer ${authToken}`),
+    headers: req.headers.append('Authorization', `Bearer ${authToken}`)
   });
   return next(newReq).pipe(
     tap({
@@ -29,7 +22,7 @@ export function authInterceptor(
             authService.unauthenticated();
           }
         }
-      },
+      }
     })
   );
 }

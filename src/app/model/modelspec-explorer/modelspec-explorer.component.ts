@@ -4,11 +4,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { DataFrame } from '../../../types/api.type';
 import { TableComponent } from '../../table/table.component';
 import { dataframeToTable, SimpleTable } from '../../../util/dataframe-util';
-import {
-  CoralData,
-  ModelSpecField,
-  pivotCoralRows,
-} from '../../../util/modelspec-util';
+import { CoralData, ModelSpecField, pivotCoralRows } from '../../../util/modelspec-util';
 
 type ModelspecTable = SimpleTable<ModelSpecField>;
 
@@ -16,7 +12,7 @@ type ModelspecTable = SimpleTable<ModelSpecField>;
   selector: 'app-modelspec-explorer',
   imports: [MatTabsModule, MatTableModule, TableComponent],
   templateUrl: './modelspec-explorer.component.html',
-  styleUrl: './modelspec-explorer.component.scss',
+  styleUrl: './modelspec-explorer.component.scss'
 })
 export class ModelspecExplorerComponent {
   data = input.required<DataFrame | null>();
@@ -31,7 +27,7 @@ export class ModelspecExplorerComponent {
     'mean_colony_diameter_m',
     'mb_rate',
     'dist_mean',
-    'dist_std',
+    'dist_std'
   ];
 
   componentRows: Signal<Record<string, Array<ModelSpecField>>>;

@@ -21,13 +21,9 @@
           <app-selection-criteria #criteria></app-selection-criteria>
           <mat-toolbar>
             @if (isBusy) {
-              <button mat-stroked-button (click)="mapService.cancelAssess()">
-                Cancel
-              </button>
+              <button mat-stroked-button (click)="mapService.cancelAssess()">Cancel</button>
             } @else if (mapService.showClear()) {
-              <button mat-button (click)="mapService.clearAssessedLayers()">
-                Clear
-              </button>
+              <button mat-button (click)="mapService.clearAssessedLayers()">Clear</button>
             }
             <span style="flex: auto"></span>
             @if (isBusy) {
@@ -38,11 +34,7 @@
               >
               </mat-progress-spinner>
             }
-            <button
-              mat-flat-button
-              [disabled]="isBusy"
-              (click)="onAssess(criteria.getCriteria())"
-            >
+            <button mat-flat-button [disabled]="isBusy" (click)="onAssess(criteria.getCriteria())">
               Assess
             </button>
           </mat-toolbar>
@@ -59,13 +51,9 @@
           <mat-accordion>
             @for (layer of mapService.styledLayers(); track layer.id) {
               <mat-expansion-panel>
-                <mat-expansion-panel-header>{{
-                  layer.title
-                }}</mat-expansion-panel-header>
+                <mat-expansion-panel-header>{{ layer.title }}</mat-expansion-panel-header>
                 <ng-template matExpansionPanelContent>
-                  <app-layer-style-editor
-                    [layer]="layer"
-                  ></app-layer-style-editor>
+                  <app-layer-style-editor [layer]="layer"></app-layer-style-editor>
                 </ng-template>
               </mat-expansion-panel>
             }
@@ -75,10 +63,7 @@
     }
   </mat-drawer>
   <mat-drawer-content>
-    <arcgis-map
-      [itemId]="config.arcgisMapItemId()"
-      (arcgisViewClick)="arcgisViewClick($event)"
-    >
+    <arcgis-map [itemId]="config.arcgisMapItemId()" (arcgisViewClick)="arcgisViewClick($event)">
       <!-- TODO buttons not stacking when bottom-right, user could just browser-fullscreen -->
       <!--      <arcgis-fullscreen position="bottom-right"></arcgis-fullscreen>-->
       <arcgis-zoom position="bottom-right"></arcgis-zoom>
@@ -169,9 +154,7 @@
         }
       </mat-menu>
     } @else {
-      <button class="profile-button" mat-raised-button (click)="openLogin()">
-        Login
-      </button>
+      <button class="profile-button" mat-raised-button (click)="openLogin()">Login</button>
     }
   </mat-drawer-content>
 </mat-drawer-container>

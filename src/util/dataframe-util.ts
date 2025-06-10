@@ -51,7 +51,7 @@ export function dataframeToTable(data: DataFrame): SimpleTable {
   return {
     rows: dataframeToRowObjects(data),
     // all columns
-    columns: data.colindex.names,
+    columns: data.colindex.names
   };
 }
 

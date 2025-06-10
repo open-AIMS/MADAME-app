@@ -20,14 +20,7 @@ interface ModelRun {
   selector: 'app-model-run-list',
   templateUrl: './model-run-list.component.html',
   styleUrl: './model-run-list.component.scss',
-  imports: [
-    MatCardModule,
-    MatButtonModule,
-    MatRippleModule,
-    MatIconModule,
-    RouterLink,
-    AsyncPipe,
-  ],
+  imports: [MatCardModule, MatButtonModule, MatRippleModule, MatIconModule, RouterLink, AsyncPipe]
 })
 export class ModelRunListComponent {
   runs$: Observable<Array<ModelRun>>;
@@ -39,10 +32,10 @@ export class ModelRunListComponent {
           ...ids.map(id => {
             return {
               id,
-              title: id,
+              title: id
             };
           }),
-          ...MODEL_RUNS,
+          ...MODEL_RUNS
         ];
         return x;
       })

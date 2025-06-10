@@ -2,11 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import {
-  MAT_DIALOG_DATA,
-  MatDialogModule,
-  MatDialogRef,
-} from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -22,10 +18,10 @@ import { WebApiService } from '../../../../api/web-api.service';
     MatSelectModule,
     MatButtonModule,
     ReactiveFormsModule,
-    MatDialogModule,
+    MatDialogModule
   ],
   templateUrl: './edit-user-roles.component.html',
-  styleUrl: './edit-user-roles.component.scss',
+  styleUrl: './edit-user-roles.component.scss'
 })
 export class UserEditRolesDialogComponent {
   readonly webApiService = inject(WebApiService);
@@ -35,14 +31,14 @@ export class UserEditRolesDialogComponent {
   data = inject<{ user?: User }>(MAT_DIALOG_DATA);
 
   userForm = new FormGroup({
-    roles: new FormControl<UserRole[]>([]),
+    roles: new FormControl<UserRole[]>([])
   });
 
   ngOnInit() {
     console.log('NG init', this.data);
     if (this.data.user) {
       this.userForm.patchValue({
-        roles: this.data.user.roles,
+        roles: this.data.user.roles
       });
     }
   }
@@ -50,10 +46,7 @@ export class UserEditRolesDialogComponent {
   onSubmit() {
     if (this.userForm.valid && this.data.user?.id) {
       const userData = this.userForm.value;
-      const operation = this.webApiService.updateUserRoles(
-        this.data.user.id,
-        userData.roles!
-      );
+      const operation = this.webApiService.updateUserRoles(this.data.user.id, userData.roles!);
 
       operation.subscribe(() => {
         this.dialogRef.close(true);

@@ -13,7 +13,7 @@ export type AuthenticatedUser = {
 };
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class AuthService {
   /**
@@ -31,9 +31,7 @@ export class AuthService {
 
   private readonly api = inject(WebApiService);
 
-  user$: Observable<UserPayload | undefined> = toObservable(
-    this._authenticated
-  ).pipe(
+  user$: Observable<UserPayload | undefined> = toObservable(this._authenticated).pipe(
     map(isAuthenticated => {
       return this.auth?.user;
     })
@@ -43,9 +41,7 @@ export class AuthService {
    * Emits the profile when authenticated; undefined when unauthenticated.
    * @deprecated not needed unless profile gains more information than token.
    */
-  profile$: Observable<UserProfile | undefined> = toObservable(
-    this._authenticated
-  ).pipe(
+  profile$: Observable<UserProfile | undefined> = toObservable(this._authenticated).pipe(
     switchMap(isAuthenticated => {
       if (isAuthenticated) {
         return this.api.getProfile();
@@ -164,7 +160,7 @@ export class AuthService {
         error: err => {
           console.error('Refresh token failed!', err);
           this.unauthenticated();
-        },
+        }
       });
   }
 
@@ -187,10 +183,7 @@ export class AuthService {
     }
   }
 
-  private extractTokenPayload(
-    token: string,
-    refreshToken: string
-  ): AuthenticatedUser {
+  private extractTokenPayload(token: string, refreshToken: string): AuthenticatedUser {
     const payload = jwtDecode<UserPayload & JwtPayload>(token);
     if (payload.exp === undefined) {
       throw new Error('exp field missing in token');
@@ -199,11 +192,11 @@ export class AuthService {
       user: {
         email: payload.email,
         id: payload.id,
-        roles: payload.roles,
+        roles: payload.roles
       },
       token,
       refreshToken,
-      expires: payload.exp,
+      expires: payload.exp
     };
   }
 

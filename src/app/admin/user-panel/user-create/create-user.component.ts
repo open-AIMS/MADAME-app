@@ -1,12 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, DestroyRef, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import {
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -37,16 +32,14 @@ interface CreateUserForm {
     MatButtonModule,
     MatProgressSpinnerModule,
     ReactiveFormsModule,
-    MatIconModule,
+    MatIconModule
   ],
   templateUrl: './create-user.component.html',
-  styleUrl: './create-user.component.scss',
+  styleUrl: './create-user.component.scss'
 })
 export class AdminCreateUserDialogComponent {
   private readonly adminService = inject(WebApiService);
-  private readonly dialogRef = inject(
-    MatDialogRef<AdminCreateUserDialogComponent>
-  );
+  private readonly dialogRef = inject(MatDialogRef<AdminCreateUserDialogComponent>);
   private readonly snackBar = inject(MatSnackBar);
   private readonly destroyRef = inject(DestroyRef);
 
@@ -57,16 +50,16 @@ export class AdminCreateUserDialogComponent {
   userForm = new FormGroup<CreateUserForm>({
     email: new FormControl('', {
       nonNullable: true,
-      validators: [Validators.required, Validators.email],
+      validators: [Validators.required, Validators.email]
     }),
     password: new FormControl('', {
       nonNullable: true,
-      validators: [Validators.required, Validators.minLength(8)],
+      validators: [Validators.required, Validators.minLength(8)]
     }),
     roles: new FormControl<UserRole[]>([], {
       nonNullable: true,
-      validators: [],
-    }),
+      validators: []
+    })
   });
 
   // Getter methods for form controls
@@ -87,7 +80,7 @@ export class AdminCreateUserDialogComponent {
       const userData = {
         email: this.email.value,
         password: this.password.value,
-        roles: this.roles.value,
+        roles: this.roles.value
       };
 
       this.adminService
@@ -96,7 +89,7 @@ export class AdminCreateUserDialogComponent {
           takeUntilDestroyed(this.destroyRef),
           tap(() => {
             this.snackBar.open('User created successfully', 'Close', {
-              duration: 3000,
+              duration: 3000
             });
             this.dialogRef.close(true);
           }),

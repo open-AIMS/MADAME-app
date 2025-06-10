@@ -1,11 +1,6 @@
 import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import {
-  FormBuilder,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { WebApiService } from '../../../api/web-api.service';
 import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -30,16 +25,14 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     MatIconModule,
     MatTooltipModule,
     MatDialogModule,
-    MatDividerModule,
+    MatDividerModule
   ],
   templateUrl: './ClusterAdminDialog.component.html',
-  styleUrl: './ClusterAdminDialog.component.scss',
+  styleUrl: './ClusterAdminDialog.component.scss'
 })
 export class ClusterAdminDialogComponent implements OnInit {
   private readonly api = inject(WebApiService);
-  private readonly dialogRef = inject(
-    MatDialogRef<ClusterAdminDialogComponent>
-  );
+  private readonly dialogRef = inject(MatDialogRef<ClusterAdminDialogComponent>);
   private readonly destroyRef = inject(DestroyRef);
   private readonly fb = inject(FormBuilder);
 
@@ -66,10 +59,7 @@ export class ClusterAdminDialogComponent implements OnInit {
 
   constructor() {
     this.scaleForm = this.fb.group({
-      desiredCount: [
-        '',
-        [Validators.required, Validators.min(0), Validators.max(10)],
-      ],
+      desiredCount: ['', [Validators.required, Validators.min(0), Validators.max(10)]]
     });
 
     // Update countdown timer
@@ -97,9 +87,7 @@ export class ClusterAdminDialogComponent implements OnInit {
     const lastSync = this.lastSynced();
     if (!lastSync) return 'Never';
 
-    const seconds = Math.floor(
-      (new Date().getTime() - lastSync.getTime()) / 1000
-    );
+    const seconds = Math.floor((new Date().getTime() - lastSync.getTime()) / 1000);
     if (seconds < 60) return `${seconds} seconds ago`;
     if (seconds < 3600) return `${Math.floor(seconds / 60)} minutes ago`;
     return lastSync.toLocaleTimeString();
@@ -109,9 +97,7 @@ export class ClusterAdminDialogComponent implements OnInit {
     if (this.scaleForm.valid && !this.busy) {
       try {
         this.busy = true;
-        await this.api
-          .scaleCluster(this.scaleForm.value.desiredCount)
-          .toPromise();
+        await this.api.scaleCluster(this.scaleForm.value.desiredCount).toPromise();
         this.refreshStatus();
       } finally {
         this.busy = false;

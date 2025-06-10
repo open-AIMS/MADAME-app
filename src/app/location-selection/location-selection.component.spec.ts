@@ -8,7 +8,7 @@ describe('LocationSelectionComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [LocationSelectionComponent],
+      imports: [LocationSelectionComponent]
     }).compileComponents();
 
     fixture = TestBed.createComponent(LocationSelectionComponent);

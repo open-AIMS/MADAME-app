@@ -7,17 +7,14 @@ import GroupLayer from '@arcgis/core/layers/GroupLayer';
 import GraphicsLayer from '@arcgis/core/layers/GraphicsLayer';
 import {
   changePolygonLayerColor,
-  getPolygonLayerColor,
+  getPolygonLayerColor
 } from '../../../util/arcgis/arcgis-layer-util';
 
 // BlendLayer has no default export
 type BlendLayer = __esri.BlendLayer;
 type BlendModes = BlendLayer['blendMode'];
 
-export type StylableLayer = Pick<
-  Layer & BlendLayer,
-  'opacity' | 'blendMode' | 'id' | 'title'
->;
+export type StylableLayer = Pick<Layer & BlendLayer, 'opacity' | 'blendMode' | 'id' | 'title'>;
 
 const BLEND_MODES = [
   'average',
@@ -50,14 +47,14 @@ const BLEND_MODES = [
   'source-in',
   'source-out',
   'vivid-light',
-  'xor',
+  'xor'
 ];
 
 @Component({
   selector: 'app-layer-style-editor',
   imports: [MatFormFieldModule, MatSelectModule, MatSliderModule],
   templateUrl: './layer-style-editor.component.html',
-  styleUrl: './layer-style-editor.component.scss',
+  styleUrl: './layer-style-editor.component.scss'
 })
 export class LayerStyleEditorComponent {
   layer = input.required<StylableLayer>();

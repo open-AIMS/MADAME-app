@@ -17,7 +17,7 @@ export const MODEL_RUNS: Array<ResultSetInfo> = [
     n_timesteps: 50,
     start_year: 2020,
     end_year: 2100,
-    handle_id: 'foo',
+    handle_id: 'foo'
   },
   {
     id: 'MOCK-2',
@@ -35,6 +35,6 @@ export const MODEL_RUNS: Array<ResultSetInfo> = [
     n_timesteps: 50,
     start_year: 2020,
     end_year: 2100,
-    handle_id: 'bar',
-  },
+    handle_id: 'bar'
+  }
 ];

@@ -49,47 +49,47 @@ export interface UserLogs {
 
 // TODO:monorepo use types from webapi project
 
-export type JobType = "TEST" | "SUITABILITY_ASSESSMENT" | "REGIONAL_ASSESSMENT";
+export type JobType = 'TEST' | 'SUITABILITY_ASSESSMENT' | 'REGIONAL_ASSESSMENT';
 
 export type CreateJobResponse = {
-    jobId: number;
-    cached: boolean;
-    requestId: number;
-}
+  jobId: number;
+  cached: boolean;
+  requestId: number;
+};
 
 export type JobDetailsResponse = {
-    job: {
-        type: JobType;
-        status: "PENDING" | "IN_PROGRESS" | "SUCCEEDED" | "FAILED" | "CANCELLED" | "TIMED_OUT";
-        id: number;
-        created_at: Date;
-        updated_at: Date;
-        user_id: number;
-        input_payload?: any;
-    };
-}
+  job: {
+    type: JobType;
+    status: 'PENDING' | 'IN_PROGRESS' | 'SUCCEEDED' | 'FAILED' | 'CANCELLED' | 'TIMED_OUT';
+    id: number;
+    created_at: Date;
+    updated_at: Date;
+    user_id: number;
+    input_payload?: any;
+  };
+};
 
-export type JobDetails = JobDetailsResponse["job"];
+export type JobDetails = JobDetailsResponse['job'];
 
 export type ListJobsResponse = {
-    jobs: {
-        status: "PENDING" | "IN_PROGRESS" | "SUCCEEDED" | "FAILED" | "CANCELLED" | "TIMED_OUT";
-        type: JobType;
-        id: number;
-        created_at: Date;
-        updated_at: Date;
-        user_id: number;
-        input_payload?: any;
-    }[];
-    total: number;
-}
+  jobs: {
+    status: 'PENDING' | 'IN_PROGRESS' | 'SUCCEEDED' | 'FAILED' | 'CANCELLED' | 'TIMED_OUT';
+    type: JobType;
+    id: number;
+    created_at: Date;
+    updated_at: Date;
+    user_id: number;
+    input_payload?: any;
+  }[];
+  total: number;
+};
 
 export type DownloadResponse = {
   job: {
     id: number;
-    type: JobDetailsResponse["job"]["type"],
-    status: JobDetailsResponse["job"]["status"]
-  },
+    type: JobDetailsResponse['job']['type'];
+    status: JobDetailsResponse['job']['status'];
+  };
   files: Record<string, string>;
 };
 
