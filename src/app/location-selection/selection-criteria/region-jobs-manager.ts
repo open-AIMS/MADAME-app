@@ -12,7 +12,7 @@ import {
 } from 'rxjs';
 import { ReefGuideConfigService } from '../reef-guide-config.service';
 import { inject } from '@angular/core';
-import { DownloadResponse, JobType } from '../../../api/web-api.types';
+import { DownloadResponse, JobDetails, JobType } from '../../../api/web-api.types';
 import { WebApiService } from '../../../api/web-api.service';
 import { retryHTTPErrors } from '../../../util/http-util';
 
@@ -34,10 +34,17 @@ export class RegionJobsManager {
 
   private regionError = new Subject<string>();
 
+  private jobUpdate = new Subject<JobDetails>();
+
   /**
    * Emits the regions that are currently busy whenever a region starts or finishes loading.
    */
   busyRegions$ = this._busyRegions$.pipe(takeUntil(this.cancel$));
+
+  /**
+   * Emits region assessment jobs when they succeeded.
+   */
+  jobUpdate$: Observable<JobDetails> = this.jobUpdate.pipe(takeUntil(this.cancel$));
 
   /**
    * Emits when Job Results download is available and ready to be used in a map layer.
@@ -77,6 +84,7 @@ export class RegionJobsManager {
         return api.startJob(jobType, finalPayload).pipe(
           tap(job => {
             console.log(`Job id=${job.id} type=${job.type} update`, job);
+            this.jobUpdate.next(job);
           }),
           filter(x => x.status === 'SUCCEEDED'),
           switchMap(job =>
@@ -120,6 +128,7 @@ export class RegionJobsManager {
     this.regionError.complete();
     this.cancel$.next();
     this.cancel$.complete();
+    this.jobUpdate.complete();
   }
 
   private startRegion(region: string) {

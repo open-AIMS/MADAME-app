@@ -22,7 +22,7 @@ import {
   ArcgisMap,
   ComponentLibraryModule,
 } from '@arcgis/map-components-angular';
-import { combineLatest, map, Observable, of, switchMap } from 'rxjs';
+import { combineLatest, filter, map, Observable } from 'rxjs';
 import { AdminPanelComponent } from '../admin/user-panel/user-panel.component';
 import { AuthService } from '../auth/auth.service';
 import { LoginDialogComponent } from '../auth/login-dialog/login-dialog.component';
@@ -35,6 +35,7 @@ import { ReefGuideConfigService } from './reef-guide-config.service';
 import { ReefGuideMapService } from './reef-guide-map.service';
 import { SelectionCriteriaComponent } from './selection-criteria/selection-criteria.component';
 import { WebApiService } from '../../api/web-api.service';
+import { JobTypePayload_RegionalAssessment, JobTypePayload_SuitabilityAssessment } from '../../api/web-api.types';
 
 type DrawerModes = 'criteria' | 'style';
 
@@ -150,13 +151,41 @@ export class LocationSelectionComponent implements AfterViewInit {
     this.mapService.clearAssessedLayers();
 
     // convert criteria to job payload and start job
-    const payload = criteriaToJobPayload(criteria);
-    this.mapService.addJobLayers('REGIONAL_ASSESSMENT', payload);
+    const raPartialPayload = criteriaToJobPayload(criteria);
+    const jobsManager = this.mapService.addJobLayers(
+      'REGIONAL_ASSESSMENT',
+      raPartialPayload
+    );
     // could load previous job result like this:
     // this.mapService.loadLayerFromJobResults(31);
 
     if (siteSuitability) {
-      this.mapService.addSiteSuitabilityLayer(criteria, siteSuitability);
+      // run site suitability job after its corresponding REGIONAL_ASSESSMENT job for the region.
+      const sequentialJobs = false;
+      if (sequentialJobs) {
+        // start the site suitability job after the regional assessment job succeeds
+        const ssJobTrigger$ = jobsManager.jobUpdate$.pipe(filter(j => j.status === 'SUCCEEDED'));
+        ssJobTrigger$.subscribe(job => {
+          // can't use raPayload above as it's missing region
+          if (job.input_payload == null) {
+            throw new Error('REGIONAL_ASSESSMENT job input_payload missing!');
+          }
+          // this final payload contains the region
+          const raFinalPayload: JobTypePayload_RegionalAssessment = job.input_payload;
+
+          const ssPayload: JobTypePayload_SuitabilityAssessment = {
+            ...raFinalPayload,
+            threshold: siteSuitability.SuitabilityThreshold,
+            x_dist: siteSuitability.xdist,
+            y_dist: siteSuitability.ydist,
+          };
+
+          this.mapService.addSiteSuitabilityLayer(ssPayload);
+        });
+      } else {
+        // start site suitability jobs immediately
+        this.mapService.addAllSiteSuitabilityLayers(criteria, siteSuitability);
+      }
     }
   }
 

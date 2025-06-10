@@ -51,21 +51,20 @@ import { AuthService } from '../auth/auth.service';
 import Editor from '@arcgis/core/widgets/Editor';
 import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
 import {
-  criteriaIdToPayloadId,
-  criteriaToJobPayload,
   criteriaToSiteSuitabilityJobPayload,
   SelectionCriteria,
   SiteSuitabilityCriteria,
 } from './reef-guide-api.types';
 import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
 import { StylableLayer } from '../widgets/layer-style-editor/layer-style-editor.component';
-import { JobType } from '../../api/web-api.types';
+import { JobType, JobTypePayload_SuitabilityAssessment } from '../../api/web-api.types';
 import { WebApiService } from '../../api/web-api.service';
 import {
   RegionDownloadResponse,
   RegionJobsManager,
 } from './selection-criteria/region-jobs-manager';
 import { seperateHttpParams, urlToBlobObjectURL } from '../../util/http-util';
+import { getFirstFileFromResults } from '../../util/api-util';
 
 interface CriteriaLayer {
   layer: TileLayer;
@@ -111,9 +110,16 @@ export class ReefGuideMapService {
    *
    * TODO better map layer management and progress system.
    * This is too hardcoded, in the future will abstract this, but wait til OpenLayers.
+   * region_assessment code is similar to site_suitability in purpose, but the code
+   * differs wildly here. Patterns here need to be reviewed and redesigned properly.
    */
   siteSuitabilityLoading = signal(false);
   regionAssessmentLoading = signal(false);
+
+  /**
+   * Site Suitability job regions that are currently running.
+   */
+  private activeSiteSuitabilityRegions = new Set<string>();
 
   private readonly pendingRequests = new Set<string>();
   private pendingHighPoint: number = 0;
@@ -129,7 +135,7 @@ export class ReefGuideMapService {
   );
 
   // suitable sites polygons group layer
-  private readonly siteSuitabilityLayer = signal<GroupLayer | undefined>(
+  private readonly siteSuitabilityGroupLayer = signal<GroupLayer | undefined>(
     undefined
   );
 
@@ -148,7 +154,7 @@ export class ReefGuideMapService {
     return [
       this.cogAssessRegionsGroupLayer(),
       this.criteriaGroupLayer(),
-      this.siteSuitabilityLayer(),
+      this.siteSuitabilityGroupLayer(),
     ].filter(isDefined);
   });
 
@@ -261,7 +267,7 @@ export class ReefGuideMapService {
    * @param jobType
    * @param payload
    */
-  addJobLayers(jobType: JobType, payload: any) {
+  addJobLayers(jobType: JobType, payload: any): RegionJobsManager {
     console.log('addJobLayers', payload);
 
     // TODO:region use region selector in panel instead of config system
@@ -301,6 +307,7 @@ export class ReefGuideMapService {
           this.regionAssessmentLoading.set(false);
         },
         error: err => {
+          console.error(err);
           this.regionAssessmentLoading.set(false);
           if (err instanceof Error) {
             this.snackbar.open(`Regional Assessment ${err.message}`, 'OK');
@@ -309,6 +316,8 @@ export class ReefGuideMapService {
           }
         },
       });
+
+      return jobManager;
   }
 
   /**
@@ -341,8 +350,7 @@ export class ReefGuideMapService {
   private jobResultsToReadyRegion(
     results: RegionDownloadResponse
   ): Observable<ReadyRegion> {
-    // hacky, but currently Jobs only create one file.
-    const url = Object.values(results.files)[0];
+    const url = getFirstFileFromResults(results);
 
     if (this.config.enableCOGBlob()) {
       // assuming file is small and better to download whole thing to blob
@@ -381,6 +389,21 @@ export class ReefGuideMapService {
     return groupLayer;
   }
 
+  private setupSiteSuitabilityGroupLayer() {
+    const currentGroupLayer = this.siteSuitabilityGroupLayer();
+    if (currentGroupLayer) {
+      return currentGroupLayer;
+    }
+
+    const groupLayer = new GroupLayer({
+      title: 'Site Suitability',
+      listMode: 'hide-children',
+    });
+    this.siteSuitabilityGroupLayer.set(groupLayer);
+    this.map.addLayer(groupLayer);
+    return groupLayer;
+  }
+
   addCOGLayers(criteria: SelectionCriteria) {
     console.log('addCOGLayers', criteria);
 
@@ -406,32 +429,16 @@ export class ReefGuideMapService {
       .subscribe(region => this.addRegionLayer(region, groupLayer));
   }
 
-  addSiteSuitabilityLayer(
+  /**
+   * Start SUITABILITY_ASSESSMENT jobs for all active regions.
+   * @param criteria
+   * @param siteCriteria
+   */
+  addAllSiteSuitabilityLayers(
     criteria: SelectionCriteria,
     siteCriteria: SiteSuitabilityCriteria
   ) {
     const regions = this.config.enabledRegions();
-
-    const groupLayer = new GroupLayer({
-      title: 'Site Suitability',
-      listMode: 'hide-children',
-    });
-    this.map.addLayer(groupLayer);
-    this.siteSuitabilityLayer.set(groupLayer);
-
-    // TODO[OpenLayers] site suitability loading indicator
-    // TODO:region rework multi-request progress tracking, review RegionJobsManager
-    // this works, but is bespoke for this kind of request, will refactor job requests
-    // to share same region job-dispatch code in user-selected region PR.
-    this.siteSuitabilityLoading.set(true);
-    // regions that are in-progress
-    const activeRegions = new Set<string>();
-    const removeActiveRegion = (region: string) => {
-      activeRegions.delete(region);
-      if (activeRegions.size === 0) {
-        this.siteSuitabilityLoading.set(false);
-      }
-    };
 
     for (const region of regions) {
       const payload = criteriaToSiteSuitabilityJobPayload(
@@ -439,28 +446,54 @@ export class ReefGuideMapService {
         criteria,
         siteCriteria
       );
-      activeRegions.add(region);
-      this.api
-        .startJob('SUITABILITY_ASSESSMENT', payload)
-        .pipe(
-          tap(job => {
-            console.log(`Job id=${job.id} type=${job.type} update`, job);
-          }),
-          filter(x => x.status === 'SUCCEEDED'),
-          switchMap(job => this.api.downloadJobResults(job.id)),
-          takeUntil(this.cancelAssess$),
-          finalize(() => removeActiveRegion(region))
-        )
-        .subscribe(x => {
-          removeActiveRegion(region);
-          const url = Object.values(x.files)[0];
-          const layer = new GeoJSONLayer({
-            title: `Site Suitability (${region})`,
-            url,
-          });
 
-          groupLayer.add(layer);
+      this.addSiteSuitabilityLayer(payload);
+    }
+  }
+
+  /**
+   * Start job, add map layer based on result
+   * @param payload
+   * @param groupLayer
+   */
+  addSiteSuitabilityLayer(payload: JobTypePayload_SuitabilityAssessment) {
+    // TODO[OpenLayers] site suitability loading indicator
+    // TODO:region rework multi-request progress tracking, review RegionJobsManager
+    // this works, but is bespoke for this kind of request, will refactor job requests
+    // to share same region job-dispatch code in user-selected region PR.
+    const groupLayer = this.setupSiteSuitabilityGroupLayer();
+    const region = payload.region;
+    this.siteSuitabilityLoading.set(true);
+    this.activeSiteSuitabilityRegions.add(region);
+
+    this.api
+      .startJob('SUITABILITY_ASSESSMENT', payload)
+      .pipe(
+        tap(job => {
+          console.log(`Job id=${job.id} type=${job.type} update`, job);
+        }),
+        filter(x => x.status === 'SUCCEEDED'),
+        switchMap(job => this.api.downloadJobResults(job.id)),
+        takeUntil(this.cancelAssess$),
+        finalize(() => this.removeActiveSiteSuitabilityRegion(region))
+      )
+      .subscribe(jobResults => {
+        this.removeActiveSiteSuitabilityRegion(region);
+        const url = getFirstFileFromResults(jobResults);
+        const layer = new GeoJSONLayer({
+          title: `Site Suitability (${region})`,
+          url,
         });
+
+        groupLayer.add(layer);
+      });
+  }
+
+  private removeActiveSiteSuitabilityRegion(region: string) {
+    this.activeSiteSuitabilityRegions.delete(region);
+
+    if (this.activeSiteSuitabilityRegions.size === 0) {
+      this.siteSuitabilityLoading.set(false);
     }
   }
 
@@ -504,8 +537,8 @@ export class ReefGuideMapService {
     groupLayer?.destroy();
     this.cogAssessRegionsGroupLayer.set(undefined);
 
-    this.siteSuitabilityLayer()?.destroy();
-    this.siteSuitabilityLayer.set(undefined);
+    this.siteSuitabilityGroupLayer()?.destroy();
+    this.siteSuitabilityGroupLayer.set(undefined);
   }
 
   /**

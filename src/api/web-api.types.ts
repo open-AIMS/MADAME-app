@@ -69,6 +69,8 @@ export type JobDetailsResponse = {
     };
 }
 
+export type JobDetails = JobDetailsResponse["job"];
+
 export type ListJobsResponse = {
     jobs: {
         status: "PENDING" | "IN_PROGRESS" | "SUCCEEDED" | "FAILED" | "CANCELLED" | "TIMED_OUT";
