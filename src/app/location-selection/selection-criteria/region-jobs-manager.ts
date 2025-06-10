@@ -34,7 +34,7 @@ export class RegionJobsManager {
 
   private regionError = new Subject<string>();
 
-  private jobSuccess = new Subject<JobDetails>();
+  private jobUpdate = new Subject<JobDetails>();
 
   /**
    * Emits the regions that are currently busy whenever a region starts or finishes loading.
@@ -44,7 +44,7 @@ export class RegionJobsManager {
   /**
    * Emits region assessment jobs when they succeeded.
    */
-  jobSuccess$: Observable<JobDetails> = this.jobSuccess;
+  jobUpdate$: Observable<JobDetails> = this.jobUpdate.pipe(takeUntil(this.cancel$));
 
   /**
    * Emits when Job Results download is available and ready to be used in a map layer.
@@ -84,11 +84,9 @@ export class RegionJobsManager {
         return api.startJob(jobType, finalPayload).pipe(
           tap(job => {
             console.log(`Job id=${job.id} type=${job.type} update`, job);
+            this.jobUpdate.next(job);
           }),
           filter(x => x.status === 'SUCCEEDED'),
-          tap(job => {
-            this.jobSuccess.next(job);
-          }),
           switchMap(job =>
             this.api.downloadJobResults(job.id).pipe(retryHTTPErrors(3))
           ),
@@ -130,6 +128,7 @@ export class RegionJobsManager {
     this.regionError.complete();
     this.cancel$.next();
     this.cancel$.complete();
+    this.jobUpdate.complete();
   }
 
   private startRegion(region: string) {

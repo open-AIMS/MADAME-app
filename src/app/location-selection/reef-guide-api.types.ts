@@ -30,7 +30,7 @@ export const criteriaIdToPayloadId: Record<string, string> = {
  */
 export function criteriaToJobPayload(
   criteria: SelectionCriteria
-): JobTypePayload_RegionalAssessment {
+): Omit<JobTypePayload_RegionalAssessment, "region"> {
   const payload: Record<string, any> = {
     reef_type: 'slopes'
   } satisfies Partial<JobTypePayload_RegionalAssessment>;
