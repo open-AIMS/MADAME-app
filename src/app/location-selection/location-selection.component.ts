@@ -35,6 +35,7 @@ import { ReefGuideConfigService } from './reef-guide-config.service';
 import { ReefGuideMapService } from './reef-guide-map.service';
 import { SelectionCriteriaComponent } from './selection-criteria/selection-criteria.component';
 import { WebApiService } from '../../api/web-api.service';
+import { JobTypePayload_RegionalAssessment, JobTypePayload_SuitabilityAssessment } from '../../api/web-api.types';
 
 type DrawerModes = 'criteria' | 'style';
 
@@ -151,12 +152,27 @@ export class LocationSelectionComponent implements AfterViewInit {
 
     // convert criteria to job payload and start job
     const payload = criteriaToJobPayload(criteria);
-    this.mapService.addJobLayers('REGIONAL_ASSESSMENT', payload);
+    const jobsManager = this.mapService.addJobLayers('REGIONAL_ASSESSMENT', payload);
     // could load previous job result like this:
     // this.mapService.loadLayerFromJobResults(31);
 
     if (siteSuitability) {
-      this.mapService.addSiteSuitabilityLayer(criteria, siteSuitability);
+      jobsManager.jobSuccess$.subscribe(job => {
+        if (job.input_payload == null) {
+          throw new Error('REGIONAL_ASSESSMENT job input_payload missing!');
+        }
+
+        const raPayload: JobTypePayload_RegionalAssessment = job.input_payload;
+
+        const payload: JobTypePayload_SuitabilityAssessment = {
+          ...raPayload,
+          threshold: siteSuitability.SuitabilityThreshold,
+          x_dist: siteSuitability.xdist,
+          y_dist: siteSuitability.ydist
+        }
+
+        this.mapService.addSiteSuitabilityLayer(payload);
+      });
     }
   }
 
