@@ -161,7 +161,7 @@ export class LocationSelectionComponent implements AfterViewInit {
 
     if (siteSuitability) {
       // run site suitability job after its corresponding REGIONAL_ASSESSMENT job for the region.
-      const sequentialJobs = true;
+      const sequentialJobs = false;
       if (sequentialJobs) {
         // start the site suitability job after the regional assessment job succeeds
         const ssJobTrigger$ = jobsManager.jobUpdate$.pipe(filter(j => j.status === 'SUCCEEDED'));
