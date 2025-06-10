@@ -5,18 +5,9 @@
     <div class="form-fields">
       <mat-form-field>
         <mat-label>Email Address</mat-label>
-        <input
-          matInput
-          formControlName="email"
-          type="email"
-          [attr.aria-label]="'Email address'"
-        />
-        <mat-error *ngIf="email.errors?.['required']">
-          Email is required
-        </mat-error>
-        <mat-error *ngIf="email.errors?.['email']">
-          Please enter a valid email address
-        </mat-error>
+        <input matInput formControlName="email" type="email" [attr.aria-label]="'Email address'" />
+        <mat-error *ngIf="email.errors?.['required']"> Email is required </mat-error>
+        <mat-error *ngIf="email.errors?.['email']"> Please enter a valid email address </mat-error>
       </mat-form-field>
 
       <mat-form-field>
@@ -35,13 +26,9 @@
           (click)="hidePassword = !hidePassword"
           [attr.aria-label]="'Toggle password visibility'"
         >
-          <mat-icon>{{
-            hidePassword ? 'visibility_off' : 'visibility'
-          }}</mat-icon>
+          <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
         </button>
-        <mat-error *ngIf="password.errors?.['required']">
-          Password is required
-        </mat-error>
+        <mat-error *ngIf="password.errors?.['required']"> Password is required </mat-error>
         <mat-error *ngIf="password.errors?.['minlength']">
           Password must be at least 8 characters
         </mat-error>
@@ -49,31 +36,18 @@
 
       <mat-form-field>
         <mat-label>User Roles</mat-label>
-        <mat-select
-          formControlName="roles"
-          multiple
-          [attr.aria-label]="'Select user roles'"
-        >
+        <mat-select formControlName="roles" multiple [attr.aria-label]="'Select user roles'">
           <mat-option *ngFor="let role of availableRoles" [value]="role">
             {{ role | titlecase }}
           </mat-option>
         </mat-select>
-        <mat-error *ngIf="roles.errors?.['required']">
-          Please select at least one role
-        </mat-error>
+        <mat-error *ngIf="roles.errors?.['required']"> Please select at least one role </mat-error>
       </mat-form-field>
     </div>
   </mat-dialog-content>
 
   <mat-dialog-actions align="end">
-    <button
-      mat-button
-      mat-dialog-close
-      type="button"
-      [disabled]="isSubmitting()"
-    >
-      Cancel
-    </button>
+    <button mat-button mat-dialog-close type="button" [disabled]="isSubmitting()">Cancel</button>
     <button
       mat-flat-button
       color="primary"
@@ -81,11 +55,7 @@
       [disabled]="!userForm.valid || isSubmitting()"
     >
       <span class="button-content">
-        <mat-spinner
-          *ngIf="isSubmitting()"
-          diameter="20"
-          class="spinner"
-        ></mat-spinner>
+        <mat-spinner *ngIf="isSubmitting()" diameter="20" class="spinner"></mat-spinner>
         {{ isSubmitting() ? 'Creating...' : 'Create User' }}
       </span>
     </button>

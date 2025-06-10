@@ -47,18 +47,13 @@
   </mat-tab>
   <mat-tab label="Parameters">
     <ng-template matTabContent>
-      <app-modelspec-explorer
-        [data]="modelspecDataframe$ | async"
-      ></app-modelspec-explorer>
+      <app-modelspec-explorer [data]="modelspecDataframe$ | async"></app-modelspec-explorer>
     </ng-template>
   </mat-tab>
   <mat-tab label="Scenarios">
     <ng-template matTabContent>
       @if (scenariosTable$ | async; as table) {
-        <app-table
-          [data]="table.rows"
-          [displayedColumns]="table.columns"
-        ></app-table>
+        <app-table [data]="table.rows" [displayedColumns]="table.columns"></app-table>
       }
     </ng-template>
   </mat-tab>

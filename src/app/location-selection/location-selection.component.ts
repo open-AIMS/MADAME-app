@@ -1,11 +1,5 @@
 import { AsyncPipe, CommonModule } from '@angular/common';
-import {
-  AfterViewInit,
-  Component,
-  inject,
-  signal,
-  ViewChild,
-} from '@angular/core';
+import { AfterViewInit, Component, inject, signal, ViewChild } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
@@ -18,10 +12,7 @@ import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltip } from '@angular/material/tooltip';
 import { ArcgisMapCustomEvent } from '@arcgis/map-components';
-import {
-  ArcgisMap,
-  ComponentLibraryModule,
-} from '@arcgis/map-components-angular';
+import { ArcgisMap, ComponentLibraryModule } from '@arcgis/map-components-angular';
 import { combineLatest, filter, map, Observable } from 'rxjs';
 import { AdminPanelComponent } from '../admin/user-panel/user-panel.component';
 import { AuthService } from '../auth/auth.service';
@@ -35,7 +26,10 @@ import { ReefGuideConfigService } from './reef-guide-config.service';
 import { ReefGuideMapService } from './reef-guide-map.service';
 import { SelectionCriteriaComponent } from './selection-criteria/selection-criteria.component';
 import { WebApiService } from '../../api/web-api.service';
-import { JobTypePayload_RegionalAssessment, JobTypePayload_SuitabilityAssessment } from '../../api/web-api.types';
+import {
+  JobTypePayload_RegionalAssessment,
+  JobTypePayload_SuitabilityAssessment
+} from '../../api/web-api.types';
 
 type DrawerModes = 'criteria' | 'style';
 
@@ -61,11 +55,11 @@ type DrawerModes = 'criteria' | 'style';
     MatExpansionModule,
     CommonModule,
     MatMenuModule,
-    MatProgressBar,
+    MatProgressBar
   ],
   providers: [ReefGuideMapService],
   templateUrl: './location-selection.component.html',
-  styleUrl: './location-selection.component.scss',
+  styleUrl: './location-selection.component.scss'
 })
 export class LocationSelectionComponent implements AfterViewInit {
   readonly config = inject(ReefGuideConfigService);
@@ -107,9 +101,7 @@ export class LocationSelectionComponent implements AfterViewInit {
     // const resp = await view.hitTest(event.detail);
     const point = event.detail.mapPoint;
     // point.spatialReference
-    console.log(
-      `Point ${point.x}, ${point.y} Lon/Lat ${point.longitude}, ${point.latitude}`
-    );
+    console.log(`Point ${point.x}, ${point.y} Lon/Lat ${point.longitude}, ${point.latitude}`);
   }
 
   openDrawer(mode: DrawerModes) {
@@ -122,7 +114,7 @@ export class LocationSelectionComponent implements AfterViewInit {
 
   openAdminPanel() {
     this.dialog.open(AdminPanelComponent, {
-      width: '800px',
+      width: '800px'
     });
   }
 
@@ -136,7 +128,7 @@ export class LocationSelectionComponent implements AfterViewInit {
 
   openClusterAdmin() {
     this.dialog.open(ClusterAdminDialogComponent, {
-      width: '800px',
+      width: '800px'
     });
   }
 
@@ -152,10 +144,7 @@ export class LocationSelectionComponent implements AfterViewInit {
 
     // convert criteria to job payload and start job
     const raPartialPayload = criteriaToJobPayload(criteria);
-    const jobsManager = this.mapService.addJobLayers(
-      'REGIONAL_ASSESSMENT',
-      raPartialPayload
-    );
+    const jobsManager = this.mapService.addJobLayers('REGIONAL_ASSESSMENT', raPartialPayload);
     // could load previous job result like this:
     // this.mapService.loadLayerFromJobResults(31);
 
@@ -177,7 +166,7 @@ export class LocationSelectionComponent implements AfterViewInit {
             ...raFinalPayload,
             threshold: siteSuitability.SuitabilityThreshold,
             x_dist: siteSuitability.xdist,
-            y_dist: siteSuitability.ydist,
+            y_dist: siteSuitability.ydist
           };
 
           this.mapService.addSiteSuitabilityLayer(ssPayload);

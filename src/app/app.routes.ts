@@ -10,36 +10,36 @@ export const routes: Routes = [
   {
     path: 'runs',
     component: ModelRunListComponent,
-    title: 'MADAME - Model Runs',
+    title: 'MADAME - Model Runs'
   },
   {
     path: 'view-run/:id',
     component: ModelRunComponent,
-    title: 'MADAME - View Run',
+    title: 'MADAME - View Run'
   },
   {
     path: 'reef-guide',
     component: LocationSelectionComponent,
-    title: 'Reef Guide',
+    title: 'Reef Guide'
   },
   // for now, redirect root to location-selection
   // TODO main nav design and routing
   {
     path: '',
     redirectTo: 'reef-guide',
-    pathMatch: 'full',
+    pathMatch: 'full'
   },
   // Development
   // temporary routes used for development.
   {
     path: 'test-map',
     component: TestMapComponent,
-    title: 'Test Map',
+    title: 'Test Map'
   },
   {
     path: 'invoke-run',
     component: ModelInvokeRunComponent,
-    title: 'Invoke Run',
+    title: 'Invoke Run'
   },
   // initial work on jobs list page. should have auth guard.
   {

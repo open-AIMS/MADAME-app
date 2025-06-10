@@ -8,7 +8,7 @@ describe('LoginDialogComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [LoginDialogComponent],
+      imports: [LoginDialogComponent]
     }).compileComponents();
 
     fixture = TestBed.createComponent(LoginDialogComponent);

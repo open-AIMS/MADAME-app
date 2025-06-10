@@ -9,7 +9,7 @@ import {
   Observable,
   of,
   Subject,
-  takeUntil,
+  takeUntil
 } from 'rxjs';
 import { ReefGuideApiService } from '../reef-guide-api.service';
 import { SelectionCriteria } from '../reef-guide-api.types';
@@ -71,7 +71,7 @@ export class CriteriaRequest {
             return {
               region,
               cogUrl: blobUrl,
-              originalUrl: url,
+              originalUrl: url
             };
           }),
           catchError(err => {

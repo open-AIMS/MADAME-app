@@ -5,16 +5,8 @@ import { MatInputModule } from '@angular/material/input';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatOption, MatSelect } from '@angular/material/select';
 import { MatListOption, MatSelectionList } from '@angular/material/list';
-import {
-  ALL_REGIONS,
-  MAPS,
-  ReefGuideConfigService,
-} from '../reef-guide-config.service';
-import {
-  MatButton,
-  MatIconAnchor,
-  MatIconButton,
-} from '@angular/material/button';
+import { ALL_REGIONS, MAPS, ReefGuideConfigService } from '../reef-guide-config.service';
+import { MatButton, MatIconAnchor, MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatTooltip } from '@angular/material/tooltip';
 import { combineLatest, map, Observable, startWith } from 'rxjs';
@@ -40,10 +32,10 @@ import { AuthService } from '../../auth/auth.service';
     MatIconAnchor,
     AsyncPipe,
     MatCheckbox,
-    MatTabsModule,
+    MatTabsModule
   ],
   templateUrl: './config-dialog.component.html',
-  styleUrl: './config-dialog.component.scss',
+  styleUrl: './config-dialog.component.scss'
 })
 export class ConfigDialogComponent {
   readonly config = inject(ReefGuideConfigService);
@@ -66,17 +58,13 @@ export class ConfigDialogComponent {
     // TODO required if arcgisMap=CUSTOM
     this.mapItemId = new FormControl(this.config.customArcgisMapItemId());
     this.regions = new FormControl(this.config.enabledRegions());
-    this.parallelRegionRequests = new FormControl(
-      this.config.parallelRegionRequests()
-    );
-    this.enableCOGBlob = new FormControl(
-      this.config.enableCOGBlob()
-    );
+    this.parallelRegionRequests = new FormControl(this.config.parallelRegionRequests());
+    this.enableCOGBlob = new FormControl(this.config.enableCOGBlob());
 
     // determine ArcGIS item URL for the current selection.
     this.arcgisItemUrl = combineLatest([
       this.arcgisMap.valueChanges.pipe(startWith(this.arcgisMap.value)),
-      this.mapItemId.valueChanges.pipe(startWith(this.mapItemId.value)),
+      this.mapItemId.valueChanges.pipe(startWith(this.mapItemId.value))
     ]).pipe(
       map(([mapId, customItemId]) => {
         let itemId: string;

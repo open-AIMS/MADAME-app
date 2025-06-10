@@ -13,7 +13,7 @@ import {
   User,
   UserLogs,
   UserProfile,
-  UserRole,
+  UserRole
 } from './web-api.types';
 import {
   interval,
@@ -36,7 +36,7 @@ type JobId = CreateJobResponse['jobId'];
  * It also provides admin endpoints for controlling clusters and managing users.
  */
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class WebApiService {
   private readonly http = inject(HttpClient);
@@ -46,10 +46,7 @@ export class WebApiService {
   constructor() {}
 
   register(user: { email: string; password: string }) {
-    return this.http.post<{ userId: number }>(
-      `${this.base}/auth/register`,
-      user
-    );
+    return this.http.post<{ userId: number }>(`${this.base}/auth/register`, user);
   }
 
   login(user: { email: string; password: string }) {
@@ -99,7 +96,7 @@ export class WebApiService {
   createNote(polygonId: number, content: string) {
     return this.http.post(`${this.base}/notes`, {
       polygonId,
-      content,
+      content
     });
   }
 
@@ -144,20 +141,15 @@ export class WebApiService {
   }
 
   userLogs({ page, limit }: { page: number; limit: number }) {
-    return this.http.get<UserLogs>(
-      `${this.baseUsers}/utils/log?page=${page}&limit=${limit}`
-    );
+    return this.http.get<UserLogs>(`${this.baseUsers}/utils/log?page=${page}&limit=${limit}`);
   }
 
   // ## Jobs System ##
 
-  createJob(
-    type: string,
-    payload: Record<string, any>
-  ): Observable<CreateJobResponse> {
+  createJob(type: string, payload: Record<string, any>): Observable<CreateJobResponse> {
     return this.http.post<CreateJobResponse>(`${this.base}/jobs`, {
       type,
-      inputPayload: payload,
+      inputPayload: payload
     });
   }
 
@@ -165,16 +157,10 @@ export class WebApiService {
     return this.http.get<JobDetailsResponse>(`${this.base}/jobs/${jobId}`);
   }
 
-  downloadJobResults(
-    jobId: JobId,
-    expirySeconds?: number
-  ): Observable<DownloadResponse> {
-    return this.http.get<DownloadResponse>(
-      `${this.base}/jobs/${jobId}/download`,
-      {
-        params: expirySeconds !== undefined ? { expirySeconds } : undefined,
-      }
-    );
+  downloadJobResults(jobId: JobId, expirySeconds?: number): Observable<DownloadResponse> {
+    return this.http.get<DownloadResponse>(`${this.base}/jobs/${jobId}/download`, {
+      params: expirySeconds !== undefined ? { expirySeconds } : undefined
+    });
   }
 
   // TODO API supports status filter

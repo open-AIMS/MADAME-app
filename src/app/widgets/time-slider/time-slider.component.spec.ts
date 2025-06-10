@@ -8,7 +8,7 @@ describe('TimeSliderComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TimeSliderComponent],
+      imports: [TimeSliderComponent]
     }).compileComponents();
 
     fixture = TestBed.createComponent(TimeSliderComponent);

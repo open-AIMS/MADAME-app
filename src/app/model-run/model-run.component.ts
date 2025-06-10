@@ -1,19 +1,10 @@
-import {
-  Component,
-  input,
-  Signal,
-  ViewChild,
-  ChangeDetectorRef,
-} from '@angular/core';
+import { Component, input, Signal, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { AsyncPipe, DatePipe, NgIf } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import {
-  ArcgisMap,
-  ComponentLibraryModule,
-} from '@arcgis/map-components-angular';
+import { ArcgisMap, ComponentLibraryModule } from '@arcgis/map-components-angular';
 import { AdriaApiService } from '../adria-api.service';
 import { map, Observable, switchMap } from 'rxjs';
 import { DataFrame, ResultSetInfo } from '../../types/api.type';
@@ -44,9 +35,9 @@ import { MatToolbar } from '@angular/material/toolbar';
     TableComponent,
     ModelspecExplorerComponent,
     ReefMapComponent,
-    MatToolbar,
+    MatToolbar
   ],
-  providers: [ResultSetService],
+  providers: [ResultSetService]
 })
 export class ModelRunComponent {
   id = input.required<string>();
@@ -71,7 +62,7 @@ export class ModelRunComponent {
     'asv',
     'relative_juveniles',
     'absolute_juveniles',
-    'coral_evenness',
+    'coral_evenness'
   ];
 
   constructor(
@@ -89,9 +80,7 @@ export class ModelRunComponent {
     this.run$ = resultSetContext.info$;
     this.run = toSignal(this.run$);
 
-    this.modelspecDataframe$ = id$.pipe(
-      switchMap(id => this.api.getResultSetModelSpec(id))
-    );
+    this.modelspecDataframe$ = id$.pipe(switchMap(id => this.api.getResultSetModelSpec(id)));
 
     this.scenariosTable$ = id$.pipe(
       switchMap(id => this.api.getResultSetScenarios(id)),
@@ -106,26 +95,18 @@ export class ModelRunComponent {
 
   getMetricFigure(): void {
     if (this.selected_metric) {
-      this.api
-        .getMetricFigure(this.resultSetContext.id, this.selected_metric)
-        .subscribe({
-          next: response => {
-            const sanitizedHtml =
-              this.sanitizer.bypassSecurityTrustHtml(response);
-            this.metrics_figures.push([
-              this.metrics_figures.length + 1,
-              sanitizedHtml,
-            ]);
-            this.cdf.detectChanges();
-            console.log(this.metrics_figures.length);
-          },
-          error: error => {
-            console.log(error.message);
-          },
-        });
-      const index = this.metrics.findIndex(
-        item => item === this.selected_metric
-      );
+      this.api.getMetricFigure(this.resultSetContext.id, this.selected_metric).subscribe({
+        next: response => {
+          const sanitizedHtml = this.sanitizer.bypassSecurityTrustHtml(response);
+          this.metrics_figures.push([this.metrics_figures.length + 1, sanitizedHtml]);
+          this.cdf.detectChanges();
+          console.log(this.metrics_figures.length);
+        },
+        error: error => {
+          console.log(error.message);
+        }
+      });
+      const index = this.metrics.findIndex(item => item === this.selected_metric);
       if (index !== -1) {
         this.metrics.splice(index, 1);
       }

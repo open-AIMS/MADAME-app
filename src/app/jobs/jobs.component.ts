@@ -23,12 +23,19 @@ import { MatToolbarModule } from '@angular/material/toolbar';
   styleUrl: './jobs.component.scss'
 })
 export class JobsComponent {
-
   api = inject(WebApiService);
   jobs$: Observable<ListJobsResponse>;
 
-  dataSource = new MatTableDataSource()
-  displayedColumns: string[] = ['actions', 'id', 'type', 'status', 'created_at', 'updated_at', 'input_payload'];
+  dataSource = new MatTableDataSource();
+  displayedColumns: string[] = [
+    'actions',
+    'id',
+    'type',
+    'status',
+    'created_at',
+    'updated_at',
+    'input_payload'
+  ];
 
   @ViewChild(MatSort) sort!: MatSort;
 
@@ -37,7 +44,7 @@ export class JobsComponent {
 
     this.jobs$.subscribe(resp => {
       this.dataSource.data = resp.jobs;
-    })
+    });
   }
 
   ngAfterViewInit() {
@@ -53,7 +60,6 @@ export class JobsComponent {
   viewDetails(jobId: number) {
     this.api.getJob(jobId).subscribe(x => {
       console.info(`Job id=${jobId} details`, x);
-    })
+    });
   }
-
 }

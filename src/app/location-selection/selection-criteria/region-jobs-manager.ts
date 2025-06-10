@@ -1,10 +1,12 @@
 import {
-  BehaviorSubject, concatMap,
+  BehaviorSubject,
+  concatMap,
   distinct,
   filter,
   map,
   mergeMap,
-  Observable, Subject,
+  Observable,
+  Subject,
   switchMap,
   takeUntil,
   tap,
@@ -15,7 +17,6 @@ import { inject } from '@angular/core';
 import { DownloadResponse, JobDetails, JobType } from '../../../api/web-api.types';
 import { WebApiService } from '../../../api/web-api.service';
 import { retryHTTPErrors } from '../../../util/http-util';
-
 
 export type RegionDownloadResponse = DownloadResponse & { region: string };
 
@@ -87,9 +88,7 @@ export class RegionJobsManager {
             this.jobUpdate.next(job);
           }),
           filter(x => x.status === 'SUCCEEDED'),
-          switchMap(job =>
-            this.api.downloadJobResults(job.id).pipe(retryHTTPErrors(3))
-          ),
+          switchMap(job => this.api.downloadJobResults(job.id).pipe(retryHTTPErrors(3))),
           map(jobResults => ({ ...jobResults, region })),
           finalize(() => {
             this.stopRegion(region);

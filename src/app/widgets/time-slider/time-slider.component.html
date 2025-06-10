@@ -1,24 +1,12 @@
 <span>{{ min() }}</span>
 @if (mode() === 'range') {
   <mat-slider [min]="min()" [max]="max()" step="1" showTickMarks discrete>
-    <input
-      matSliderStartThumb
-      [(value)]="left"
-      (valueChange)="leftChange.emit($event)"
-    />
-    <input
-      matSliderEndThumb
-      [(value)]="right"
-      (valueChange)="rightChange.emit($event)"
-    />
+    <input matSliderStartThumb [(value)]="left" (valueChange)="leftChange.emit($event)" />
+    <input matSliderEndThumb [(value)]="right" (valueChange)="rightChange.emit($event)" />
   </mat-slider>
 } @else {
   <mat-slider [min]="min()" [max]="max()" step="1" showTickMarks discrete>
-    <input
-      matSliderThumb
-      [(value)]="left"
-      (valueChange)="leftChange.emit($event)"
-    />
+    <input matSliderThumb [(value)]="left" (valueChange)="leftChange.emit($event)" />
   </mat-slider>
 }
 <span>{{ max() }}</span>

@@ -8,7 +8,7 @@ describe('ModelRunListComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ModelRunListComponent],
+      imports: [ModelRunListComponent]
     }).compileComponents();
 
     fixture = TestBed.createComponent(ModelRunListComponent);

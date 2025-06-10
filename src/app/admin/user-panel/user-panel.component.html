@@ -4,11 +4,7 @@
     <mat-tab-group>
       <mat-tab label="Manage">
         <div class="table-container">
-          <table
-            mat-table
-            [dataSource]="tableUsersList"
-            class="mat-elevation-z8"
-          >
+          <table mat-table [dataSource]="tableUsersList" class="mat-elevation-z8">
             <!-- Email Column -->
             <ng-container matColumnDef="email">
               <th mat-header-cell *matHeaderCellDef>Email</th>
@@ -39,10 +35,7 @@
                 </button>
               </td>
             </ng-container>
-            <tr
-              mat-header-row
-              *matHeaderRowDef="displayedColumns; sticky: true"
-            ></tr>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
           </table>
           <mat-menu #menu="matMenu" hasBackdrop="true">
@@ -56,11 +49,7 @@
                 <span>Change Password</span>
               </button>
               @if ((authService.user$ | async)?.email !== user.email) {
-                <button
-                  mat-menu-item
-                  (click)="deleteUser(user.id)"
-                  class="delete-action"
-                >
+                <button mat-menu-item (click)="deleteUser(user.id)" class="delete-action">
                   <mat-icon color="warn">delete</mat-icon>
                   <span class="warn-text">Delete User</span>
                 </button>
@@ -72,11 +61,7 @@
       <mat-tab label="Logs">
         <div class="logs-container">
           <div class="logs-header">
-            <button
-              mat-icon-button
-              (click)="refreshLogs()"
-              aria-label="Refresh logs"
-            >
+            <button mat-icon-button (click)="refreshLogs()" aria-label="Refresh logs">
               <mat-icon>refresh</mat-icon>
             </button>
           </div>
@@ -122,14 +107,8 @@
                 </td>
               </ng-container>
 
-              <tr
-                mat-header-row
-                *matHeaderRowDef="userLogsDisplayedColumns"
-              ></tr>
-              <tr
-                mat-row
-                *matRowDef="let row; columns: userLogsDisplayedColumns"
-              ></tr>
+              <tr mat-header-row *matHeaderRowDef="userLogsDisplayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: userLogsDisplayedColumns"></tr>
             </table>
             <mat-paginator
               [length]="logs.pagination.total"

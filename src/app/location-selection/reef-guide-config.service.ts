@@ -5,7 +5,7 @@ import {
   Injectable,
   Signal,
   signal,
-  WritableSignal,
+  WritableSignal
 } from '@angular/core';
 import { AuthService } from '../auth/auth.service';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -34,9 +34,7 @@ function getBoolean(val: string): boolean {
  *
  * TODO fix types so this errors if add property to StoredConfig
  */
-const configVarGetters: Partial<
-  Record<keyof StoredConfig, (val: string) => any>
-> = {
+const configVarGetters: Partial<Record<keyof StoredConfig, (val: string) => any>> = {
   enabledRegions: getArray,
   parallelRegionRequests: getBoolean,
   enableCOGBlob: getBoolean
@@ -54,14 +52,14 @@ export const MAPS: Array<Map> = [
   {
     id: 'simple',
     name: 'Simple',
-    arcgisItemId: 'd7404f1b7eed4269b0028a0a6b698000',
+    arcgisItemId: 'd7404f1b7eed4269b0028a0a6b698000'
   },
   // Decision Sim prototype
   {
     id: 'DecisionSim',
     name: 'Decision Sim 2 v1_5 GS',
-    arcgisItemId: 'fee03c9e65a8413f8b0bb8c158c7f040',
-  },
+    arcgisItemId: 'fee03c9e65a8413f8b0bb8c158c7f040'
+  }
 ];
 
 const DEFAULT_MAP = MAPS[0];
@@ -70,11 +68,11 @@ export const ALL_REGIONS = [
   'Townsville-Whitsunday',
   'Cairns-Cooktown',
   'Mackay-Capricorn',
-  'FarNorthern',
+  'FarNorthern'
 ];
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class ReefGuideConfigService {
   readonly authService = inject(AuthService);
@@ -131,9 +129,7 @@ export class ReefGuideConfigService {
       } else {
         let map = MAPS.find(m => m.id === mapId);
         if (map === undefined) {
-          console.warn(
-            `No Map found with id="${mapId}", defaulting to "${DEFAULT_MAP.id}"`
-          );
+          console.warn(`No Map found with id="${mapId}", defaulting to "${DEFAULT_MAP.id}"`);
           map = DEFAULT_MAP;
         }
         return map.arcgisItemId;
@@ -141,22 +137,16 @@ export class ReefGuideConfigService {
     });
 
     this.enabledRegions = signal(this.get('enabledRegions', ALL_REGIONS));
-    this.parallelRegionRequests = signal(
-      this.get('parallelRegionRequests', true)
-    );
+    this.parallelRegionRequests = signal(this.get('parallelRegionRequests', true));
 
     // default to false since ObjectURLs not working in deployed app
     // Also, should add file size condition
     this.enableCOGBlob = signal(this.get('enableCOGBlob', false));
 
     effect(() => this.set('arcgisMap', this.arcgisMap()));
-    effect(() =>
-      this.set('customArcgisMapItemId', this.customArcgisMapItemId())
-    );
+    effect(() => this.set('customArcgisMapItemId', this.customArcgisMapItemId()));
     effect(() => this.set('enabledRegions', this.enabledRegions()));
-    effect(() =>
-      this.set('parallelRegionRequests', this.parallelRegionRequests())
-    );
+    effect(() => this.set('parallelRegionRequests', this.parallelRegionRequests()));
     effect(() => this.set('enableCOGBlob', this.enableCOGBlob()));
 
     // ignore the first effect, which would set the initial value.
@@ -166,17 +156,9 @@ export class ReefGuideConfigService {
     });
   }
 
-  private get<K extends keyof StoredConfig, V = StoredConfig[K]>(
-    key: K
-  ): V | undefined;
-  private get<K extends keyof StoredConfig, V = StoredConfig[K]>(
-    key: K,
-    dflt: V
-  ): V;
-  private get<K extends keyof StoredConfig, V = StoredConfig[K]>(
-    key: K,
-    dflt?: V
-  ): V | undefined {
+  private get<K extends keyof StoredConfig, V = StoredConfig[K]>(key: K): V | undefined;
+  private get<K extends keyof StoredConfig, V = StoredConfig[K]>(key: K, dflt: V): V;
+  private get<K extends keyof StoredConfig, V = StoredConfig[K]>(key: K, dflt?: V): V | undefined {
     let val = localStorage.getItem(`${this.prefix}${key}`);
     if (val == null) {
       return dflt ?? undefined;
@@ -186,10 +168,7 @@ export class ReefGuideConfigService {
     }
   }
 
-  private set<K extends keyof StoredConfig, V = StoredConfig[K]>(
-    key: K,
-    value: V
-  ) {
+  private set<K extends keyof StoredConfig, V = StoredConfig[K]>(key: K, value: V) {
     if (this.readonly) {
       return;
     }

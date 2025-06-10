@@ -1,10 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import {
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -27,10 +22,10 @@ type Credentials = { email: string; password: string };
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
-    MatProgressBar,
+    MatProgressBar
   ],
   templateUrl: './login-dialog.component.html',
-  styleUrl: './login-dialog.component.scss',
+  styleUrl: './login-dialog.component.scss'
 })
 export class LoginDialogComponent {
   readonly dialogRef = inject(MatDialogRef<LoginDialogComponent>);
@@ -45,7 +40,7 @@ export class LoginDialogComponent {
 
   form = new FormGroup({
     email: new FormControl('', Validators.required),
-    password: new FormControl('', Validators.required),
+    password: new FormControl('', Validators.required)
   });
 
   // error messages related to the email input.
@@ -77,7 +72,7 @@ export class LoginDialogComponent {
         this.busy.set(false);
         this.dialogRef.close();
       },
-      error: err => this.handleError(err),
+      error: err => this.handleError(err)
     });
   }
 
@@ -90,7 +85,7 @@ export class LoginDialogComponent {
         console.log('registered, logging in', value.email);
         this.login(value);
       },
-      error: err => this.handleError(err),
+      error: err => this.handleError(err)
     });
   }
 
@@ -104,16 +99,16 @@ export class LoginDialogComponent {
 
     if (this.emailErrors.includes(errorMessage)) {
       email.setErrors({
-        invalid: true,
+        invalid: true
       });
       // clear error message on next change.
       email.valueChanges.pipe(take(1)).subscribe(() => this.resetErrors());
     } else if (errorMessage === 'Invalid credentials') {
       email.setErrors({
-        invalid: true,
+        invalid: true
       });
       password.setErrors({
-        invalid: true,
+        invalid: true
       });
       // in this case user only needs to fix one input, but form will
       // remain invalid until user changes both.

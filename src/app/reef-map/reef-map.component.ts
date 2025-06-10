@@ -1,25 +1,14 @@
 import { Component, ViewChild } from '@angular/core';
 import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
 import { ArcgisMapCustomEvent } from '@arcgis/map-components';
-import {
-  ArcgisMap,
-  ComponentLibraryModule,
-} from '@arcgis/map-components-angular';
+import { ArcgisMap, ComponentLibraryModule } from '@arcgis/map-components-angular';
 import Field from '@arcgis/core/layers/support/Field';
 import {
   cloneFeatureLayerAsLocal,
   cloneRendererChangedField,
-  updateLayerFeatureAttributes,
+  updateLayerFeatureAttributes
 } from '../../util/arcgis/arcgis-layer-util';
-import {
-  BehaviorSubject,
-  firstValueFrom,
-  map,
-  Observable,
-  Subject,
-  switchMap,
-  tap,
-} from 'rxjs';
+import { BehaviorSubject, firstValueFrom, map, Observable, Subject, switchMap, tap } from 'rxjs';
 import { experimentSimpleGraphicsLayer } from '../../util/arcgis/arcgis-layer-experiments';
 import { AdriaApiService } from '../adria-api.service';
 import { ResultSetService } from '../contexts/result-set.service';
@@ -39,10 +28,10 @@ import Home from '@arcgis/core/widgets/Home';
     MatSliderModule,
     MatProgressSpinnerModule,
     CommonModule,
-    TimeSliderComponent,
+    TimeSliderComponent
   ],
   templateUrl: './reef-map.component.html',
-  styleUrl: './reef-map.component.scss',
+  styleUrl: './reef-map.component.scss'
 })
 export class ReefMapComponent {
   // mapItemId = '94fe3f59dcc64b9eb94576a1f1f17ec9';
@@ -66,9 +55,7 @@ export class ReefMapComponent {
     private api: AdriaApiService,
     private resultSetContext: ResultSetService
   ) {
-    this.yearExtent$ = resultSetContext.info$.pipe(
-      map(info => [info.start_year, info.end_year])
-    );
+    this.yearExtent$ = resultSetContext.info$.pipe(map(info => [info.start_year, info.end_year]));
   }
 
   /**
@@ -90,9 +77,7 @@ export class ReefMapComponent {
     console.log('ArcGis ready', this.map);
   }
 
-  arcgisViewLayerviewCreate(
-    event: ArcgisMapCustomEvent<__esri.ViewLayerviewCreateEvent>
-  ) {
+  arcgisViewLayerviewCreate(event: ArcgisMapCustomEvent<__esri.ViewLayerviewCreateEvent>) {
     const { layer, layerView } = event.detail;
     // console.log(`layer "${layer.title}" type=${layer.type}`, layer);
     // TODO refer by ID, this is brittle
@@ -101,10 +86,7 @@ export class ReefMapComponent {
     }
   }
 
-  private async cloneReefsLayer(
-    layer: __esri.FeatureLayer,
-    layerView: __esri.LayerView
-  ) {
+  private async cloneReefsLayer(layer: __esri.FeatureLayer, layerView: __esri.LayerView) {
     // only do this once
     if (this.cloned) {
       return;
@@ -129,9 +111,7 @@ export class ReefMapComponent {
     // hide original layer
     layer.visible = false;
 
-    const relCoverData = await firstValueFrom(
-      this.api.getMeanRelativeCover(resultSetId)
-    );
+    const relCoverData = await firstValueFrom(this.api.getMeanRelativeCover(resultSetId));
 
     let unique_id_matchCount = 0;
     // create a new local layer and add relative_cover field
@@ -139,15 +119,15 @@ export class ReefMapComponent {
       layer,
       {
         title: layer.title,
-        renderer,
+        renderer
       },
       {
         newFields: [
           new Field({
             name: field,
             alias: 'Relative Cover',
-            type: 'double',
-          }),
+            type: 'double'
+          })
         ],
         modifyAttributes: attrs => {
           attrs[field] = dataframeFind(
@@ -162,13 +142,11 @@ export class ReefMapComponent {
             },
             field
           );
-        },
+        }
       }
     );
 
-    console.log(
-      `map.addLayer relative_cover, UNIQUE_ID matchCount=${unique_id_matchCount}`
-    );
+    console.log(`map.addLayer relative_cover, UNIQUE_ID matchCount=${unique_id_matchCount}`);
     await this.map.addLayer(newLayer);
     this.reefLayer = newLayer;
 
@@ -179,20 +157,16 @@ export class ReefMapComponent {
           this.timestep = timestep;
           this.timestepLoading$.next(true);
         }),
-        switchMap(timestep =>
-          this.api.getMeanRelativeCover(resultSetId, timestep)
-        )
+        switchMap(timestep => this.api.getMeanRelativeCover(resultSetId, timestep))
       )
-      .subscribe(relCoverData =>
-        this.loadTimestepRelativeCoverData(relCoverData)
-      );
+      .subscribe(relCoverData => this.loadTimestepRelativeCoverData(relCoverData));
 
     // create a Home button that uses our custom zoomToExtent method.
     const homeButton = new Home({
       view: this.map.view,
       goToOverride: (view, goToParameters) => {
         this.zoomToExtent(newLayer, field);
-      },
+      }
     });
     this.map.view.ui.add(homeButton, 'top-right');
 
@@ -208,7 +182,7 @@ export class ReefMapComponent {
           'UNIQUE_ID',
           unique_id => unique_id === attrs['UNIQUE_ID'],
           'relative_cover'
-        ),
+        )
       };
     });
     this.reefLayer!.title = `Reefs Relative Cover ${pointOrRangeToParam(this.timestep!)}`;
@@ -247,7 +221,7 @@ export class ReefMapComponent {
       title: 'Reef Relative Cover',
       url: layerUrl,
       visible: true,
-      renderer,
+      renderer
     });
 
     console.log('init fields', newLayer.fields);

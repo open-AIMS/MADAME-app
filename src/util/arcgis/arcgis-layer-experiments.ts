@@ -8,7 +8,7 @@ export function experimentSimpleGraphicsLayer(): GraphicsLayer {
   const point: any = {
     type: 'point',
     longitude: 146.809998,
-    latitude: -19.168182,
+    latitude: -19.168182
   };
 
   const simpleMarkerSymbol = {
@@ -16,13 +16,13 @@ export function experimentSimpleGraphicsLayer(): GraphicsLayer {
     color: [0, 0, 0],
     outline: {
       color: [255, 255, 255],
-      width: 1,
-    },
+      width: 1
+    }
   };
 
   const attributes = {
     name: 'Point',
-    description: 'I am a point',
+    description: 'I am a point'
   };
 
   const pointGraphic = new Graphic({
@@ -31,8 +31,8 @@ export function experimentSimpleGraphicsLayer(): GraphicsLayer {
     attributes: attributes,
     popupTemplate: {
       title: attributes.name,
-      content: attributes.description,
-    },
+      content: attributes.description
+    }
   });
 
   gl.add(pointGraphic);

@@ -1,29 +1,17 @@
-import {
-  Component,
-  inject,
-  QueryList,
-  signal,
-  ViewChildren,
-} from '@angular/core';
-import {
-  CalciteComponentsModule,
-  CalciteSlider,
-} from '@esri/calcite-components-angular';
+import { Component, inject, QueryList, signal, ViewChildren } from '@angular/core';
+import { CalciteComponentsModule, CalciteSlider } from '@esri/calcite-components-angular';
 import { MatSliderModule } from '@angular/material/slider';
 import {
   FormBuilder,
   FormGroup,
   FormsModule,
   ReactiveFormsModule,
-  Validators,
+  Validators
 } from '@angular/forms';
 import { MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { ReefGuideMapService } from '../reef-guide-map.service';
-import {
-  CriteriaAssessment,
-  SiteSuitabilityCriteria,
-} from '../reef-guide-api.types';
+import { CriteriaAssessment, SiteSuitabilityCriteria } from '../reef-guide-api.types';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { MatSlideToggle } from '@angular/material/slide-toggle';
@@ -56,10 +44,10 @@ interface SelectionCriteriaInputDef {
     MatFormFieldModule,
     MatInput,
     MatSlideToggle,
-    ReactiveFormsModule,
+    ReactiveFormsModule
   ],
   templateUrl: './selection-criteria.component.html',
-  styleUrl: './selection-criteria.component.scss',
+  styleUrl: './selection-criteria.component.scss'
 })
 export class SelectionCriteriaComponent {
   readonly mapService = inject(ReefGuideMapService);
@@ -84,14 +72,14 @@ export class SelectionCriteriaComponent {
       step: 0.5,
       // convert Depth to negative values required by API. [-10, -2]
       convertValue: v => -v,
-      reverseValues: true,
+      reverseValues: true
     },
     {
       id: 'Slope',
       name: 'Slope (degrees)',
       // Slope: 0.0:40.0
       min: 0,
-      max: 45,
+      max: 45
     },
     {
       id: 'WavesHs',
@@ -99,7 +87,7 @@ export class SelectionCriteriaComponent {
       min: 0,
       max: 6,
       maxValue: 1,
-      step: 0.1,
+      step: 0.1
     },
     {
       id: 'WavesTp',
@@ -108,8 +96,8 @@ export class SelectionCriteriaComponent {
       min: 0,
       max: 9,
       maxValue: 6,
-      step: 0.5,
-    },
+      step: 0.5
+    }
   ];
 
   enableSiteSuitability = signal(false);
@@ -125,7 +113,7 @@ export class SelectionCriteriaComponent {
     this.siteForm = this.formBuilder.group({
       xdist: [450, [Validators.min(1), Validators.required]],
       ydist: [20, [Validators.min(1), Validators.required]],
-      SuitabilityThreshold: [95, Validators.required],
+      SuitabilityThreshold: [95, Validators.required]
     });
   }
 
@@ -161,7 +149,7 @@ export class SelectionCriteriaComponent {
 
     return {
       criteria,
-      siteSuitability,
+      siteSuitability
     };
   }
 

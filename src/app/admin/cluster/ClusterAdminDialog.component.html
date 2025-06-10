@@ -50,15 +50,9 @@
       <div *ngIf="status.deployments?.length" class="deployments-section">
         <h4>Active Deployments</h4>
         <div class="scrollable-section">
-          <div
-            *ngFor="let deployment of status.deployments"
-            class="deployment-card"
-          >
+          <div *ngFor="let deployment of status.deployments" class="deployment-card">
             <div class="deployment-header">
-              <span
-                class="status-badge"
-                [class.status-primary]="deployment.status === 'PRIMARY'"
-              >
+              <span class="status-badge" [class.status-primary]="deployment.status === 'PRIMARY'">
                 {{ deployment.status }}
               </span>
               <span class="deployment-count">
@@ -84,13 +78,8 @@
         <h4>Recent Events</h4>
         <div class="scrollable-section">
           <div *ngFor="let event of status.events" class="event-item">
-            <span class="event-time">{{
-              event.createdAt | date: 'short'
-            }}</span>
-            <span
-              class="event-message text-truncate"
-              [matTooltip]="event.message"
-            >
+            <span class="event-time">{{ event.createdAt | date: 'short' }}</span>
+            <span class="event-message text-truncate" [matTooltip]="event.message">
               {{ event.message }}
             </span>
           </div>

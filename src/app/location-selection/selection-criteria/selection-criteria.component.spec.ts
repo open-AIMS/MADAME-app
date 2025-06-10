@@ -8,7 +8,7 @@ describe('SelectionCriteriaComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SelectionCriteriaComponent],
+      imports: [SelectionCriteriaComponent]
     }).compileComponents();
 
     fixture = TestBed.createComponent(SelectionCriteriaComponent);

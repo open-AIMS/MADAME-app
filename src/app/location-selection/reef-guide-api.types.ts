@@ -1,6 +1,6 @@
 import {
   JobTypePayload_RegionalAssessment,
-  JobTypePayload_SuitabilityAssessment,
+  JobTypePayload_SuitabilityAssessment
 } from '../../api/web-api.types';
 
 /**
@@ -19,7 +19,7 @@ export const criteriaIdToPayloadId: Record<string, string> = {
   // removed from app code
   // Turbidity: 'turbidity',
   WavesHs: 'waves_height',
-  WavesTp: 'waves_period',
+  WavesTp: 'waves_period'
 };
 
 // TODO:monorepo remove these functions and types after refactor all code to job payloads.
@@ -30,7 +30,7 @@ export const criteriaIdToPayloadId: Record<string, string> = {
  */
 export function criteriaToJobPayload(
   criteria: SelectionCriteria
-): Omit<JobTypePayload_RegionalAssessment, "region"> {
+): Omit<JobTypePayload_RegionalAssessment, 'region'> {
   const payload: Record<string, any> = {
     reef_type: 'slopes'
   } satisfies Partial<JobTypePayload_RegionalAssessment>;
@@ -38,9 +38,7 @@ export function criteriaToJobPayload(
   for (let [criteriaId, range] of Object.entries(criteria)) {
     const payloadProp = criteriaIdToPayloadId[criteriaId];
     if (payloadProp === undefined) {
-      throw new Error(
-        `"${criteriaId}" has no mapping to job payload property name`
-      );
+      throw new Error(`"${criteriaId}" has no mapping to job payload property name`);
     }
     payload[`${payloadProp}_min`] = range[0];
     payload[`${payloadProp}_max`] = range[1];
@@ -58,7 +56,7 @@ export function criteriaToSiteSuitabilityJobPayload(
     region,
     x_dist: siteCriteria.xdist,
     y_dist: siteCriteria.ydist,
-    threshold: siteCriteria.SuitabilityThreshold,
+    threshold: siteCriteria.SuitabilityThreshold
   };
 }
 

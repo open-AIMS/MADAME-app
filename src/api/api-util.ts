@@ -23,7 +23,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 */
 
 const translateMessage: Record<string, string> = {
-  'Failed to fetch': 'Connection error!',
+  'Failed to fetch': 'Connection error!'
 };
 
 /**

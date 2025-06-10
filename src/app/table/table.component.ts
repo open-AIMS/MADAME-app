@@ -1,10 +1,4 @@
-import {
-  AfterViewInit,
-  Component,
-  effect,
-  input,
-  ViewChild,
-} from '@angular/core';
+import { AfterViewInit, Component, effect, input, ViewChild } from '@angular/core';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 
@@ -12,7 +6,7 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
   selector: 'app-table',
   imports: [MatTableModule, MatSortModule],
   templateUrl: './table.component.html',
-  styleUrl: './table.component.scss',
+  styleUrl: './table.component.scss'
 })
 export class TableComponent implements AfterViewInit {
   data = input<Array<any>>();

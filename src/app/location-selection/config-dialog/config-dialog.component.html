@@ -23,12 +23,7 @@
       }
 
       @if (arcgisItemUrl | async; as url) {
-        <a
-          mat-icon-button
-          [href]="url"
-          target="_blank"
-          matTooltip="Open item on ArcGIS"
-        >
+        <a mat-icon-button [href]="url" target="_blank" matTooltip="Open item on ArcGIS">
           <mat-icon>map</mat-icon>
         </a>
       }
