@@ -1,3 +1,22 @@
+# ⚠️ DEPRECATED / ARCHIVED
+
+> **This repository is deprecated and no longer maintained.**
+
+## Why is this deprecated?
+
+MADAME-app has been integrated into ReefGuide, constituting the main frontend for the ReefGuide application.
+
+See the [reefguide repo](https://github.com/open-AIMS/reefguide).
+
+## Need Help?
+
+If you have questions or concerns about this deprecation, please contact the ReefGuide development team.
+---
+
+*This notice was added on 11/7/25. The repository will remain accessible for historical reference.*
+
+---
+
 # MADAME App
 
 Model Assessment and Decision Analysis for Marine Environments web application.
